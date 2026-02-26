@@ -305,12 +305,6 @@ input[type=number]::-webkit-outer-spin-button {
     /* Increased from 22px */
     width: 26px;
     /* Increased from 22px */
-    background-color: var(--form-bg);
-    /* Pure white checkmark base */
-    border: 2px solid var(--border-color);
-    /* Thicker border to match checkmark outline */
-    border-radius: 5px;
-    /* Highly rounded box */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -318,27 +312,26 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .checkmark svg {
-    color: #10B981;
-    /* Precise vibrant green */
-    stroke-width: 3.5px;
-    /* Bold matching check */
-    width: 18px;
-    /* Increased from 14px */
-    height: 18px;
-    /* Increased from 14px */
-    opacity: 0;
+    color: var(--border-color);
+    width: 26px;
+    height: 26px;
     transition: var(--transition);
 }
 
-.checkbox-container input:checked~.checkmark {
-    background-color: var(--form-bg);
-    /* Keep base white like design */
-    border-color: #10B981;
-    /* Green rim */
+.checkmark svg .tick {
+    opacity: 0;
+    transition: var(--transition);
+    transform-origin: center;
+    transform: scale(0.5);
 }
 
 .checkbox-container input:checked~.checkmark svg {
+    color: var(--primary);
+}
+
+.checkbox-container input:checked~.checkmark svg .tick {
     opacity: 1;
+    transform: scale(1);
 }
 
 .checkbox-label {
