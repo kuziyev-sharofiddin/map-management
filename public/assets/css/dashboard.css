@@ -192,6 +192,8 @@ body {
     height: 125px;
     position: relative;
     overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 /* Decorative square background mimicking the exact SVG background */
@@ -224,6 +226,10 @@ body {
     z-index: 0;
 }
 
+.stat-card:not(.primary-card):hover::before {
+    background-image: url("data:image/svg+xml,%3Csvg width='76' height='95' viewBox='0 0 76 95' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='46' width='24' height='24' rx='2' fill='white' fill-opacity='0.05'/%3E%3Crect x='0' y='0' width='24' height='24' rx='2' fill='white' fill-opacity='0.05'/%3E%3Crect x='52' y='46' width='24' height='24' rx='2' fill='white' fill-opacity='0.05'/%3E%3Crect x='52' y='0' width='24' height='24' rx='2' fill='white' fill-opacity='0.05'/%3E%3Crect x='26' y='71' width='24' height='24' rx='2' fill='white' fill-opacity='0.05'/%3E%3C/svg%3E");
+}
+
 .stat-card:not(.primary-card)::after {
     display: none;
 }
@@ -244,6 +250,7 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.5;
+    transition: color 0.3s ease;
 }
 
 .stat-icon-wrapper {
@@ -284,6 +291,7 @@ body {
     font-weight: 700;
     color: var(--text-main);
     letter-spacing: -0.03em;
+    transition: color 0.3s ease;
 }
 
 .stat-label {
@@ -291,6 +299,7 @@ body {
     color: var(--text-muted);
     font-weight: 500;
     margin-bottom: 6px;
+    transition: color 0.3s ease, opacity 0.3s ease;
 }
 
 /* Primary Card Variant (Card 1) */
@@ -308,6 +317,22 @@ body {
 }
 
 .primary-card .stat-label {
+    opacity: 0.8;
+}
+
+/* Card Hover Effect */
+.stat-card:hover {
+    background: #7B48FF;
+    color: #FFFFFF;
+}
+
+.stat-card:hover .stat-title,
+.stat-card:hover .stat-number,
+.stat-card:hover .stat-label {
+    color: #FFFFFF;
+}
+
+.stat-card:hover .stat-label {
     opacity: 0.8;
 }
 
@@ -340,7 +365,7 @@ body {
     padding: 8px 16px;
     border-radius: 12px;
     border: 1px solid var(--border-color);
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     color: var(--text-main);
     cursor: pointer;
