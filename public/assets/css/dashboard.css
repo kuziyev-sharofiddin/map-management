@@ -53,13 +53,13 @@ body {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 40px;
-    padding-left: 8px;
+    padding: 0 8px;
 }
 
 .logo {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     font-weight: 700;
     font-size: 20px;
     color: var(--primary);
@@ -68,9 +68,9 @@ body {
 .collapse-sidebar {
     background: transparent;
     border: 1px solid var(--border-color);
-    border-radius: 6px;
-    width: 32px;
-    height: 32px;
+    border-radius: 8px;
+    width: 34px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -83,7 +83,6 @@ body {
     flex-direction: column;
     gap: 8px;
     flex: 1;
-    /* Pushes footer down */
 }
 
 .nav-item {
@@ -91,7 +90,7 @@ body {
     align-items: center;
     gap: 12px;
     padding: 12px 16px;
-    border-radius: 8px;
+    border-radius: 12px;
     color: var(--text-muted);
     text-decoration: none;
     font-weight: 500;
@@ -105,40 +104,22 @@ body {
 }
 
 .nav-item.active {
-    background-color: #F3F4F6;
+    background-color: #F5F4F9;
     color: var(--text-main);
 }
 
-.sidebar-footer {
-    margin-top: auto;
+.nav-item.active .nav-icon {
+    color: var(--primary);
 }
 
-.logout-btn {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    background-color: #FEF2F2;
-    color: #EF4444;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 500;
-    font-size: 15px;
-    transition: 0.2s ease;
-}
-
-.logout-btn:hover {
-    background-color: #FEE2E2;
-}
 
 /* ================== MAIN CONTENT ================== */
 .main-content {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background-color: #F4F7FB;
-    /* Very light cool gray matching figma bg */
-    padding: 32px 48px;
+    background-color: var(--bg-main);
+    padding: 24px 48px;
 }
 
 .dashboard-header {
@@ -146,24 +127,26 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .page-title {
     font-size: 24px;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: -0.02em;
 }
 
 .user-profile {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
 }
 
 .avatar img {
     width: 44px;
     height: 44px;
-    border-radius: 50%;
+    border-radius: 14px;
     object-fit: cover;
 }
 
@@ -197,49 +180,101 @@ body {
 
 .stat-card {
     background: #FFFFFF;
-    border-radius: 20px;
-    padding: 24px;
-    box-shadow: var(--card-shadow);
-    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 15px 15px 15px 21px;
+    box-shadow: 2px 2px 6px rgba(123, 72, 255, 0.1);
+    border: none;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    justify-content: space-between;
+    height: 125px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative square background mimicking the exact SVG background */
+.decorative-bg::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    right: -9px;
+    width: 76px;
+    height: 95px;
+    background-image: url("data:image/svg+xml,%3Csvg width='76' height='95' viewBox='0 0 76 95' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='46' width='24' height='24' rx='2' fill='white' fill-opacity='0.05'/%3E%3Crect x='0' y='0' width='24' height='24' rx='2' fill='white' fill-opacity='0.05'/%3E%3Crect x='52' y='46' width='24' height='24' rx='2' fill='white' fill-opacity='0.05'/%3E%3Crect x='52' y='0' width='24' height='24' rx='2' fill='white' fill-opacity='0.05'/%3E%3Crect x='26' y='71' width='24' height='24' rx='2' fill='white' fill-opacity='0.05'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    z-index: 0;
+}
+
+.decorative-bg::after {
+    display: none;
+}
+
+/* Base style for non-colored decorative backgrounds */
+.stat-card:not(.primary-card)::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    right: -9px;
+    width: 76px;
+    height: 95px;
+    background-image: url("data:image/svg+xml,%3Csvg width='76' height='95' viewBox='0 0 76 95' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='46' width='24' height='24' rx='2' fill='%23B4B1B9' fill-opacity='0.08'/%3E%3Crect x='0' y='0' width='24' height='24' rx='2' fill='%23B4B1B9' fill-opacity='0.08'/%3E%3Crect x='52' y='46' width='24' height='24' rx='2' fill='%23B4B1B9' fill-opacity='0.08'/%3E%3Crect x='52' y='0' width='24' height='24' rx='2' fill='%23B4B1B9' fill-opacity='0.08'/%3E%3Crect x='26' y='71' width='24' height='24' rx='2' fill='%23B4B1B9' fill-opacity='0.08'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    z-index: 0;
+}
+
+.stat-card:not(.primary-card)::after {
+    display: none;
 }
 
 .stat-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    position: relative;
+    z-index: 1;
 }
 
 .stat-title {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     color: var(--text-muted);
-    max-width: 120px;
-    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5;
 }
 
 .stat-icon-wrapper {
     width: 44px;
     height: 44px;
-    border-radius: 12px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--primary);
-    background-color: #F5F3FF;
+    background-color: #F8F6FF;
     position: relative;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.02);
 }
 
-.stat-icon-wrapper.outline {
-    background-color: #F8FAFC;
+.custom-icon-container {
+    position: relative;
+    z-index: 1;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+}
+
+.white-bg {
+    background-color: #FFFFFF !important;
 }
 
 .stat-value-area {
     display: flex;
     align-items: baseline;
     gap: 4px;
+    position: relative;
+    z-index: 1;
 }
 
 .stat-number {
@@ -257,10 +292,10 @@ body {
 
 /* Primary Card Variant (Card 1) */
 .primary-card {
-    background: linear-gradient(135deg, #7C4DFF 0%, #6200EA 100%);
+    background: #7B48FF;
     color: #FFFFFF;
     border: none;
-    box-shadow: 0px 10px 24px rgba(124, 77, 255, 0.3);
+    box-shadow: 2px 2px 6px rgba(123, 72, 255, 0.1);
 }
 
 .primary-card .stat-title,
@@ -269,18 +304,16 @@ body {
     color: #FFFFFF;
 }
 
-.primary-card .stat-icon-wrapper {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: #FFFFFF;
-    backdrop-filter: blur(4px);
+.primary-card .stat-label {
+    opacity: 0.8;
 }
 
 /* ================== RANKINGS SECTION ================== */
 .rankings-section {
     background: #FFFFFF;
     border-radius: 20px;
-    padding: 24px;
-    box-shadow: var(--card-shadow);
+    padding: 24px 32px;
+    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.02);
     border: 1px solid var(--border-color);
 }
 
@@ -294,15 +327,15 @@ body {
 .rankings-header h2 {
     font-size: 16px;
     font-weight: 600;
-    color: var(--text-muted);
+    color: var(--text-main);
 }
 
 .date-filter {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     padding: 8px 16px;
-    border-radius: 8px;
+    border-radius: 12px;
     border: 1px solid var(--border-color);
     font-size: 14px;
     font-weight: 500;
@@ -312,6 +345,10 @@ body {
 
 .date-filter .calendar-icon {
     color: var(--primary);
+}
+
+.date-filter .chevron-icon {
+    color: var(--text-muted);
 }
 
 /* Table Architecture */
@@ -324,8 +361,8 @@ body {
 .table-row {
     display: flex;
     align-items: center;
-    padding: 16px 24px;
-    border-radius: 12px;
+    padding: 14px 24px;
+    border-radius: 14px;
     font-size: 15px;
     font-weight: 500;
 }
@@ -333,12 +370,13 @@ body {
 .table-head {
     color: var(--text-muted);
     padding: 8px 24px;
-    font-size: 13px;
+    font-size: 14px;
+    margin-bottom: 4px;
 }
 
 .col-num {
     width: 48px;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .table-head .col-num {
@@ -370,31 +408,46 @@ body {
 }
 
 .sparkline {
-    width: 60px;
-    height: 24px;
+    width: 100px;
+    height: 30px;
 }
 
 /* Colorful Row Variants from Figma */
 .row-green {
-    background-color: #D1FAE5;
+    background-color: #E2F9EE;
+    border-left: 4px solid #10B981;
 }
 
 .col-num.row-green,
 .row-green .col-num,
 .row-green .col-fio {
-    color: #065F46;
+    color: #10B981;
+}
+
+.row-green .col-fio span {
+    color: var(--text-main);
 }
 
 .row-yellow {
-    background-color: #FEF3C7;
+    background-color: #FEF9D9;
+    border-left: 4px solid #D9A01C;
+}
+
+.row-yellow .col-num {
+    color: #D9A01C;
 }
 
 .row-orange {
     background-color: #FFEDD5;
+    border-left: 4px solid #DB7535;
+}
+
+.row-orange .col-num {
+    color: #DB7535;
 }
 
 .row-gray {
-    background-color: #F3F4F6;
+    background-color: #F8F9FB;
 }
 
 /* Sparkline strokes matching row colors */
@@ -403,11 +456,11 @@ body {
 }
 
 .stroke-yellow {
-    stroke: #F59E0B;
+    stroke: #D9A01C;
 }
 
 .stroke-orange {
-    stroke: #F97316;
+    stroke: #DB7535;
 }
 
 .stroke-gray {
