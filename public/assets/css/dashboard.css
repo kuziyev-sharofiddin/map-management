@@ -1,0 +1,415 @@
+/* 
+ * Dashboard Styling
+ * Base Font: Inter
+ */
+
+:root {
+    --bg-main: #FDFDFD;
+    --bg-sidebar: #FFFFFF;
+    --primary: #7C4DFF;
+    --text-main: #111827;
+    --text-muted: #6B7280;
+    --border-color: #F3F4F6;
+
+    --card-shadow: 0px 4px 24px rgba(0, 0, 0, 0.04);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ================== LAYOUT ================== */
+.dashboard-layout {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* ================== SIDEBAR ================== */
+.sidebar {
+    width: 260px;
+    background-color: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    padding-left: 8px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--primary);
+}
+
+.collapse-sidebar {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    /* Pushes footer down */
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+    background-color: #F9FAFB;
+    color: var(--text-main);
+}
+
+.nav-item.active {
+    background-color: #F3F4F6;
+    color: var(--text-main);
+}
+
+.sidebar-footer {
+    margin-top: auto;
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background-color: #FEF2F2;
+    color: #EF4444;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 15px;
+    transition: 0.2s ease;
+}
+
+.logout-btn:hover {
+    background-color: #FEE2E2;
+}
+
+/* ================== MAIN CONTENT ================== */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #F4F7FB;
+    /* Very light cool gray matching figma bg */
+    padding: 32px 48px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.avatar img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.user-role {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.content-body {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* ================== STAT CARDS GRID ================== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.stat-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.stat-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    max-width: 120px;
+    line-height: 1.4;
+}
+
+.stat-icon-wrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    background-color: #F5F3FF;
+    position: relative;
+}
+
+.stat-icon-wrapper.outline {
+    background-color: #F8FAFC;
+}
+
+.stat-value-area {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.03em;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Primary Card Variant (Card 1) */
+.primary-card {
+    background: linear-gradient(135deg, #7C4DFF 0%, #6200EA 100%);
+    color: #FFFFFF;
+    border: none;
+    box-shadow: 0px 10px 24px rgba(124, 77, 255, 0.3);
+}
+
+.primary-card .stat-title,
+.primary-card .stat-number,
+.primary-card .stat-label {
+    color: #FFFFFF;
+}
+
+.primary-card .stat-icon-wrapper {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #FFFFFF;
+    backdrop-filter: blur(4px);
+}
+
+/* ================== RANKINGS SECTION ================== */
+.rankings-section {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color);
+}
+
+.rankings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.rankings-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.date-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-main);
+    cursor: pointer;
+}
+
+.date-filter .calendar-icon {
+    color: var(--primary);
+}
+
+/* Table Architecture */
+.rankings-table {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.table-row {
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.table-head {
+    color: var(--text-muted);
+    padding: 8px 24px;
+    font-size: 13px;
+}
+
+.col-num {
+    width: 48px;
+    font-weight: 600;
+}
+
+.table-head .col-num {
+    font-weight: 500;
+}
+
+.col-fio {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.row-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.col-region {
+    flex: 2;
+    color: var(--text-muted);
+}
+
+.col-stat {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.sparkline {
+    width: 60px;
+    height: 24px;
+}
+
+/* Colorful Row Variants from Figma */
+.row-green {
+    background-color: #D1FAE5;
+}
+
+.col-num.row-green,
+.row-green .col-num,
+.row-green .col-fio {
+    color: #065F46;
+}
+
+.row-yellow {
+    background-color: #FEF3C7;
+}
+
+.row-orange {
+    background-color: #FFEDD5;
+}
+
+.row-gray {
+    background-color: #F3F4F6;
+}
+
+/* Sparkline strokes matching row colors */
+.stroke-green {
+    stroke: #10B981;
+}
+
+.stroke-yellow {
+    stroke: #F59E0B;
+}
+
+.stroke-orange {
+    stroke: #F97316;
+}
+
+.stroke-gray {
+    stroke: #9CA3AF;
+}
