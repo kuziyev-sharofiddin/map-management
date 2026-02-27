@@ -194,7 +194,7 @@
                         <div class="table-row row-green">
                             <div class="col-num">01</div>
                             <div class="col-fio">
-                                <img src="https://ui-avatars.com/api/?name=Nodirov+shokirbek&background=random" class="row-avatar" alt="Avatar">
+                                <img src="{{ asset('assets/images/undiruv-rasm.svg') }}" class="row-avatar" alt="Avatar">
                                 <span>Nodirov shokirbek</span>
                             </div>
                             <div class="col-region">Farg'ona</div>
@@ -210,7 +210,7 @@
                         <div class="table-row row-yellow">
                             <div class="col-num">02</div>
                             <div class="col-fio">
-                                <img src="https://ui-avatars.com/api/?name=Nodirov+shokirbek&background=random" class="row-avatar" alt="Avatar">
+                                <img src="{{ asset('assets/images/undiruv-rasm.svg') }}" class="row-avatar" alt="Avatar">
                                 <span>Nodirov shokirbek</span>
                             </div>
                             <div class="col-region">Andijon</div>
@@ -226,7 +226,7 @@
                         <div class="table-row row-orange">
                             <div class="col-num">03</div>
                             <div class="col-fio">
-                                <img src="https://ui-avatars.com/api/?name=Nodirov+shokirbek&background=random" class="row-avatar" alt="Avatar">
+                                <img src="{{ asset('assets/images/undiruv-rasm.svg') }}" class="row-avatar" alt="Avatar">
                                 <span>Nodirov shokirbek</span>
                             </div>
                             <div class="col-region">Qo'qon</div>
@@ -242,7 +242,7 @@
                         <div class="table-row row-gray">
                             <div class="col-num">04</div>
                             <div class="col-fio">
-                                <img src="https://ui-avatars.com/api/?name=Nodirov+shokirbek&background=random" class="row-avatar" alt="Avatar">
+                                <img src="{{ asset('assets/images/undiruv-rasm.svg') }}" class="row-avatar" alt="Avatar">
                                 <span>Nodirov shokirbek</span>
                             </div>
                             <div class="col-region">Namangan</div>
@@ -258,7 +258,7 @@
                         <div class="table-row row-gray">
                             <div class="col-num">05</div>
                             <div class="col-fio">
-                                <img src="https://ui-avatars.com/api/?name=Nodirov+shokirbek&background=random" class="row-avatar" alt="Avatar">
+                                <img src="{{ asset('assets/images/undiruv-rasm.svg') }}" class="row-avatar" alt="Avatar">
                                 <span>Nodirov shokirbek</span>
                             </div>
                             <div class="col-region">Toshkent</div>
@@ -276,5 +276,45 @@
             </div>
         </main>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const statCards = document.querySelectorAll('.stat-card');
+
+            // Track the card that is permanently active (default: first card)
+            let activeCard = statCards[0];
+
+            statCards.forEach(card => {
+                // On hover: hide active card's purple, show purple on hovered card
+                card.addEventListener('mouseenter', () => {
+                    if (card !== activeCard) {
+                        // Temporarily remove primary style from active card
+                        activeCard.classList.remove('primary-card');
+                        activeCard.classList.remove('decorative-bg');
+                    }
+                });
+
+                // On leave: restore active card's purple
+                card.addEventListener('mouseleave', () => {
+                    if (card !== activeCard) {
+                        activeCard.classList.add('primary-card');
+                        activeCard.classList.add('decorative-bg');
+                    }
+                });
+
+                // On click: permanently set this card as the active one
+                card.addEventListener('click', () => {
+                    // Clear styles from all
+                    statCards.forEach(c => {
+                        c.classList.remove('primary-card');
+                        c.classList.remove('decorative-bg');
+                    });
+                    // Set clicked card as new active
+                    activeCard = card;
+                    card.classList.add('primary-card');
+                    card.classList.add('decorative-bg');
+                });
+            });
+        });
+    </script>
 </body>
 </html>
