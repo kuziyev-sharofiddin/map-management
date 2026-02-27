@@ -52,13 +52,15 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 40px;
-    padding: 0 8px;
+    margin-bottom: 32px;
+    padding: 0 8px 24px 8px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .logo {
     display: flex;
     align-items: center;
+    height: 44px;
     gap: 12px;
     font-weight: 700;
     font-size: 20px;
@@ -94,7 +96,7 @@ body {
     color: var(--text-muted);
     text-decoration: none;
     font-weight: 500;
-    font-size: 15px;
+    font-size: 16px;
     transition: all 0.2s ease;
 }
 
@@ -132,7 +134,7 @@ body {
 }
 
 .page-title {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 600;
     letter-spacing: -0.02em;
 }
@@ -157,11 +159,11 @@ body {
 
 .user-name {
     font-weight: 600;
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .user-role {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--text-muted);
 }
 
@@ -235,7 +237,7 @@ body {
 }
 
 .stat-title {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 500;
     color: var(--text-muted);
     white-space: nowrap;
@@ -278,16 +280,17 @@ body {
 }
 
 .stat-number {
-    font-size: 32px;
+    font-size: 36px;
     font-weight: 700;
     color: var(--text-main);
     letter-spacing: -0.03em;
 }
 
 .stat-label {
-    font-size: 14px;
+    font-size: 16px;
     color: var(--text-muted);
     font-weight: 500;
+    margin-bottom: 6px;
 }
 
 /* Primary Card Variant (Card 1) */
@@ -325,7 +328,7 @@ body {
 }
 
 .rankings-header h2 {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     color: var(--text-main);
 }
@@ -363,14 +366,14 @@ body {
     align-items: center;
     padding: 14px 24px;
     border-radius: 14px;
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 500;
 }
 
 .table-head {
     color: var(--text-muted);
     padding: 8px 24px;
-    font-size: 14px;
+    font-size: 16px;
     margin-bottom: 4px;
 }
 
