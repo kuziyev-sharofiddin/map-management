@@ -9,3 +9,5 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 });
+
+Route::get('/undiruvchilar', [\App\Http\Controllers\UndiruvchiController::class, 'index'])->name('undiruvchilar.index');
