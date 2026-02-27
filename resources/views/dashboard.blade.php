@@ -167,17 +167,61 @@
                         <h2>Top (5) reyting undiruvchilar</h2>
                         
                         <!-- Dropdown filter placeholder -->
-                        <div class="date-filter">
-                            <svg class="calendar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                            </svg>
-                            <span>Fevral 2026</span>
-                            <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
+                        <div class="calendar-dropdown-container">
+                            <div class="date-filter" id="dateFilterBtn">
+                                <svg class="calendar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span id="selectedDateText">Fevral 2026</span>
+                                <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+                            
+                            <!-- Dropdown Menu -->
+                            <div class="calendar-dropdown-menu" id="calendarDropdownMenu">
+                                <div class="dropdown-months">
+                                    <div class="dropdown-item" data-month="Yanvar">Yanvar</div>
+                                    <div class="dropdown-item active" data-month="Fevral">Fevral</div>
+                                    <div class="dropdown-item" data-month="Mart">Mart</div>
+                                    <div class="dropdown-item" data-month="Aprel">Aprel</div>
+                                    <div class="dropdown-item" data-month="May">May</div>
+                                    <div class="dropdown-item" data-month="Iyun">Iyun</div>
+                                    <div class="dropdown-item" data-month="Iyul">Iyul</div>
+                                    <div class="dropdown-item" data-month="Avgust">Avgust</div>
+                                    <div class="dropdown-item" data-month="Sentyabr">Sentyabr</div>
+                                    <div class="dropdown-item" data-month="Oktyabr">Oktyabr</div>
+                                    <div class="dropdown-item" data-month="Noyabr">Noyabr</div>
+                                    <div class="dropdown-item" data-month="Dekabr">Dekabr</div>
+                                </div>
+                                <div class="dropdown-years">
+                                    <div class="dropdown-year-header" id="yearDropdownBtn">
+                                        <span id="selectedYearHeader">2026</span>
+                                        <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </div>
+                                    <div class="dropdown-year-list">
+                                        <div class="dropdown-item" data-year="2011">2011</div>
+                                        <div class="dropdown-item" data-year="2012">2012</div>
+                                        <div class="dropdown-item" data-year="2013">2013</div>
+                                        <div class="dropdown-item" data-year="2014">2014</div>
+                                        <div class="dropdown-item" data-year="2015">2015</div>
+                                        <div class="dropdown-item" data-year="2016">2016</div>
+                                        <div class="dropdown-item" data-year="2017">2017</div>
+                                        <div class="dropdown-item" data-year="2018">2018</div>
+                                        <div class="dropdown-item" data-year="2019">2019</div>
+                                        <div class="dropdown-item" data-year="2020">2020</div>
+                                        <div class="dropdown-item" data-year="2021">2021</div>
+                                        <div class="dropdown-item" data-year="2022">2022</div>
+                                        <div class="dropdown-item" data-year="2023">2023</div>
+                                        <div class="dropdown-item" data-year="2024">2024</div>
+                                        <div class="dropdown-item" data-year="2025">2025</div>
+                                        <div class="dropdown-item active" data-year="2026">2026</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -195,13 +239,13 @@
                             <div class="col-num">01</div>
                             <div class="col-fio">
                                 <img src="{{ asset('assets/images/undiruv-rasm.svg') }}" class="row-avatar" alt="Avatar">
-                                <span>Nodirov shokirbek</span>
+                                <span>Avazbek Olimov</span>
                             </div>
                             <div class="col-region">Farg'ona</div>
                             <div class="col-stat">
-                                <svg viewBox="0 0 100 30" class="sparkline stroke-green">
-                                    <path d="M0,20 Q10,5 20,20 T40,20 T60,20 T80,10 T100,20" fill="none" stroke-width="1.5" stroke-linecap="round"/>
-                                    <path d="M0,20 Q10,5 20,20 T40,20 T60,20 T80,10 T100,20" fill="none" stroke="#10B981" stroke-width="4" stroke-linecap="round" opacity="0.2" transform="translate(0, 3)"/>
+                                <svg viewBox="988 118 126 32" class="sparkline stroke-green" preserveAspectRatio="none">
+                                    <path d="M989 143.493C989 143.493 997.084 129.712 1005.57 129.522C1012.96 129.356 1014.24 139.153 1021.63 139.501C1031.79 139.98 1031.57 123.696 1041.71 123.035C1055 122.17 1052.01 146.792 1065.31 147.485C1079.98 148.251 1076.77 119.28 1091.41 120.54C1102.62 121.504 1113 139.501 1113 139.501" fill="none" stroke-width="1.5" stroke-linecap="round"/>
+                                    <path d="M989 143.493C989 143.493 997.084 129.712 1005.57 129.522C1012.96 129.356 1014.24 139.153 1021.63 139.501C1031.79 139.98 1031.57 123.696 1041.71 123.035C1055 122.17 1052.01 146.792 1065.31 147.485C1079.98 148.251 1076.77 119.28 1091.41 120.54C1102.62 121.504 1113 139.501 1113 139.501" fill="none" stroke="#45BF84" stroke-width="4" stroke-linecap="round" opacity="0.2" transform="translate(0, 3)"/>
                                 </svg>
                             </div>
                         </div>
@@ -211,13 +255,13 @@
                             <div class="col-num">02</div>
                             <div class="col-fio">
                                 <img src="{{ asset('assets/images/undiruv-rasm.svg') }}" class="row-avatar" alt="Avatar">
-                                <span>Nodirov shokirbek</span>
+                                <span>Botir Qodirov</span>
                             </div>
                             <div class="col-region">Andijon</div>
                             <div class="col-stat">
-                                <svg viewBox="0 0 100 30" class="sparkline stroke-yellow">
-                                    <path d="M0,20 Q10,15 20,25 T40,15 T60,25 T80,10 T100,25" fill="none" stroke-width="1.5" stroke-linecap="round"/>
-                                    <path d="M0,20 Q10,15 20,25 T40,15 T60,25 T80,10 T100,25" fill="none" stroke="#F59E0B" stroke-width="4" stroke-linecap="round" opacity="0.2" transform="translate(0, 3)"/>
+                                <svg viewBox="988 187 126 32" class="sparkline stroke-yellow" preserveAspectRatio="none">
+                                    <path d="M989 212.493C989 212.493 997.084 198.712 1005.57 198.522C1012.96 198.356 1014.24 208.153 1021.63 208.501C1031.79 208.98 1031.57 192.696 1041.71 192.035C1055 191.17 1052.01 215.792 1065.31 216.485C1079.98 217.251 1076.77 188.28 1091.41 189.54C1102.62 190.504 1113 208.501 1113 208.501" fill="none" stroke-width="1.5" stroke-linecap="round"/>
+                                    <path d="M989 212.493C989 212.493 997.084 198.712 1005.57 198.522C1012.96 198.356 1014.24 208.153 1021.63 208.501C1031.79 208.98 1031.57 192.696 1041.71 192.035C1055 191.17 1052.01 215.792 1065.31 216.485C1079.98 217.251 1076.77 188.28 1091.41 189.54C1102.62 190.504 1113 208.501 1113 208.501" fill="none" stroke="#B7BF45" stroke-width="4" stroke-linecap="round" opacity="0.2" transform="translate(0, 3)"/>
                                 </svg>
                             </div>
                         </div>
@@ -227,13 +271,13 @@
                             <div class="col-num">03</div>
                             <div class="col-fio">
                                 <img src="{{ asset('assets/images/undiruv-rasm.svg') }}" class="row-avatar" alt="Avatar">
-                                <span>Nodirov shokirbek</span>
+                                <span>Ozodbek Nazarbekov</span>
                             </div>
                             <div class="col-region">Qo'qon</div>
                             <div class="col-stat">
-                                <svg viewBox="0 0 100 30" class="sparkline stroke-orange">
-                                    <path d="M0,25 Q10,10 20,20 T40,25 T60,15 T80,25 T100,10" fill="none" stroke-width="1.5" stroke-linecap="round"/>
-                                    <path d="M0,25 Q10,10 20,20 T40,25 T60,15 T80,25 T100,10" fill="none" stroke="#F97316" stroke-width="4" stroke-linecap="round" opacity="0.2" transform="translate(0, 3)"/>
+                                <svg viewBox="988 256 126 32" class="sparkline stroke-orange" preserveAspectRatio="none">
+                                    <path d="M989 281.493C989 281.493 997.084 267.712 1005.57 267.522C1012.96 267.356 1014.24 277.153 1021.63 277.501C1031.79 277.98 1031.57 261.696 1041.71 261.035C1055 260.17 1052.01 284.792 1065.31 285.485C1079.98 286.251 1076.77 257.28 1091.41 258.54C1102.62 259.504 1113 277.501 1113 277.501" fill="none" stroke-width="1.5" stroke-linecap="round"/>
+                                    <path d="M989 281.493C989 281.493 997.084 267.712 1005.57 267.522C1012.96 267.356 1014.24 277.153 1021.63 277.501C1031.79 277.98 1031.57 261.696 1041.71 261.035C1055 260.17 1052.01 284.792 1065.31 285.485C1079.98 286.251 1076.77 257.28 1091.41 258.54C1102.62 259.504 1113 277.501 1113 277.501" fill="none" stroke="#D49859" stroke-width="4" stroke-linecap="round" opacity="0.2" transform="translate(0, 3)"/>
                                 </svg>
                             </div>
                         </div>
@@ -243,13 +287,13 @@
                             <div class="col-num">04</div>
                             <div class="col-fio">
                                 <img src="{{ asset('assets/images/undiruv-rasm.svg') }}" class="row-avatar" alt="Avatar">
-                                <span>Nodirov shokirbek</span>
+                                <span>Ortiq Otajonov</span>
                             </div>
                             <div class="col-region">Namangan</div>
                             <div class="col-stat">
-                                <svg viewBox="0 0 100 30" class="sparkline stroke-gray">
-                                    <path d="M0,20 Q10,15 20,20 T40,20 T60,10 T80,25 T100,20" fill="none" stroke-width="1.5" stroke-linecap="round"/>
-                                    <path d="M0,20 Q10,15 20,20 T40,20 T60,10 T80,25 T100,20" fill="none" stroke="#9CA3AF" stroke-width="4" stroke-linecap="round" opacity="0.2" transform="translate(0, 3)"/>
+                                <svg viewBox="988 325 126 32" class="sparkline stroke-gray" preserveAspectRatio="none">
+                                    <path d="M989 350.493C989 350.493 997.084 336.712 1005.57 336.522C1012.96 336.356 1014.24 346.153 1021.63 346.501C1031.79 346.98 1031.57 330.696 1041.71 330.035C1055 329.17 1052.01 353.792 1065.31 354.485C1079.98 355.251 1076.77 326.28 1091.41 327.54C1102.62 328.504 1113 346.501 1113 346.501" fill="none" stroke-width="1.5" stroke-linecap="round"/>
+                                    <path d="M989 350.493C989 350.493 997.084 336.712 1005.57 336.522C1012.96 336.356 1014.24 346.153 1021.63 346.501C1031.79 346.98 1031.57 330.696 1041.71 330.035C1055 329.17 1052.01 353.792 1065.31 354.485C1079.98 355.251 1076.77 326.28 1091.41 327.54C1102.62 328.504 1113 346.501 1113 346.501" fill="none" stroke="#807B89" stroke-width="4" stroke-linecap="round" opacity="0.2" transform="translate(0, 3)"/>
                                 </svg>
                             </div>
                         </div>
@@ -259,13 +303,13 @@
                             <div class="col-num">05</div>
                             <div class="col-fio">
                                 <img src="{{ asset('assets/images/undiruv-rasm.svg') }}" class="row-avatar" alt="Avatar">
-                                <span>Nodirov shokirbek</span>
+                                <span>Mirza Azizov</span>
                             </div>
                             <div class="col-region">Toshkent</div>
                             <div class="col-stat">
-                                <svg viewBox="0 0 100 30" class="sparkline stroke-gray">
-                                    <path d="M0,25 Q10,5 20,25 T40,15 T60,25 T80,15 T100,25" fill="none" stroke-width="1.5" stroke-linecap="round"/>
-                                    <path d="M0,25 Q10,5 20,25 T40,15 T60,25 T80,15 T100,25" fill="none" stroke="#9CA3AF" stroke-width="4" stroke-linecap="round" opacity="0.2" transform="translate(0, 3)"/>
+                                <svg viewBox="988 394 126 32" class="sparkline stroke-gray" preserveAspectRatio="none">
+                                    <path d="M989 419.493C989 419.493 997.084 405.712 1005.57 405.522C1012.96 405.356 1014.24 415.153 1021.63 415.501C1031.79 415.98 1031.57 399.696 1041.71 399.035C1055 398.17 1052.01 422.792 1065.31 423.485C1079.98 424.251 1076.77 395.28 1091.41 396.54C1102.62 397.504 1113 415.501 1113 415.501" fill="none" stroke-width="1.5" stroke-linecap="round"/>
+                                    <path d="M989 419.493C989 419.493 997.084 405.712 1005.57 405.522C1012.96 405.356 1014.24 415.153 1021.63 415.501C1031.79 415.98 1031.57 399.696 1041.71 399.035C1055 398.17 1052.01 422.792 1065.31 423.485C1079.98 424.251 1076.77 395.28 1091.41 396.54C1102.62 397.504 1113 415.501 1113 415.501" fill="none" stroke="#807B89" stroke-width="4" stroke-linecap="round" opacity="0.2" transform="translate(0, 3)"/>
                                 </svg>
                             </div>
                         </div>
@@ -314,6 +358,53 @@
                     card.classList.add('decorative-bg');
                 });
             });
+
+            // Date Filter Dropdown Logic
+            const dateFilterBtn = document.getElementById('dateFilterBtn');
+            const calendarDropdownMenu = document.getElementById('calendarDropdownMenu');
+            const selectedDateText = document.getElementById('selectedDateText');
+            const selectedYearHeader = document.getElementById('selectedYearHeader');
+            
+            let currentMonth = 'Fevral';
+            let currentYear = '2026';
+
+            if(dateFilterBtn) {
+                dateFilterBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    calendarDropdownMenu.classList.toggle('show');
+                });
+            }
+
+            document.addEventListener('click', (e) => {
+                if (calendarDropdownMenu && !calendarDropdownMenu.contains(e.target) && !dateFilterBtn.contains(e.target)) {
+                    calendarDropdownMenu.classList.remove('show');
+                }
+            });
+
+            const monthItems = document.querySelectorAll('.dropdown-months .dropdown-item');
+            monthItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    monthItems.forEach(m => m.classList.remove('active'));
+                    item.classList.add('active');
+                    currentMonth = item.dataset.month;
+                    updateSelectedDate();
+                });
+            });
+
+            const yearItems = document.querySelectorAll('.dropdown-year-list .dropdown-item');
+            yearItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    yearItems.forEach(y => y.classList.remove('active'));
+                    item.classList.add('active');
+                    currentYear = item.dataset.year;
+                    selectedYearHeader.textContent = currentYear;
+                    updateSelectedDate();
+                });
+            });
+
+            function updateSelectedDate() {
+                selectedDateText.textContent = `${currentMonth} ${currentYear}`;
+            }
         });
     </script>
 </body>
