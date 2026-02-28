@@ -63,10 +63,30 @@
                 <tr>
                     <th>#</th>
                     <th>F.I.O</th>
-                    <th>Jinsi</th>
-                    <th>Telefon</th>
-                    <th>Ish xolati</th>
-                    <th>Hududlar</th>
+                    <th style="white-space: nowrap;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <img src="{{ asset('assets/images/man.svg') }}" width="20" height="20" alt="Jinsi">
+                            Jinsi
+                        </div>
+                    </th>
+                    <th style="white-space: nowrap;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <img src="{{ asset('assets/images/telefon.svg') }}" width="20" height="20" alt="Telefon">
+                            Telefon
+                        </div>
+                    </th>
+                    <th style="white-space: nowrap;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <img src="{{ asset('assets/images/ish.svg') }}" width="20" height="20" alt="Ish holati">
+                            Ish holati
+                        </div>
+                    </th>
+                    <th style="white-space: nowrap;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <img src="{{ asset('assets/images/location.svg') }}" width="20" height="20" alt="Hududlar">
+                            Hududlar
+                        </div>
+                    </th>
                 </tr>
             </thead>
             <tbody>
