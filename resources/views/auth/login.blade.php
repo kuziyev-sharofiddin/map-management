@@ -1,0 +1,231 @@
+@extends('layouts.auth')
+
+@section('title', 'Xush kelibsiz!')
+
+@section('content')
+    <div class="auth-card">
+        <div class="auth-card-inner">
+            <!-- Left Section: Form -->
+            <div class="auth-form-section">
+            <div class="auth-form-wrapper">
+                <div class="auth-header">
+                <!-- Logo -->
+                <div class="brand-logo">
+                    <img src="{{ asset('assets/images/logo-icon.svg') }}" alt="Logo" class="logo-icon" id="fallback-logo">
+                    <!-- SVG fallback if image is missing -->
+                    <svg class="placeholder-svg" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                        <path d="M15.9385 6.09228L10.3385 9.32296L4.7384 6.09228L10.3385 2.86159L15.9385 6.09228Z" fill="#7C3AED"/>
+                        <path d="M10.3385 24.1691V17.7077L4.7384 14.4771V20.9384L10.3385 24.1691Z" fill="#7C3AED"/>
+                        <path d="M21.5385 24.1691V17.7077L15.9385 14.4771V20.9384L21.5385 24.1691Z" fill="#7C3AED"/>
+                        <path d="M15.9385 28.4769V22.0154L10.3385 18.7847V25.2462L15.9385 28.4769Z" fill="#8B5CF6"/>
+                        <path d="M27.1385 22.0154V15.5539L21.5385 12.3232V18.7847L27.1385 22.0154Z" fill="#8B5CF6"/>
+                        <path d="M21.5385 18.7847L15.9385 15.5539L10.3385 18.7847L15.9385 22.0154L21.5385 18.7847Z" fill="#A78BFA"/>
+                        <path d="M15.9385 12.3232L10.3385 9.09249L4.7384 12.3232L10.3385 15.5539L15.9385 12.3232Z" fill="#A78BFA"/>
+                        <path d="M27.1385 12.3232L21.5385 9.09249L15.9385 12.3232L21.5385 15.5539L27.1385 12.3232Z" fill="#A78BFA"/>
+                    </svg>
+                </div>
+                <h1 class="auth-title">Xush kelibsiz!</h1>
+                <p class="auth-subtitle">Xisobingizga kiring.</p>
+            </div>
+
+            <form action="#" method="POST" class="auth-form" id="loginForm" novalidate>
+                @csrf
+                
+                <!-- Phone Number -->
+                <div class="form-group" id="phone-group">
+                    <label for="phone" class="form-label">Telefon raqam</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13 3.2524C15.1627 2.63619 17.5428 3.14662 19.1981 4.80192C20.8534 6.45723 21.3638 8.8373 20.7476 11M14.9369 5.96407C15.7093 5.81021 16.5991 6.0767 17.2612 6.73883C17.9233 7.40095 18.1898 8.29065 18.0359 9.0631" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M15.1653 20.8835C16.0469 21.0388 16.9531 21.0388 17.8347 20.8835C19.2516 20.6338 20.3929 19.6826 20.786 18.4236L20.8694 18.1565C20.956 17.879 21 17.5919 21 17.3034C21 16.0313 19.8623 15 18.4589 15H14.5411C13.1377 15 12 16.0313 12 17.3034C12 17.5919 12.044 17.879 12.1306 18.1565L12.214 18.4236C12.6071 19.6826 13.7484 20.6338 15.1653 20.8835ZM15.1653 20.8835C9.04195 19.7489 4.25108 14.958 3.1165 8.83468M3.1165 8.83468C2.96117 7.95315 2.96117 7.04686 3.1165 6.16532C3.36618 4.74842 4.31744 3.60713 5.57641 3.21402L5.84345 3.13063C6.12103 3.04396 6.40813 3 6.69661 3C7.96874 3 9.00001 4.13768 9 5.54106L9 9.45894C9.00001 10.8623 7.96874 12 6.69661 12C6.40813 12 6.12103 11.956 5.84345 11.8694L5.57641 11.786C4.31744 11.3929 3.36618 10.2516 3.1165 8.83468Z" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                        </span>
+                        <input type="tel" id="phone" name="phone" class="form-input has-icon-left" placeholder="+998" required>
+                    </div>
+                    <span class="error-message" id="phone-error">Iltimos, to'g'ri telefon raqam kiriting</span>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group" id="password-group">
+                    <label for="password" class="form-label">Parolingiz</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4.6531 17.0263L3.95839 17.3089L3.95839 17.3089L4.6531 17.0263ZM4.30609 11.3971L5.03006 11.593L4.30609 11.3971ZM19.6939 11.3971L18.9699 11.593L19.6939 11.3971ZM19.3469 17.0263L20.0416 17.3089V17.3089L19.3469 17.0263ZM14.0365 20.8418L13.9206 20.1008V20.1008L14.0365 20.8418ZM9.96352 20.8418L10.0794 20.1008V20.1008L9.96352 20.8418ZM8.65619 7.60213L8.50672 6.86718V6.86718L8.65619 7.60213ZM15.3438 7.60213L15.4933 6.86718L15.4933 6.86718L15.3438 7.60213ZM9.21479 20.7247L9.0989 21.4657V21.4657L9.21479 20.7247ZM4.74598 17.2546L5.44069 16.972L5.44069 16.972L4.74598 17.2546ZM14.7852 20.7247L14.9011 21.4657V21.4657L14.7852 20.7247ZM19.254 17.2546L18.5593 16.972V16.972L19.254 17.2546ZM15.6199 7.65829L15.4705 8.39324L15.4705 8.39324L15.6199 7.65829ZM8.38009 7.65829L8.52956 8.39324L8.38009 7.65829ZM6.89397 7.43059C6.89397 7.84481 7.22976 8.18059 7.64397 8.18059C8.05819 8.18059 8.39397 7.84481 8.39397 7.43059H7.64397H6.89397ZM7.64397 7.12771H6.89397V7.12771H7.64397ZM16.356 7.12772H15.606V7.12772H16.356ZM15.606 7.4306C15.606 7.84481 15.9418 8.1806 16.356 8.1806C16.7702 8.1806 17.106 7.84481 17.106 7.4306H16.356H15.606ZM10.8517 3.14126L10.6697 2.41368L10.6697 2.41368L10.8517 3.14126ZM13.1482 3.14126L13.3302 2.41368V2.41368L13.1482 3.14126ZM8.38009 7.65829L8.52956 8.39324L8.80567 8.33709L8.65619 7.60213L8.50672 6.86718L8.23062 6.92333L8.38009 7.65829ZM15.3438 7.60213L15.1943 8.33709L15.4705 8.39324L15.6199 7.65829L15.7694 6.92333L15.4933 6.86718L15.3438 7.60213ZM14.7852 20.7247L14.6693 19.9837L13.9206 20.1008L14.0365 20.8418L14.1523 21.5828L14.9011 21.4657L14.7852 20.7247ZM9.96352 20.8418L10.0794 20.1008L9.33068 19.9837L9.21479 20.7247L9.0989 21.4657L9.84762 21.5828L9.96352 20.8418ZM19.3469 17.0263L18.6522 16.7437L18.5593 16.972L19.254 17.2546L19.9487 17.5373L20.0416 17.3089L19.3469 17.0263ZM4.74598 17.2546L5.44069 16.972L5.3478 16.7437L4.6531 17.0263L3.95839 17.3089L4.05128 17.5373L4.74598 17.2546ZM4.6531 17.0263L5.34781 16.7437C4.67941 15.1008 4.56858 13.2988 5.03006 11.593L4.30609 11.3971L3.58212 11.2013C3.03465 13.2248 3.1667 15.363 3.95839 17.3089L4.6531 17.0263ZM19.6939 11.3971L18.9699 11.593C19.4314 13.2987 19.3206 15.1008 18.6522 16.7437L19.3469 17.0263L20.0416 17.3089C20.8333 15.363 20.9654 13.2248 20.4179 11.2012L19.6939 11.3971ZM14.0365 20.8418L13.9206 20.1008C12.6486 20.2997 11.3514 20.2997 10.0794 20.1008L9.96352 20.8418L9.84762 21.5828C11.2732 21.8057 12.7268 21.8057 14.1523 21.5828L14.0365 20.8418ZM8.65619 7.60213L8.80567 8.33709C10.9118 7.90875 13.0882 7.90875 15.1943 8.33709L15.3438 7.60213L15.4933 6.86718C13.1899 6.39872 10.8101 6.39872 8.50672 6.86718L8.65619 7.60213ZM9.21479 20.7247L9.33068 19.9837C7.55628 19.7062 6.08366 18.5524 5.44069 16.972L4.74598 17.2546L4.05128 17.5373C4.90076 19.6253 6.82633 21.1102 9.0989 21.4657L9.21479 20.7247ZM14.7852 20.7247L14.9011 21.4657C17.1736 21.1102 19.0992 19.6253 19.9487 17.5373L19.254 17.2546L18.5593 16.972C17.9163 18.5524 16.4437 19.7062 14.6693 19.9837L14.7852 20.7247ZM15.6199 7.65829L15.4705 8.39324C17.1912 8.7432 18.5368 9.99212 18.9699 11.593L19.6939 11.3971L20.4179 11.2012C19.8298 9.02766 18.0205 7.38115 15.7694 6.92333L15.6199 7.65829ZM8.38009 7.65829L8.23062 6.92333C5.97952 7.38115 4.17018 9.02766 3.58212 11.2013L4.30609 11.3971L5.03006 11.593C5.46317 9.99212 6.80883 8.7432 8.52956 8.39324L8.38009 7.65829ZM7.64397 7.43059H8.39397V7.12771H7.64397H6.89397V7.43059H7.64397ZM16.356 7.12772H15.606V7.4306H16.356H17.106V7.12772H16.356ZM10.8517 3.14126L11.0337 3.86884C11.6672 3.71039 12.3328 3.71039 12.9662 3.86884L13.1482 3.14126L13.3302 2.41368C12.4578 2.19544 11.5422 2.19544 10.6697 2.41368L10.8517 3.14126ZM16.356 7.12772H17.106C17.106 4.88982 15.535 2.96519 13.3302 2.41368L13.1482 3.14126L12.9662 3.86884C14.5399 4.2625 15.606 5.61508 15.606 7.12772H16.356ZM7.64397 7.12771H8.39397C8.39397 5.61508 9.46002 4.2625 11.0337 3.86884L10.8517 3.14126L10.6697 2.41368C8.46497 2.96519 6.89397 4.88982 6.89397 7.12771H7.64397Z" fill="currentColor"/>
+                                <path d="M12 13.5L12 15.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        </span>
+                        <input type="password" id="password" name="password" class="form-input has-icon-left has-icon-right" placeholder="Parolingizni kiriting..." required>
+                        <button type="button" class="password-toggle" id="togglePassword" aria-label="Parolni ko'rsatish/yashirish">
+                            <!-- Eye icon (visible by default) -->
+                            <svg class="eye-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 8.25C9.92893 8.25 8.25 9.92893 8.25 12C8.25 14.0711 9.92893 15.75 12 15.75C14.0711 15.75 15.75 14.0711 15.75 12C15.75 9.92893 14.0711 8.25 12 8.25ZM9.75 12C9.75 10.7574 10.7574 9.75 12 9.75C13.2426 9.75 14.25 10.7574 14.25 12C14.25 13.2426 13.2426 14.25 12 14.25C10.7574 14.25 9.75 13.2426 9.75 12Z" fill="currentColor"/>
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 3.25C7.48587 3.25 4.44529 5.9542 2.68057 8.24686L2.64874 8.2882C2.24964 8.80653 1.88206 9.28392 1.63269 9.8484C1.36564 10.4529 1.25 11.1117 1.25 12C1.25 12.8883 1.36564 13.5471 1.63269 14.1516C1.88206 14.7161 2.24964 15.1935 2.64875 15.7118L2.68057 15.7531C4.44529 18.0458 7.48587 20.75 12 20.75C16.5141 20.75 19.5547 18.0458 21.3194 15.7531L21.3512 15.7118C21.7504 15.1935 22.1179 14.7161 22.3673 14.1516C22.6344 13.5471 22.75 12.8883 22.75 12C22.75 11.1117 22.6344 10.4529 22.3673 9.8484C22.1179 9.28391 21.7504 8.80652 21.3512 8.28818L21.3194 8.24686C19.5547 5.9542 16.5141 3.25 12 3.25ZM3.86922 9.1618C5.49864 7.04492 8.15036 4.75 12 4.75C15.8496 4.75 18.5014 7.04492 20.1308 9.1618C20.5694 9.73159 20.8263 10.0721 20.9952 10.4545C21.1532 10.812 21.25 11.2489 21.25 12C21.25 12.7511 21.1532 13.188 20.9952 13.5455C20.8263 13.9279 20.5694 14.2684 20.1308 14.8382C18.5014 16.9551 15.8496 19.25 12 19.25C8.15036 19.25 5.49864 16.9551 3.86922 14.8382C3.43064 14.2684 3.17374 13.9279 3.00476 13.5455C2.84684 13.188 2.75 12.7511 2.75 12C2.75 11.2489 2.84684 10.812 3.00476 10.4545C3.17374 10.0721 3.43063 9.73159 3.86922 9.1618Z" fill="currentColor"/>
+                            </svg>
+                            <!-- Eye Off icon (hidden by default) - using a strikethrough over the new eye -->
+                            <svg class="eye-off-icon hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 8.25C9.92893 8.25 8.25 9.92893 8.25 12C8.25 14.0711 9.92893 15.75 12 15.75C14.0711 15.75 15.75 14.0711 15.75 12C15.75 9.92893 14.0711 8.25 12 8.25ZM9.75 12C9.75 10.7574 10.7574 9.75 12 9.75C13.2426 9.75 14.25 10.7574 14.25 12C14.25 13.2426 13.2426 14.25 12 14.25C10.7574 14.25 9.75 13.2426 9.75 12Z" fill="currentColor"/>
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 3.25C7.48587 3.25 4.44529 5.9542 2.68057 8.24686L2.64874 8.2882C2.24964 8.80653 1.88206 9.28392 1.63269 9.8484C1.36564 10.4529 1.25 11.1117 1.25 12C1.25 12.8883 1.36564 13.5471 1.63269 14.1516C1.88206 14.7161 2.24964 15.1935 2.64875 15.7118L2.68057 15.7531C4.44529 18.0458 7.48587 20.75 12 20.75C16.5141 20.75 19.5547 18.0458 21.3194 15.7531L21.3512 15.7118C21.7504 15.1935 22.1179 14.7161 22.3673 14.1516C22.6344 13.5471 22.75 12.8883 22.75 12C22.75 11.1117 22.6344 10.4529 22.3673 9.8484C22.1179 9.28391 21.7504 8.80652 21.3512 8.28818L21.3194 8.24686C19.5547 5.9542 16.5141 3.25 12 3.25ZM3.86922 9.1618C5.49864 7.04492 8.15036 4.75 12 4.75C15.8496 4.75 18.5014 7.04492 20.1308 9.1618C20.5694 9.73159 20.8263 10.0721 20.9952 10.4545C21.1532 10.812 21.25 11.2489 21.25 12C21.25 12.7511 21.1532 13.188 20.9952 13.5455C20.8263 13.9279 20.5694 14.2684 20.1308 14.8382C18.5014 16.9551 15.8496 19.25 12 19.25C8.15036 19.25 5.49864 16.9551 3.86922 14.8382C3.43064 14.2684 3.17374 13.9279 3.00476 13.5455C2.84684 13.188 2.75 12.7511 2.75 12C2.75 11.2489 2.84684 10.812 3.00476 10.4545C3.17374 10.0721 3.43063 9.73159 3.86922 9.1618Z" fill="currentColor" opacity="0.6"/>
+                                <!-- Cross line to indicate 'eye off' -->
+                                <line x1="2" y1="22" x2="22" y2="2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <span class="error-message" id="password-error">Parol kiritilishi shart</span>
+                </div>
+
+                <!-- Remember Me -->
+                <div class="form-group remember-group">
+                    <label class="checkbox-container" for="remember">
+                        <input type="checkbox" name="remember" id="remember" checked>
+                        <span class="checkmark">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path class="tick" d="M16.0303 10.0303C16.3232 9.73744 16.3232 9.26256 16.0303 8.96967C15.7374 8.67678 15.2626 8.67678 14.9697 8.96967L10.5 13.4393L9.03033 11.9697C8.73744 11.6768 8.26256 11.6768 7.96967 11.9697C7.67678 12.2626 7.67678 12.7374 7.96967 13.0303L9.96967 15.0303C10.2626 15.3232 10.7374 15.3232 11.0303 15.0303L16.0303 10.0303Z" fill="currentColor"/>
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M12.0574 1.25H11.9426C9.63424 1.24999 7.82519 1.24998 6.41371 1.43975C4.96897 1.63399 3.82895 2.03933 2.93414 2.93414C2.03933 3.82895 1.63399 4.96897 1.43975 6.41371C1.24998 7.82519 1.24999 9.63422 1.25 11.9426V12.0574C1.24999 14.3658 1.24998 16.1748 1.43975 17.5863C1.63399 19.031 2.03933 20.1711 2.93414 21.0659C3.82895 21.9607 4.96897 22.366 6.41371 22.5603C7.82519 22.75 9.63423 22.75 11.9426 22.75H12.0574C14.3658 22.75 16.1748 22.75 17.5863 22.5603C19.031 22.366 20.1711 21.9607 21.0659 21.0659C21.9607 20.1711 22.366 19.031 22.5603 17.5863C22.75 16.1748 22.75 14.3658 22.75 12.0574V11.9426C22.75 9.63423 22.75 7.82519 22.5603 6.41371C22.366 4.96897 21.9607 3.82895 21.0659 2.93414C20.1711 2.03933 19.031 1.63399 17.5863 1.43975C16.1748 1.24998 14.3658 1.24999 12.0574 1.25ZM3.9948 3.9948C4.56445 3.42514 5.33517 3.09825 6.61358 2.92637C7.91356 2.75159 9.62177 2.75 12 2.75C14.3782 2.75 16.0864 2.75159 17.3864 2.92637C18.6648 3.09825 19.4355 3.42514 20.0052 3.9948C20.5749 4.56445 20.9018 5.33517 21.0736 6.61358C21.2484 7.91356 21.25 9.62177 21.25 12C21.25 14.3782 21.2484 16.0864 21.0736 17.3864C20.9018 18.6648 20.5749 19.4355 20.0052 20.0052C19.4355 20.5749 18.6648 20.9018 17.3864 21.0736C16.0864 21.2484 14.3782 21.25 12 21.25C9.62177 21.25 7.91356 21.2484 6.61358 21.0736C5.33517 20.9018 4.56445 20.5749 3.9948 20.0052C3.42514 19.4355 3.09825 18.6648 2.92637 17.3864C2.75159 16.0864 2.75 14.3782 2.75 12C2.75 9.62177 2.75159 7.91356 2.92637 6.61358C3.09825 5.33517 3.42514 4.56445 3.9948 3.9948Z" fill="currentColor"/>
+                            </svg>
+                        </span>
+                        <span class="checkbox-label">Eslab qolish</span>
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-primary" id="submitBtn">
+                    Kirish
+                </button>
+            </form>
+            </div>
+        </div>
+
+        <!-- Right Section: Graphic -->
+        <div class="auth-graphic-section" id="auth-graphic-section">
+            <div class="graphic-container">
+                <div class="graphic-tilt-wrapper" id="graphic-tilt">
+                    <!-- Inner glow/shadows for the 3D effect -->
+                    <div class="graphic-base"></div>
+                    <div class="graphic-sphere" id="graphic-sphere"></div>
+                    
+                    <!-- Pin Wrapper for shadow (since clip-path removes shadows) -->
+                    <div class="pin-wrapper">
+                        <div class="graphic-pin">
+                            <div class="pin-hole"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Highlights to make it shiny like the image -->
+                    <div class="highlight hl-1"></div>
+                    <div class="highlight hl-2"></div>
+                    <div class="highlight hl-3"></div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Earth Drag-to-Spin Interaction Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const section = document.getElementById('auth-graphic-section');
+            const tiltWrapper = document.getElementById('graphic-tilt');
+            const sphere = document.getElementById('graphic-sphere');
+            
+            if (!section || !tiltWrapper || !sphere) return;
+            
+            let isDragging = false;
+            let startX = 0;
+            let startY = 0;
+            
+            // Texture panning state
+            let mapPosX = 0;
+            let autoVelocityX = -0.6; 
+            
+            // 3D Tilt state
+            let currentRotateX = 0;
+            let currentRotateY = 0;
+            let targetRotateX = 0;
+            let targetRotateY = 0;
+            
+            // Render loop for smooth continuous updating
+            function animate() {
+                if (!isDragging) {
+                    mapPosX += autoVelocityX;
+                    // Slowly return tilt to center when not interacting
+                    targetRotateX *= 0.95;
+                    targetRotateY *= 0.95;
+                }
+                
+                // Smooth interpolation for elegant 3D tilt
+                currentRotateX += (targetRotateX - currentRotateX) * 0.1;
+                currentRotateY += (targetRotateY - currentRotateY) * 0.1;
+                
+                // Set CSS variables and transforms
+                sphere.style.setProperty('--map-pos-x', `${mapPosX}px`);
+                tiltWrapper.style.transform = `rotateX(${currentRotateX}deg) rotateY(${currentRotateY}deg)`;
+                
+                requestAnimationFrame(animate);
+            }
+            
+            // Start the animation loop
+            requestAnimationFrame(animate);
+            
+            // Mouse Drag Events
+            section.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                section.style.cursor = 'grabbing';
+            });
+            
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+                section.style.cursor = '';
+            });
+            
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                startX = e.clientX;
+                startY = e.clientY;
+                
+                // Move texture horizontally
+                mapPosX += dx * 1.5;
+                
+                // Add to 3D tilt targets
+                targetRotateY += dx * 0.3;
+                targetRotateX -= dy * 0.3; // Negative: Dragging down rotates backwards (positive X)
+                
+                // Clamp rotation to avoid flipping inside out
+                targetRotateX = Math.max(-45, Math.min(45, targetRotateX));
+                targetRotateY = Math.max(-60, Math.min(60, targetRotateY));
+            });
+
+            // Touch Drag Events for Mobile capability
+            section.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            }, { passive: true });
+            
+            window.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+            
+            window.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const dx = e.touches[0].clientX - startX;
+                const dy = e.touches[0].clientY - startY;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                
+                mapPosX += dx * 1.5;
+                
+                targetRotateY += dx * 0.4;
+                targetRotateX -= dy * 0.4;
+                
+                targetRotateX = Math.max(-45, Math.min(45, targetRotateX));
+                targetRotateY = Math.max(-60, Math.min(60, targetRotateY));
+            }, { passive: true });
+        });
+    </script>
+@endsection
