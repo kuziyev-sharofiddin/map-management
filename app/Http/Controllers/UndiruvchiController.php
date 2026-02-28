@@ -10,4 +10,9 @@ class UndiruvchiController extends Controller
     {
         return view('undiruvchilar.index');
     }
+
+    public function map()
+    {
+        return view('undiruvchilar.map');
+    }
 }

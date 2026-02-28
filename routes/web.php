@@ -11,3 +11,4 @@ Route::get('/dashboard', function () {
 });
 
 Route::get('/undiruvchilar', [\App\Http\Controllers\UndiruvchiController::class, 'index'])->name('undiruvchilar.index');
+Route::get('/undiruvchilar/xarita', [\App\Http\Controllers\UndiruvchiController::class, 'map'])->name('undiruvchilar.map');

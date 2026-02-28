@@ -81,10 +81,10 @@
             </div>
 
             <!-- Xarita Button -->
-            <button class="primary-btn xarita-btn">
+            <a href="{{ route('undiruvchilar.map') }}" class="primary-btn xarita-btn" style="text-decoration:none;">
                 <img src="{{ asset('assets/images/loc.svg') }}" width="20" height="20" alt="Xarita">
                 Xarita
-            </button>
+            </a>
         </div>
     </div>
 

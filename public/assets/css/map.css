@@ -1,0 +1,398 @@
+/* =========================================================================
+   MAP PAGE — map.css
+   ========================================================================= */
+
+/* Lock scroll — prevent page scroll on map page */
+html.map-page-html,
+body.map-page {
+    overflow: hidden;
+    height: 100%;
+}
+
+body.map-page .dashboard-layout {
+    height: 100vh;
+    overflow: hidden;
+}
+
+body.map-page .main-content {
+    overflow: hidden;
+    height: 100vh;
+    padding-bottom: 0;
+}
+
+body.map-page .content-body {
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---- Page Wrapper: matches full-xarita.svg content area (1138×923) ---- */
+.map-page-wrapper {
+    display: flex;
+    height: calc(100vh - 170px);
+    min-height: 400px;
+    background: #FFFFFF;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #EFEFEF;
+    margin-top: 10px;
+    margin-bottom: 24px;
+}
+
+/* =========================================================================
+   LEFT PANEL
+   ========================================================================= */
+.map-left-panel {
+    flex: 0 0 500px;
+    width: 500px;
+    min-width: 500px;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    background: #FFFFFF;
+    overflow: hidden;
+}
+
+/* --- Top card (back + search + filters) --- */
+.map-top-card {
+    background: #F5F4F9;
+    border-radius: 10px;
+    margin: 12px;
+    padding: 6px 0 4px;
+    flex-shrink: 0;
+}
+
+/* --- Back header row --- */
+.map-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 16px 14px;
+}
+
+.map-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #EFEFEF;
+    border-radius: 8px;
+    background: #FFFFFF;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.map-back-btn:hover {
+    background: #F5F4F9;
+}
+
+.map-panel-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #151515;
+}
+
+/* --- Search box --- */
+.map-search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #FFFFFF;
+    border: 1px solid #EFEFEF;
+    border-radius: 10px;
+    padding: 0 14px;
+    height: 46px;
+    margin: 0 16px 12px;
+    transition: border-color 0.2s;
+}
+
+.map-search-box:focus-within {
+    border-color: #7B48FF;
+}
+
+.map-search-box input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+    color: #151515;
+    font-family: 'Inter', sans-serif;
+}
+
+.map-search-box input::placeholder {
+    color: #ABABAB;
+}
+
+/* --- Filter rows (date / time) --- */
+.map-filter-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 16px 12px;
+}
+
+.map-filter-wrapper {
+    position: relative;
+}
+
+.map-hidden-input {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Calendar dropdown override for map page (opens to right) */
+.map-left-panel .custom-calendar-dropdown {
+    right: auto;
+    left: 0;
+    z-index: 1100;
+}
+
+.map-filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #FFFFFF;
+    border: 1px solid #EFEFEF;
+    border-radius: 12px;
+    padding: 0 16px;
+    height: 50px;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    color: #151515;
+    font-weight: 500;
+}
+
+.map-filter-btn:hover {
+    background: #F9F8FF;
+}
+
+.map-filter-btn-label {
+    flex: 1;
+    text-align: left;
+}
+
+.map-filter-btn-arrow {
+    color: #ABABAB;
+    flex-shrink: 0;
+}
+
+/* --- Status Tabs (Barchasi / Onlayn / Oflayn) --- */
+.map-tabs {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #EFEFEF;
+    padding: 0 16px;
+    margin-bottom: 0;
+}
+
+.map-tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #ABABAB;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: -1px;
+}
+
+.map-tab.active {
+    color: #7B48FF;
+    border-bottom-color: #7B48FF;
+}
+
+.map-tab:hover:not(.active) {
+    color: #151515;
+}
+
+/* --- Person list --- */
+.map-person-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.map-person-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #F5F5F5;
+    transition: background 0.15s;
+}
+
+.map-person-item:hover {
+    background: #F9F8FF;
+}
+
+.map-person-item.active {
+    background: #F3EEFF;
+}
+
+.map-person-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1.5px solid currentColor;
+}
+
+.map-person-dot.dot-orange {
+    color: #D49859;
+    border-color: #D49859;
+}
+
+.map-person-dot.dot-green {
+    color: #45BF84;
+    border-color: #45BF84;
+}
+
+.map-person-info {
+    flex: 1;
+}
+
+.map-person-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #151515;
+}
+
+.map-person-arrow {
+    color: #CBCBCB;
+    flex-shrink: 0;
+}
+
+/* =========================================================================
+   RIGHT MAP AREA
+   ========================================================================= */
+.map-right-area {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    overflow: hidden;
+    background: #FFFFFF;
+}
+
+/* Map search bar overlay */
+.map-overlay-search {
+    position: absolute;
+    top: 28px;
+    left: 28px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    background: #FFFFFF;
+    border: 1px solid #EFEFEF;
+    border-radius: 12px;
+    height: 50px;
+    width: 292px;
+    padding: 0 16px;
+    transition: border-color 0.2s;
+}
+
+.map-overlay-search:focus-within {
+    border-color: #7B48FF;
+}
+
+.map-overlay-search .search-icon {
+    color: #ABABAB;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.map-overlay-search input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+    color: #151515;
+    font-family: 'Inter', sans-serif;
+}
+
+.map-overlay-search input::placeholder {
+    color: #ABABAB;
+}
+
+#yandexMap {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 1;
+    border: 1px solid #EFEFEF;
+}
+
+/* Custom avatar marker */
+.map-avatar-marker {
+    width: 42px;
+    height: 52px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.map-avatar-marker img {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 3px solid #7B48FF;
+    object-fit: cover;
+}
+
+/* Leaflet popup */
+.map-popup-card {
+    padding: 2px;
+    min-width: 160px;
+}
+
+.map-popup-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #151515;
+    margin-bottom: 3px;
+}
+
+.map-popup-meta {
+    font-size: 12px;
+    color: #807B89;
+}
+
+/* Static SVG map image */
+.map-static-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Xarita.svg is 1440px wide; left 250px is the sidebar panel in the mockup.
+       Shift left so only the map right area shows. */
+    object-position: right center;
+    user-select: none;
+    pointer-events: none;
+}
