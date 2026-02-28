@@ -59,19 +59,14 @@
     <!-- Data Table -->
     <div class="data-table-container">
         <table class="data-table">
-            <colgroup>
-                <col style="width: 9.2%;">
-                <col style="width: 21.5%;">
-                <col style="width: 15.2%;">
-                <col style="width: 19.6%;">
-                <col style="width: 16.7%;">
-                <col style="width: 17.8%;">
-            </colgroup>
             <thead>
                 <tr>
-                    <th colspan="6" style="padding: 0; background: transparent; border: none;">
-                        <img src="{{ asset('assets/images/main.svg') }}" alt="Jadval sarlavhasi" style="width: 100%; display: block; height: auto;">
-                    </th>
+                    <th>#</th>
+                    <th>F.I.O</th>
+                    <th>Jinsi</th>
+                    <th>Telefon</th>
+                    <th>Ish xolati</th>
+                    <th>Hududlar</th>
                 </tr>
             </thead>
             <tbody>
