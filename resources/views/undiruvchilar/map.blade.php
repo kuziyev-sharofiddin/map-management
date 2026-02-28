@@ -12,17 +12,17 @@
 
 @php
 $people = [
-    ['name'=>'Nodirova Nodiraxon', 'status'=>'orange', 'lat'=>41.3200, 'lng'=>69.2450],
-    ['name'=>'Nodirova Nodiraxon', 'status'=>'orange', 'lat'=>41.3150, 'lng'=>69.2490],
+    ['name'=>'Karimova Shahlo', 'status'=>'orange', 'lat'=>41.3200, 'lng'=>69.2450],
+    ['name'=>'Usmonov Jamshid', 'status'=>'orange', 'lat'=>41.3150, 'lng'=>69.2490],
     ['name'=>'Nodirova Nodiraxon', 'status'=>'orange', 'lat'=>41.3100, 'lng'=>69.2540],
-    ['name'=>'Nodirova Nodiraxon', 'status'=>'orange', 'lat'=>41.3050, 'lng'=>69.2590],
-    ['name'=>'Nodirova Nodiraxon', 'status'=>'orange', 'lat'=>41.3000, 'lng'=>69.2640],
+    ['name'=>'Rustamov Alisher', 'status'=>'orange', 'lat'=>41.3050, 'lng'=>69.2590],
+    ['name'=>'Otaxonov Murod', 'status'=>'orange', 'lat'=>41.3000, 'lng'=>69.2640],
     ['name'=>'Nodirov Shokirbek',  'status'=>'green',  'lat'=>41.2950, 'lng'=>69.2690],
-    ['name'=>'Nodirov Shokirbek',  'status'=>'green',  'lat'=>41.2900, 'lng'=>69.2740],
-    ['name'=>'Nodirov Shokirbek',  'status'=>'green',  'lat'=>41.2850, 'lng'=>69.2790],
-    ['name'=>'Nodirov Shokirbek',  'status'=>'green',  'lat'=>41.2800, 'lng'=>69.2840],
-    ['name'=>'Nodirov Shokirbek',  'status'=>'green',  'lat'=>41.2750, 'lng'=>69.2890],
-    ['name'=>'Nodirov Shokirbek',  'status'=>'green',  'lat'=>41.2700, 'lng'=>69.2940],
+    ['name'=>'Qosimov Bekzod',  'status'=>'green',  'lat'=>41.2900, 'lng'=>69.2740],
+    ['name'=>'Yuldasheva Malika',  'status'=>'green',  'lat'=>41.2850, 'lng'=>69.2790],
+    ['name'=>'Ismailov Doston',  'status'=>'green',  'lat'=>41.2800, 'lng'=>69.2840],
+    ['name'=>'Tursunova Feruza',  'status'=>'green',  'lat'=>41.2750, 'lng'=>69.2890],
+    ['name'=>'Xusanov Jasur',  'status'=>'green',  'lat'=>41.2700, 'lng'=>69.2940],
 ];
 @endphp
 
@@ -43,7 +43,7 @@ $people = [
             </div>
 
             <div class="map-search-box">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ABABAB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <img src="{{ asset('assets/images/search.svg') }}" class="search-icon" width="20" height="20" alt="Qidiruv">
                 <input type="text" id="mapSearchInput" placeholder="Undiruvchini qidirish...">
             </div>
 
@@ -86,6 +86,58 @@ $people = [
                         </div>
                     </div>
                 </div>
+                
+                {{-- TIME FILTER --}}
+                <div class="time-filter-wrapper" style="position: relative;">
+                    <button class="map-filter-btn" id="mapTimeFilterBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <polyline points="12 8 12 12 14 14"></polyline>
+                        </svg>
+                        <span class="map-filter-btn-label" id="mapTimeFilterText">12:45 - 00:00 gacha</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="map-filter-btn-arrow"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+
+                    {{-- TIME DROPDOWN (Interactive UI mimicking oclock.svg) --}}
+                    <div class="time-dropdown" id="mapTimeDropdown" style="display: none;">
+                        <div class="time-dropdown-header">Vaqtni o'rnatish</div>
+                        <div class="time-dropdown-tabs">
+                            <div class="time-tab active" id="timeTabFrom">
+                                <span>Dan</span> <span class="time-val" id="timeValFrom">12:00</span>
+                            </div>
+                            <div class="time-tab" id="timeTabTo">
+                                <span>Gacha</span> <span class="time-val" id="timeValTo">16:00</span>
+                            </div>
+                        </div>
+
+                        <div class="time-picker-body">
+                            {{-- Fade overlays --}}
+                            <div class="time-picker-fade-top"></div>
+                            <div class="time-picker-fade-bottom"></div>
+                            {{-- Selection borders --}}
+                            <div class="time-picker-select-overlay"></div>
+
+                            <div class="time-wheels">
+                                <div class="time-wheel" id="wheelHour">
+                                    <div class="wheel-scroller" id="scrollHour">
+                                        <!-- Built via JS -->
+                                    </div>
+                                </div>
+                                <div class="time-colon">:</div>
+                                <div class="time-wheel" id="wheelMinute">
+                                    <div class="wheel-scroller" id="scrollMinute">
+                                        <!-- Built via JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="time-dropdown-footer">
+                            <button class="time-btn-cancel" id="timeBtnCancel">Bekor qilish</button>
+                            <button class="time-btn-save" id="timeBtnSave">Saqlash</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>{{-- /map-top-card --}}
 
@@ -101,8 +153,8 @@ $people = [
                  data-lat="{{ $p['lat'] }}" data-lng="{{ $p['lng'] }}"
                  data-name="{{ $p['name'] }}" data-status="{{ $p['status'] }}">
                 <span class="map-person-dot dot-{{ $p['status'] }}"></span>
-                <span class="map-person-name">{{ $p['name'] }}</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CBCBCB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="map-person-arrow"><polyline points="9 18 15 12 9 6"/></svg>
+                <span class="map-person-name" style="flex: 1;">{{ $p['name'] }}</span>
+                <img src="{{ asset('assets/images/strelka.svg') }}" width="24" height="24" class="map-person-arrow" alt="Arrow">
             </div>
             @endforeach
         </div>
@@ -115,6 +167,14 @@ $people = [
             <img src="{{ asset('assets/images/search.svg') }}" class="search-icon" width="20" height="20" alt="Qidiruv">
             <input type="text" id="mapLocationSearch" placeholder="Manzilni qidirish...">
         </div>
+        
+        <!-- Custom Zoom Controls -->
+        <div class="map-custom-zoom">
+            <div class="zoom-btn" id="mapZoomIn"></div>
+            <div class="zoom-btn" id="mapZoomOut"></div>
+            <img src="{{ asset('assets/images/plus-minus.svg') }}" alt="Zoom Controls">
+        </div>
+
         <div id="yandexMap"></div>
     </div>
 
@@ -135,10 +195,21 @@ ymaps.ready(function () {
     var map = new ymaps.Map('yandexMap', {
         center: [41.297, 69.270],
         zoom: 13,
-        controls: ['zoomControl'],
+        controls: [],
         type: 'yandex#map',
     }, {
         suppressMapOpenBlock: true,
+    });
+
+    // Custom Zoom Events
+    document.getElementById('mapZoomIn').addEventListener('click', function() {
+        var z = map.getZoom();
+        map.setZoom(z + 1, { smooth: true, duration: 200 });
+    });
+    
+    document.getElementById('mapZoomOut').addEventListener('click', function() {
+        var z = map.getZoom();
+        map.setZoom(z - 1, { smooth: true, duration: 200 });
     });
 
     // ---- Route polyline ----
@@ -271,7 +342,7 @@ ymaps.ready(function () {
         if (!btn || !dropdown) return;
 
         const months = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'];
-        const shortMonths = ['yan', 'fev', 'mar', 'apr', 'may', 'iyn', 'iyl', 'avg', 'sen', 'okt', 'noy', 'dek'];
+        const shortMonths = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyn', 'Iyl', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'];
 
         let currentYear = 2026;
         const startYear = 2015;
@@ -486,6 +557,167 @@ ymaps.ready(function () {
 
         setupCalendar();
         updateDisplay();
+    })();
+
+    // ============================================================
+    //  MAP PAGE — Interactive Time Picker Logic
+    // ============================================================
+    (function() {
+        const timeBtn = document.getElementById('mapTimeFilterBtn');
+        const timeText = document.getElementById('mapTimeFilterText');
+        const timeDropdown = document.getElementById('mapTimeDropdown');
+        
+        const tabFrom = document.getElementById('timeTabFrom');
+        const tabTo = document.getElementById('timeTabTo');
+        const valFrom = document.getElementById('timeValFrom');
+        const valTo = document.getElementById('timeValTo');
+        
+        const scrollHour = document.getElementById('scrollHour');
+        const scrollMinute = document.getElementById('scrollMinute');
+        const wheelHour = document.getElementById('wheelHour');
+        const wheelMinute = document.getElementById('wheelMinute');
+        
+        const btnCancel = document.getElementById('timeBtnCancel');
+        const btnSave = document.getElementById('timeBtnSave');
+
+        if (!timeBtn || !timeDropdown) return;
+
+        let activeTab = 'from'; // 'from' or 'to'
+        let timeFrom = { h: 12, m: 0 };
+        let timeTo = { h: 16, m: 0 };
+
+        // Generate wheel items
+        function pad(n) { return n < 10 ? '0'+n : n; }
+        
+        function buildWheel(container, max) {
+            container.innerHTML = '';
+            for(let i=0; i<max; i++) {
+                let div = document.createElement('div');
+                div.className = 'time-wheel-item';
+                div.dataset.val = i;
+                div.innerText = pad(i);
+                container.appendChild(div);
+            }
+        }
+        
+        buildWheel(scrollHour, 24);
+        buildWheel(scrollMinute, 60);
+
+        function updateWheelSelection(wheel) {
+            const items = wheel.querySelectorAll('.time-wheel-item');
+            const center = wheel.scrollTop + (wheel.clientHeight / 2);
+            
+            let closestItem = null;
+            let minDiff = Infinity;
+            
+            items.forEach(item => {
+                const itemCenter = item.offsetTop - wheel.offsetTop + (item.clientHeight / 2);
+                const diff = Math.abs(center - itemCenter);
+                if(diff < minDiff) {
+                    minDiff = diff;
+                    closestItem = item;
+                }
+                item.classList.remove('selected');
+            });
+            
+            if(closestItem) {
+                closestItem.classList.add('selected');
+                let val = parseInt(closestItem.dataset.val);
+                if(wheel.id === 'wheelHour') {
+                    if(activeTab === 'from') timeFrom.h = val;
+                    else timeTo.h = val;
+                } else {
+                    if(activeTab === 'from') timeFrom.m = val;
+                    else timeTo.m = val;
+                }
+                updateTabText();
+            }
+        }
+
+        // Scroll event with debounce for smooth selection
+        let scrollTimeout;
+        wheelHour.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => updateWheelSelection(wheelHour), 50);
+        });
+        wheelMinute.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => updateWheelSelection(wheelMinute), 50);
+        });
+
+        function updateTabText() {
+            valFrom.innerText = pad(timeFrom.h) + ':' + pad(timeFrom.m);
+            valTo.innerText = pad(timeTo.h) + ':' + pad(timeTo.m);
+        }
+
+        function setWheelValue(wheel, val) {
+            const items = wheel.querySelectorAll('.time-wheel-item');
+            let targetItem = wheel.querySelector(`.time-wheel-item[data-val="${val}"]`);
+            if(targetItem) {
+                // Approximate scroll to center target
+                wheel.scrollTop = targetItem.offsetTop - wheel.offsetTop - (wheel.clientHeight/2) + (targetItem.clientHeight/2);
+                setTimeout(() => updateWheelSelection(wheel), 10);
+            }
+        }
+
+        function loadTabValues() {
+            if(activeTab === 'from') {
+                setWheelValue(wheelHour, timeFrom.h);
+                setWheelValue(wheelMinute, timeFrom.m);
+            } else {
+                setWheelValue(wheelHour, timeTo.h);
+                setWheelValue(wheelMinute, timeTo.m);
+            }
+        }
+
+        // Tabs
+        tabFrom.addEventListener('click', () => {
+            activeTab = 'from';
+            tabFrom.classList.add('active');
+            tabTo.classList.remove('active');
+            loadTabValues();
+        });
+        tabTo.addEventListener('click', () => {
+            activeTab = 'to';
+            tabTo.classList.add('active');
+            tabFrom.classList.remove('active');
+            loadTabValues();
+        });
+
+        // Toggle dropdown
+        timeBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (timeDropdown.style.display === 'none' || timeDropdown.style.display === '') {
+                timeDropdown.style.display = 'block';
+                // Initialize positions on open
+                setTimeout(loadTabValues, 10);
+            } else {
+                timeDropdown.style.display = 'none';
+            }
+        });
+
+        // Buttons
+        btnCancel.addEventListener('click', () => {
+            timeDropdown.style.display = 'none';
+        });
+
+        btnSave.addEventListener('click', () => {
+            timeText.innerText = pad(timeFrom.h) + ':' + pad(timeFrom.m) + ' - ' + pad(timeTo.h) + ':' + pad(timeTo.m) + ' gacha';
+            timeDropdown.style.display = 'none';
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!timeBtn.contains(e.target) && !timeDropdown.contains(e.target)) {
+                timeDropdown.style.display = 'none';
+            }
+        });
+
+        timeDropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+        
+        // Initial setup
+        updateTabText();
     })();
 });
 </script>
