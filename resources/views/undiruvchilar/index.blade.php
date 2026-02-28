@@ -59,14 +59,19 @@
     <!-- Data Table -->
     <div class="data-table-container">
         <table class="data-table">
+            <colgroup>
+                <col style="width: 9.2%;">
+                <col style="width: 21.5%;">
+                <col style="width: 15.2%;">
+                <col style="width: 19.6%;">
+                <col style="width: 16.7%;">
+                <col style="width: 17.8%;">
+            </colgroup>
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>F.I.O</th>
-                    <th>Jinsi</th>
-                    <th>Telefon</th>
-                    <th>Ish xolati</th>
-                    <th>Hududlar</th>
+                    <th colspan="6" style="padding: 0; background: transparent; border: none;">
+                        <img src="{{ asset('assets/images/main.svg') }}" alt="Jadval sarlavhasi" style="width: 100%; display: block; height: auto;">
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -75,7 +80,7 @@
                     <td>1</td>
                     <td class="fio-cell">Nodirov shokirbek</td>
                     <td class="jinsi-cell">
-                        <svg class="gender-icon male" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16" y1="8" x2="21" y2="8"></line><line x1="21" y1="8" x2="21" y2="13"></line><line x1="21" y1="8" x2="15.5" y2="13.5"></line><circle cx="10" cy="16" r="6"></circle></svg>
+                        <img src="{{ asset('assets/images/erkak.svg') }}" class="gender-icon male" alt="Erkak">
                         Erkak
                     </td>
                     <td>+998 (93) 123-45-67</td>
@@ -87,7 +92,7 @@
                     <td>2</td>
                     <td class="fio-cell">Nodirov shokirbek</td>
                     <td class="jinsi-cell">
-                        <svg class="gender-icon male" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16" y1="8" x2="21" y2="8"></line><line x1="21" y1="8" x2="21" y2="13"></line><line x1="21" y1="8" x2="15.5" y2="13.5"></line><circle cx="10" cy="16" r="6"></circle></svg>
+                        <img src="{{ asset('assets/images/erkak.svg') }}" class="gender-icon male" alt="Erkak">
                         Erkak
                     </td>
                     <td>+998 (93) 123-45-67</td>
@@ -99,7 +104,7 @@
                     <td>3</td>
                     <td class="fio-cell">Nodirov shokirbek</td>
                     <td class="jinsi-cell">
-                        <svg class="gender-icon male" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16" y1="8" x2="21" y2="8"></line><line x1="21" y1="8" x2="21" y2="13"></line><line x1="21" y1="8" x2="15.5" y2="13.5"></line><circle cx="10" cy="16" r="6"></circle></svg>
+                        <img src="{{ asset('assets/images/erkak.svg') }}" class="gender-icon male" alt="Erkak">
                         Erkak
                     </td>
                     <td>+998 (93) 123-45-67</td>
@@ -111,7 +116,7 @@
                     <td>4</td>
                     <td class="fio-cell">Nodirov shokirbek</td>
                     <td class="jinsi-cell">
-                        <svg class="gender-icon male" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16" y1="8" x2="21" y2="8"></line><line x1="21" y1="8" x2="21" y2="13"></line><line x1="21" y1="8" x2="15.5" y2="13.5"></line><circle cx="10" cy="16" r="6"></circle></svg>
+                        <img src="{{ asset('assets/images/erkak.svg') }}" class="gender-icon male" alt="Erkak">
                         Erkak
                     </td>
                     <td>+998 (93) 123-45-67</td>
@@ -123,7 +128,7 @@
                     <td>5</td>
                     <td class="fio-cell">Nodirov shokirbek</td>
                     <td class="jinsi-cell">
-                        <svg class="gender-icon male" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16" y1="8" x2="21" y2="8"></line><line x1="21" y1="8" x2="21" y2="13"></line><line x1="21" y1="8" x2="15.5" y2="13.5"></line><circle cx="10" cy="16" r="6"></circle></svg>
+                        <img src="{{ asset('assets/images/erkak.svg') }}" class="gender-icon male" alt="Erkak">
                         Erkak
                     </td>
                     <td>+998 (93) 123-45-67</td>
@@ -135,7 +140,7 @@
                     <td>6</td>
                     <td class="fio-cell">Nodirov shokirbek</td>
                     <td class="jinsi-cell">
-                        <svg class="gender-icon male" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16" y1="8" x2="21" y2="8"></line><line x1="21" y1="8" x2="21" y2="13"></line><line x1="21" y1="8" x2="15.5" y2="13.5"></line><circle cx="10" cy="16" r="6"></circle></svg>
+                        <img src="{{ asset('assets/images/erkak.svg') }}" class="gender-icon male" alt="Erkak">
                         Erkak
                     </td>
                     <td>+998 (93) 123-45-67</td>
@@ -147,7 +152,7 @@
                     <td>7</td>
                     <td class="fio-cell">Nodirov shokirbek</td>
                     <td class="jinsi-cell">
-                        <svg class="gender-icon male" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16" y1="8" x2="21" y2="8"></line><line x1="21" y1="8" x2="21" y2="13"></line><line x1="21" y1="8" x2="15.5" y2="13.5"></line><circle cx="10" cy="16" r="6"></circle></svg>
+                        <img src="{{ asset('assets/images/erkak.svg') }}" class="gender-icon male" alt="Erkak">
                         Erkak
                     </td>
                     <td>+998 (93) 123-45-67</td>
@@ -159,7 +164,7 @@
                     <td>8</td>
                     <td class="fio-cell">Nodirova Nodiraxon</td>
                     <td class="jinsi-cell">
-                        <svg class="gender-icon female" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="16" x2="12" y2="24"></line><line x1="9" y1="21" x2="15" y2="21"></line><circle cx="12" cy="10" r="6"></circle></svg>
+                        <img src="{{ asset('assets/images/ayol.svg') }}" class="gender-icon female" alt="Ayol">
                         Ayol
                     </td>
                     <td>+998 (93) 123-45-67</td>
@@ -171,7 +176,7 @@
                     <td>9</td>
                     <td class="fio-cell">Nodirova Nodiraxon</td>
                     <td class="jinsi-cell">
-                        <svg class="gender-icon female" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="16" x2="12" y2="24"></line><line x1="9" y1="21" x2="15" y2="21"></line><circle cx="12" cy="10" r="6"></circle></svg>
+                        <img src="{{ asset('assets/images/ayol.svg') }}" class="gender-icon female" alt="Ayol">
                         Ayol
                     </td>
                     <td>+998 (93) 123-45-67</td>
@@ -183,7 +188,7 @@
                     <td>10</td>
                     <td class="fio-cell">Nodirova Nodiraxon</td>
                     <td class="jinsi-cell">
-                        <svg class="gender-icon female" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="16" x2="12" y2="24"></line><line x1="9" y1="21" x2="15" y2="21"></line><circle cx="12" cy="10" r="6"></circle></svg>
+                        <img src="{{ asset('assets/images/ayol.svg') }}" class="gender-icon female" alt="Ayol">
                         Ayol
                     </td>
                     <td>+998 (93) 123-45-67</td>
@@ -195,7 +200,7 @@
                     <td>11</td>
                     <td class="fio-cell">Nodirova Nodiraxon</td>
                     <td class="jinsi-cell">
-                        <svg class="gender-icon female" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="16" x2="12" y2="24"></line><line x1="9" y1="21" x2="15" y2="21"></line><circle cx="12" cy="10" r="6"></circle></svg>
+                        <img src="{{ asset('assets/images/ayol.svg') }}" class="gender-icon female" alt="Ayol">
                         Ayol
                     </td>
                     <td>+998 (93) 123-45-67</td>
@@ -207,7 +212,7 @@
                     <td>12</td>
                     <td class="fio-cell">Nodirova Nodiraxon</td>
                     <td class="jinsi-cell">
-                        <svg class="gender-icon female" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="16" x2="12" y2="24"></line><line x1="9" y1="21" x2="15" y2="21"></line><circle cx="12" cy="10" r="6"></circle></svg>
+                        <img src="{{ asset('assets/images/ayol.svg') }}" class="gender-icon female" alt="Ayol">
                         Ayol
                     </td>
                     <td>+998 (93) 123-45-67</td>
@@ -219,7 +224,7 @@
                     <td>13</td>
                     <td class="fio-cell">Nodirova Nodiraxon</td>
                     <td class="jinsi-cell">
-                        <svg class="gender-icon female" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="16" x2="12" y2="24"></line><line x1="9" y1="21" x2="15" y2="21"></line><circle cx="12" cy="10" r="6"></circle></svg>
+                        <img src="{{ asset('assets/images/ayol.svg') }}" class="gender-icon female" alt="Ayol">
                         Ayol
                     </td>
                     <td>+998 (93) 123-45-67</td>

@@ -58,6 +58,12 @@
                     <span>Undiruvchilar</span>
                 </a>
             </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="logout-btn" aria-label="Ilovadan chiqish">
+                    <img src="{{ asset('assets/images/logout.svg') }}" alt="Ilovadan chiqish">
+                </a>
+            </div>
         </aside>
 
         <!-- Main Content Area -->
