@@ -162,10 +162,6 @@ $people = [
 
     {{-- RIGHT MAP AREA --}}
     <div class="map-right-area">
-        <div class="map-overlay-search">
-            <img src="{{ asset('assets/images/search.svg') }}" class="search-icon" width="20" height="20" alt="Qidiruv">
-            <input type="text" id="mapLocationSearch" placeholder="Manzilni qidirish...">
-        </div>
         
         <!-- Custom Zoom Controls -->
         <div class="map-custom-zoom">
@@ -192,7 +188,7 @@ ymaps.ready(function () {
 
     // ---- Init map ----
     var map = new ymaps.Map('yandexMap', {
-        center: [41.297, 69.270],
+        center: [40.386, 71.786], // Farg'ona shahri markazi
         zoom: 13,
         controls: [],
         type: 'yandex#map',
@@ -284,41 +280,6 @@ ymaps.ready(function () {
         rows.forEach(function(r) {
             r.style.display = (!q || r.dataset.name.toLowerCase().indexOf(q) !== -1) ? '' : 'none';
         });
-    });
-
-    // ---- Location search (geocoding) ----
-    var locationInput = document.getElementById('mapLocationSearch');
-    var searchMarker = null;
-
-    function searchLocation(query) {
-        if (!query || query.length < 2) return;
-        ymaps.geocode(query, { results: 1 }).then(function(res) {
-            var firstGeoObject = res.geoObjects.get(0);
-            if (!firstGeoObject) return;
-            var coords = firstGeoObject.geometry.getCoordinates();
-            var name = firstGeoObject.getAddressLine();
-
-            // Remove old search marker
-            if (searchMarker) map.geoObjects.remove(searchMarker);
-
-            // Add new marker
-            searchMarker = new ymaps.Placemark(coords, {
-                balloonContent: name,
-            }, {
-                preset: 'islands#redDotIcon',
-            });
-            map.geoObjects.add(searchMarker);
-            map.panTo(coords, { flying: true, duration: 600 });
-            map.setZoom(15, { smooth: true, duration: 400 });
-            searchMarker.balloon.open();
-        });
-    }
-
-    locationInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            searchLocation(this.value.trim());
-        }
     });
 
     // ============================================================
