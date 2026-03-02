@@ -100,7 +100,13 @@
         <!-- Right Section: Graphic -->
         <div class="auth-graphic-section" id="auth-graphic-section">
             <div class="graphic-container">
-                <img src="{{ asset('assets/images/logotip.svg') }}" alt="Undiruv Logo" class="auth-logotip">
+                <div class="logotip-wrapper">
+                    <img src="{{ asset('assets/images/logotip.svg') }}" alt="Undiruv Logo" class="auth-logotip">
+                    <div class="logotip-brand">
+                        <h2 class="logotip-title">UNDIRUV NAZORAT</h2>
+                        <p class="logotip-subtitle">Tizimli yondashuv, yuqori unumdorlik.</p>
+                    </div>
+                </div>
             </div>
         </div>
         </div>

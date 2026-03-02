@@ -117,7 +117,6 @@ body {
     display: flex;
     flex-direction: column;
     padding: 280px 44px;
-    border: 1.5px solid #EDE8FD;
     border-radius: 28px;
     box-shadow:
         0 0 0 8px rgba(139, 92, 246, 0.05),
@@ -125,19 +124,55 @@ body {
         0 8px 32px rgba(139, 92, 246, 0.08);
     background: #fff;
     position: relative;
+    /* Rotating border uchun kerak */
+    isolation: isolate;
+    overflow: hidden;
 }
 
-/* Subtle top-arc decorative glow */
+/* Aylanib yuradigan border (conic-gradient) */
 .auth-form-wrapper::before {
     content: '';
     position: absolute;
-    top: -2px;
-    left: 10%;
-    width: 80%;
-    height: 4px;
-    background: linear-gradient(90deg, transparent, #8B5CF6 30%, #A78BFA 70%, transparent);
-    border-radius: 0 0 50% 50%;
-    opacity: 0.5;
+    inset: -3px;
+    border-radius: 30px;
+    background: conic-gradient(from var(--angle, 0deg),
+            transparent 0deg,
+            transparent 60deg,
+            #8B5CF6 80deg,
+            #A78BFA 120deg,
+            #C4B5FD 160deg,
+            #A78BFA 200deg,
+            #8B5CF6 240deg,
+            transparent 260deg,
+            transparent 360deg);
+    animation: rotate-border 3s linear infinite;
+    z-index: -1;
+}
+
+/* Ichki oq fon (border effektini ko'rsatish uchun) */
+.auth-form-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 26px;
+    background: #ffffff;
+    z-index: -1;
+}
+
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes rotate-border {
+    from {
+        --angle: 0deg;
+    }
+
+    to {
+        --angle: 360deg;
+    }
 }
 
 .auth-header {
@@ -440,10 +475,37 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .auth-logotip {
-    width: 75%;
-    max-width: 560px;
+    width: 120%;
+    max-width: 980px;
     height: auto;
     object-fit: contain;
+}
+
+/* Logotip + brand text wrapper */
+.logotip-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logotip-brand {
+    text-align: center;
+}
+
+.logotip-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+}
+
+.logotip-subtitle {
+    font-size: 0.975rem;
+    color: var(--text-secondary);
+    font-weight: 400;
 }
 
 /* Wrapper that actually handles the 3D tilting */
