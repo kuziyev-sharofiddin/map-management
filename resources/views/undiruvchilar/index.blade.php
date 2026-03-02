@@ -6,6 +6,87 @@
 
 @section('content')
 <div class="undiruvchilar-container">
+    <!-- KPI Statistics Grid -->
+    <div class="stats-grid" style="margin-bottom: 24px;">
+        <!-- Card 1 (Purple Base) -->
+        <div class="stat-card primary-card decorative-bg">
+            <div class="stat-header">
+                <span class="stat-title">Jami undiruvchilar soni</span>
+                <div class="custom-icon-container">
+                    <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="0.5" y="0.5" width="41" height="41" rx="11.5" fill="white"/>
+                        <svg x="9" y="9" width="24" height="24" viewBox="229 28 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M244.5 35.5C244.5 37.433 242.933 39 241 39C239.067 39 237.5 37.433 237.5 35.5C237.5 33.567 239.067 32 241 32C242.933 32 244.5 33.567 244.5 35.5Z" fill="#7B48FF"/>
+                            <path d="M247 44.5C247 46.433 244.314 48 241 48C237.686 48 235 46.433 235 44.5C235 42.567 237.686 41 241 41C244.314 41 247 42.567 247 44.5Z" fill="#7B48FF"/>
+                            <path d="M236.122 33C236.3 33 236.473 33.0174 236.64 33.0506C236.232 33.7745 236 34.6101 236 35.5C236 36.3683 236.221 37.1848 236.611 37.8964C236.452 37.9258 236.289 37.9413 236.122 37.9413C234.708 37.9413 233.561 36.8351 233.561 35.4706C233.561 34.1061 234.708 33 236.122 33Z" fill="#7B48FF"/>
+                            <path d="M234.447 46.986C233.879 46.3071 233.5 45.474 233.5 44.5C233.5 43.5558 233.857 42.744 234.396 42.0767C232.491 42.2245 231 43.2662 231 44.5294C231 45.8044 232.517 46.8538 234.447 46.986Z" fill="#7B48FF"/>
+                            <path d="M246 35.5C246 36.3683 245.779 37.1848 245.389 37.8964C245.547 37.9258 245.711 37.9413 245.878 37.9413C247.292 37.9413 248.439 36.8351 248.439 35.4706C248.439 34.1061 247.292 33 245.878 33C245.7 33 245.527 33.0174 245.36 33.0506C245.767 33.7745 246 34.6101 246 35.5Z" fill="#7B48FF"/>
+                            <path d="M247.553 46.986C249.483 46.8538 251 45.8044 251 44.5294C251 43.2662 249.509 42.2245 247.604 42.0767C248.143 42.744 248.5 43.5558 248.5 44.5C248.5 45.474 248.12 46.3071 247.553 46.986Z" fill="#7B48FF"/>
+                        </svg>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-value-area">
+                <span class="stat-number">1,200</span><span class="stat-label">/ta</span>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-title">Onlayn undiruvchilar soni</span>
+                <div class="custom-icon-container">
+                    <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="0.5" y="0.5" width="41" height="41" rx="11.5" fill="white"/>
+                        <rect x="0.5" y="0.5" width="41" height="41" rx="11.5" stroke="#EFEFEF"/>
+                        <circle cx="21" cy="15" r="4" fill="#7B48FF"/>
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M25.5 31C23.8501 31 23.0251 31 22.5126 30.4874C22 29.9749 22 29.1499 22 27.5C22 25.8501 22 25.0251 22.5126 24.5126C23.0251 24 23.8501 24 25.5 24C27.1499 24 27.9749 24 28.4874 24.5126C29 25.0251 29 25.8501 29 27.5C29 29.1499 29 29.9749 28.4874 30.4874C27.9749 31 27.1499 31 25.5 31ZM27.468 26.7458C27.6958 26.518 27.6958 26.1487 27.468 25.9209C27.2402 25.693 26.8709 25.693 26.6431 25.9209L24.7222 27.8417L24.3569 27.4764C24.1291 27.2486 23.7598 27.2486 23.532 27.4764C23.3042 27.7042 23.3042 28.0736 23.532 28.3014L24.3097 29.0791C24.5375 29.307 24.9069 29.307 25.1347 29.0791L27.468 26.7458Z" fill="#7B48FF"/>
+                        <path d="M24.4147 22.5074C23.4046 22.1842 22.24 22 21 22C17.134 22 14 23.7909 14 26C14 28.1406 16.9424 29.8884 20.6421 29.9949C20.615 29.8686 20.594 29.7432 20.5775 29.6201C20.4998 29.0424 20.4999 28.3365 20.5 27.586V27.414C20.4999 26.6635 20.4998 25.9576 20.5775 25.3799C20.6639 24.737 20.8705 24.0333 21.4519 23.4519C22.0334 22.8705 22.737 22.6639 23.3799 22.5774C23.6919 22.5355 24.0412 22.5162 24.4147 22.5074Z" fill="#7B48FF"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-value-area">
+                <span class="stat-number">600</span><span class="stat-label">/ta</span>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-title">Oflayn undiruvchilar soni</span>
+                <div class="custom-icon-container">
+                    <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="0.5" y="0.5" width="41" height="41" rx="11.5" fill="white"/>
+                    <rect x="0.5" y="0.5" width="41" height="41" rx="11.5" stroke="#EFEFEF"/>
+                    <circle cx="21" cy="15" r="4" fill="#7B48FF"/>
+                    <path d="M24.4147 22.5074C23.4046 22.1842 22.24 22 21 22C17.134 22 14 23.7909 14 26C14 28.1406 16.9424 29.8884 20.6421 29.9949C20.615 29.8686 20.594 29.7432 20.5775 29.6201C20.4998 29.0424 20.4999 28.3365 20.5 27.586V27.414C20.4999 26.6635 20.4998 25.9576 20.5775 25.3799C20.6639 24.737 20.8705 24.0333 21.4519 23.4519C22.0334 22.8705 22.737 22.6639 23.3799 22.5774C23.6919 22.5355 24.0412 22.5162 24.4147 22.5074Z" fill="#7B48FF"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M25.5 31C23.8501 31 23.0251 31 22.5126 30.4874C22 29.9749 22 29.1499 22 27.5C22 25.8501 22 25.0251 22.5126 24.5126C23.0251 24 23.8501 24 25.5 24C27.1499 24 27.9749 24 28.4874 24.5126C29 25.0251 29 25.8501 29 27.5C29 29.1499 29 29.9749 28.4874 30.4874C27.9749 31 27.1499 31 25.5 31ZM24.3569 25.532C24.1291 25.3042 23.7598 25.3042 23.532 25.532C23.3042 25.7598 23.3042 26.1291 23.532 26.3569L24.675 27.5L23.532 28.6431C23.3042 28.8709 23.3042 29.2402 23.532 29.468C23.7598 29.6958 24.1291 29.6958 24.3569 29.468L25.5 28.325L26.6431 29.468C26.8709 29.6958 27.2402 29.6958 27.468 29.468C27.6958 29.2402 27.6958 28.8709 27.468 28.6431L26.325 27.5L27.468 26.3569C27.6958 26.1291 27.6958 25.7598 27.468 25.532C27.2402 25.3042 26.8709 25.3042 26.6431 25.532L25.5 26.675L24.3569 25.532Z" fill="#7B48FF"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-value-area">
+                <span class="stat-number">600</span><span class="stat-label">/ta</span>
+            </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-title">Hududlar soni</span>
+                <div class="custom-icon-container">
+                    <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="0.5" y="0.5" width="41" height="41" rx="11.5" fill="white"/>
+                    <rect x="0.5" y="0.5" width="41" height="41" rx="11.5" stroke="#EFEFEF"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M21 12C16.5678 12 13 15.7029 13 20.2389C13 22.4908 13.8783 24.9032 15.2835 26.757C16.6854 28.6066 18.6944 30 21 30C23.3056 30 25.3146 28.6066 26.7165 26.757C28.1217 24.9032 29 22.4908 29 20.2389C29 15.7029 25.4322 12 21 12ZM18.1657 19.6154C18.1657 18.035 19.4347 16.7538 21 16.7538C22.5653 16.7538 23.8343 18.035 23.8343 19.6154C23.8343 21.1958 22.5653 22.4769 21 22.4769C19.4347 22.4769 18.1657 21.1958 18.1657 19.6154ZM21 17.8615C20.0406 17.8615 19.2629 18.6468 19.2629 19.6154C19.2629 20.584 20.0406 21.3692 21 21.3692C21.9594 21.3692 22.7371 20.584 22.7371 19.6154C22.7371 18.6468 21.9594 17.8615 21 17.8615Z" fill="#7B48FF"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-value-area">
+                <span class="stat-number">10</span><span class="stat-label">/ta</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Actions Row -->
     <div class="actions-row">
         <!-- Search -->
@@ -322,6 +403,35 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // KPI Statistics Card Hover Logic
+    const statCards = document.querySelectorAll('.stat-card');
+    if (statCards.length > 0) {
+        let activeCard = statCards[0];
+        statCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                if (card !== activeCard) {
+                    activeCard.classList.remove('primary-card');
+                    activeCard.classList.remove('decorative-bg');
+                }
+            });
+            card.addEventListener('mouseleave', () => {
+                if (card !== activeCard) {
+                    activeCard.classList.add('primary-card');
+                    activeCard.classList.add('decorative-bg');
+                }
+            });
+            card.addEventListener('click', () => {
+                statCards.forEach(c => {
+                    c.classList.remove('primary-card');
+                    c.classList.remove('decorative-bg');
+                });
+                activeCard = card;
+                card.classList.add('primary-card');
+                card.classList.add('decorative-bg');
+            });
+        });
+    }
+
     const btn = document.getElementById('dateFilterBtn');
     const dropdown = document.getElementById('customCalendarDropdown');
     const monthsContainer = document.getElementById('calendarMonths');

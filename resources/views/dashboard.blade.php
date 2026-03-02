@@ -7,6 +7,7 @@
 @section('content')
                 
                 <!-- KPI Statistics Grid -->
+                {{-- 
                 <div class="stats-grid">
                     <!-- Card 1 (Purple Base) -->
                     <div class="stat-card primary-card decorative-bg">
@@ -86,6 +87,7 @@
                         </div>
                     </div>
                 </div>
+                --}}
 
                 <!-- Top Rankings Section -->
                 <div class="rankings-section">
