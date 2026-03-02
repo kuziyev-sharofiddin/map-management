@@ -11,7 +11,7 @@
                 <div class="auth-header">
                 <!-- Logo -->
                 <div class="brand-logo">
-                    <img src="{{ asset('assets/images/logo-icon.svg') }}" alt="Logo" class="logo-icon" id="fallback-logo">
+                    <img src="{{ asset('assets/images/little_logotip.svg') }}" alt="Logo" class="logo-icon" id="fallback-logo">
                     <!-- SVG fallback if image is missing -->
                     <svg class="placeholder-svg" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
                         <path d="M15.9385 6.09228L10.3385 9.32296L4.7384 6.09228L10.3385 2.86159L15.9385 6.09228Z" fill="#7C3AED"/>

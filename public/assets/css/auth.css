@@ -116,7 +116,7 @@ body {
     min-width: 320px;
     display: flex;
     flex-direction: column;
-    padding: 350px 44px;
+    padding: 280px 44px;
     border: 1.5px solid #EDE8FD;
     border-radius: 28px;
     box-shadow:
@@ -440,8 +440,8 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .auth-logotip {
-    width: 145%;
-    max-width: 860px;
+    width: 75%;
+    max-width: 560px;
     height: auto;
     object-fit: contain;
 }
