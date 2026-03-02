@@ -111,13 +111,33 @@ body {
 }
 
 .auth-form-wrapper {
-    width: calc(100% - 240px);
-    /* Exactly 120px margin on each side (240px total) */
+    width: calc(100% - 60px);
     max-width: none;
-    /* Remove max-width limit to allow full expansion */
     min-width: 320px;
     display: flex;
     flex-direction: column;
+    padding: 350px 44px;
+    border: 1.5px solid #EDE8FD;
+    border-radius: 28px;
+    box-shadow:
+        0 0 0 8px rgba(139, 92, 246, 0.05),
+        0 0 0 16px rgba(139, 92, 246, 0.025),
+        0 8px 32px rgba(139, 92, 246, 0.08);
+    background: #fff;
+    position: relative;
+}
+
+/* Subtle top-arc decorative glow */
+.auth-form-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 10%;
+    width: 80%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #8B5CF6 30%, #A78BFA 70%, transparent);
+    border-radius: 0 0 50% 50%;
+    opacity: 0.5;
 }
 
 .auth-header {

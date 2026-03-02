@@ -220,9 +220,77 @@ ymaps.ready(function () {
     var placemarks = [];
     coords.forEach(function(c, i) {
         var color = statuses[i] === 'green' ? '#45BF84' : '#D49859';
+        
+        // Build custom balloon layout matching user_info.svg design without the background image
+        var customBalloonContent = `
+            <div style="min-width: 260px; font-family: Inter, sans-serif; padding: 5px 0;">
+                <div style="display:flex; align-items:center; margin-bottom: 16px;">
+                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(rows[i].dataset.name)}&background=7B48FF&color=fff" style="width:40px; height:40px; border-radius:10px; margin-right:12px; object-fit: cover;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 15px; color:#151515; line-height:1.2; margin-bottom: 2px;">${rows[i].dataset.name}</div>
+                        <div style="font-size: 13px; color:#807b89;">Undiruvchi</div>
+                    </div>
+                </div>
+                
+                <div style="height:1px; background:#F0F0F0; margin: 0 -15px 16px -15px;"></div>
+                
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                        <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                            <span>Telefon:</span>
+                        </div>
+                        <span style="font-weight: 600; color:#151515;">+998 (90) 123-45-67</span>
+                    </div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                        <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+                            <span>Status:</span>
+                        </div>
+                        <span style="font-weight: 600; color:${color};">${statuses[i] === 'green' ? 'Aktiv' : 'Nofaol'}</span>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                        <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>Vaqt:</span>
+                        </div>
+                        <span style="font-weight: 600; color:#151515;">22.01.2026 / 12:00</span>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                        <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="10" y1="15" x2="10" y2="9"></line><line x1="14" y1="15" x2="14" y2="9"></line></svg>
+                            <span>To'xtab turgan vaqt:</span>
+                        </div>
+                        <span style="font-weight: 600; color:#45BF84;">0 min</span>
+                    </div>
+                </div>
+                
+                <div style="height:1px; background:#F0F0F0; margin: 16px -15px 12px -15px;"></div>
+                
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                    <div style="display:flex; align-items:center; color:#807b89; gap:6px;">
+                        <span>Kordinata:</span>
+                        <span style="font-weight: 600; color:#151515; letter-spacing: 0.5px;">${c[0].toFixed(6)} - ${c[1].toFixed(6)}</span>
+                    </div>
+                    <div style="position:relative; display:flex; align-items:center;">
+                        <span id="copyMsg-${i}" style="position:absolute; right:35px; background:#45BF84; color:#fff; font-size:11px; padding:3px 6px; border-radius:4px; opacity:0; transition:opacity 0.3s ease; pointer-events:none; white-space:nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Nusxa olindi</span>
+                        <div style="cursor:pointer; display:flex; padding: 5px; border-radius: 6px; background: #F5F4F9; transition: background 0.2s;" title="Nusxa olish" onclick="navigator.clipboard.writeText('${c[0].toFixed(6)}, ${c[1].toFixed(6)}').then(() => { var msg = document.getElementById('copyMsg-${i}'); if(msg) { msg.style.opacity='1'; msg.style.transform='translateY(-2px)'; setTimeout(()=>{ msg.style.opacity='0'; msg.style.transform='translateY(0)'; }, 1500); } var t=this; t.style.background='#d1f0e1'; setTimeout(()=>t.style.background='#F5F4F9', 500); })">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#807b89" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
         var pm = new ymaps.Placemark(c, {
-            balloonContent: '<strong>' + rows[i].dataset.name + '</strong>',
+            balloonContentBody: customBalloonContent,
         }, {
+            balloonPanelMaxMapArea: 0,
+            hideIconOnBalloonOpen: false,
+            balloonOffset: [0, -20],
             iconLayout: 'default#image',
             iconImageHref: 'data:image/svg+xml,' + encodeURIComponent(
                 '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">' +
