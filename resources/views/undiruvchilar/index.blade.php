@@ -96,6 +96,26 @@
         </div>
 
         <div class="filters-and-actions">
+            <!-- Filter Filiallar -->
+            <div class="status-filter-wrapper" id="branchFilterWrapper" style="margin-right: 12px;">
+                <button class="filter-btn" id="branchFilterBtn">
+                    <img src="{{ asset('assets/images/barchasi.svg') }}" width="20" height="20" alt="Barchasi">
+                    <span id="branchFilterText" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; vertical-align: middle;">{{ $selectedBranchName ?? 'Barchasi (Filiallar)' }}</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                
+                <div class="custom-status-dropdown" id="branchDropdown" style="max-height: 300px; overflow-y: auto;">
+                    <div class="status-item {{ empty($selectedBranch) ? 'active' : '' }}" data-guid="">Barchasi (Filiallar)</div>
+                    @if(isset($branches) && is_array($branches))
+                        @foreach($branches as $branch)
+                            <div class="status-item {{ ($selectedBranch ?? '') == ($branch['branch_guid'] ?? '') ? 'active' : '' }}" data-guid="{{ $branch['branch_guid'] ?? '' }}">{{ $branch['name'] ?? 'Noma\'lum' }}</div>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
+
             <!-- Filter Status -->
             <div class="status-filter-wrapper" id="statusFilterWrapper">
                 <button class="filter-btn" id="statusFilterBtn">
@@ -500,25 +520,63 @@ document.addEventListener('DOMContentLoaded', function() {
     const statusDropdown = document.getElementById('statusDropdown');
     const statusFilterText = document.getElementById('statusFilterText');
 
+    // Branch Filter Elements
+    const branchFilterBtn = document.getElementById('branchFilterBtn');
+    const branchDropdown = document.getElementById('branchDropdown');
+    const branchFilterText = document.getElementById('branchFilterText');
+
+    if (branchFilterBtn && branchDropdown) {
+        branchFilterBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            branchDropdown.classList.toggle('active');
+            branchFilterBtn.classList.toggle('active');
+            
+            if (statusDropdown) {
+                statusDropdown.classList.remove('active');
+                statusFilterBtn.classList.remove('active');
+            }
+        });
+
+        branchDropdown.querySelectorAll('.status-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
+                branchDropdown.querySelectorAll('.status-item').forEach(el => el.classList.remove('active'));
+                item.classList.add('active');
+                
+                branchFilterText.innerText = item.innerText;
+                
+                branchDropdown.classList.remove('active');
+                branchFilterBtn.classList.remove('active');
+
+                // AJAX emas, to'g'ridan-to'g'ri GET surov
+                const branchGuid = item.getAttribute('data-guid') || '';
+                window.location.href = "{{ route('undiruvchilar.index') }}" + (branchGuid ? "?branch_guid=" + encodeURIComponent(branchGuid) : "");
+            });
+        });
+    }
+
     if (statusFilterBtn && statusDropdown) {
         statusFilterBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             statusDropdown.classList.toggle('active');
             statusFilterBtn.classList.toggle('active');
+
+            if (branchDropdown) {
+                branchDropdown.classList.remove('active');
+                branchFilterBtn.classList.remove('active');
+            }
         });
 
         statusDropdown.querySelectorAll('.status-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 e.stopPropagation();
                 
-                // Update active class
                 statusDropdown.querySelectorAll('.status-item').forEach(el => el.classList.remove('active'));
                 item.classList.add('active');
                 
-                // Update button text
                 statusFilterText.innerText = item.innerText;
                 
-                // Close dropdown
                 statusDropdown.classList.remove('active');
                 statusFilterBtn.classList.remove('active');
             });
@@ -547,6 +605,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if(statusFilterBtn && statusDropdown && !statusFilterBtn.contains(e.target) && !statusDropdown.contains(e.target)) {
             statusDropdown.classList.remove('active');
             statusFilterBtn.classList.remove('active');
+        }
+        if(branchFilterBtn && branchDropdown && !branchFilterBtn.contains(e.target) && !branchDropdown.contains(e.target)) {
+            branchDropdown.classList.remove('active');
+            branchFilterBtn.classList.remove('active');
         }
     });
 
