@@ -90,10 +90,14 @@
     <!-- Actions Row -->
     <div class="actions-row">
         <!-- Search -->
-        <div class="search-box">
-            <img src="{{ asset('assets/images/search.svg') }}" class="search-icon" width="20" height="20" alt="Qidiruv">
-            <input type="text" placeholder="Qidiruv...">
-        </div>
+        <form class="search-box" style="margin: 0;" method="GET" action="{{ route('undiruvchilar.index') }}" id="searchForm">
+            @if(request('branch_guid')) <input type="hidden" name="branch_guid" value="{{ request('branch_guid') }}"> @endif
+            @if(request('is_active')) <input type="hidden" name="is_active" value="{{ request('is_active') }}"> @endif
+            @if(request('date')) <input type="hidden" name="date" value="{{ request('date') }}"> @endif
+            
+            <img src="{{ asset('assets/images/search.svg') }}" class="search-icon" width="20" height="20" alt="Qidiruv" onclick="document.getElementById('searchForm').submit()" style="cursor: pointer;">
+            <input type="text" id="searchInput" name="search" value="{{ request('search') }}" placeholder="Qidiruv..." autocomplete="off">
+        </form>
 
         <div class="filters-and-actions">
             <!-- Filter Filiallar -->
@@ -186,9 +190,8 @@
             <!-- Barcha filtrlarni tozalash (Faqat parametrlar bo'lganda chiqadi) -->
             @if(request()->hasAny(['branch_guid', 'is_active', 'date']))
             <a href="{{ route('undiruvchilar.index') }}" class="filter-btn" style="text-decoration: none; color: #FF4D4D; border-color: #FF4D4D; display: flex; align-items: center; gap: 6px; box-sizing: border-box;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                    <path d="M3 3v5h5" />
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.36,2.72L20.78,4.14L15.06,9.85C16.13,11.39 16.28,13.24 15.38,14.44L9.06,8.12C10.26,7.22 12.11,7.37 13.65,8.44L19.36,2.72M5.93,17.57C3.92,15.56 2.69,13.16 2.35,10.92L7.23,8.83L14.67,16.27L12.58,21.15C10.34,20.81 7.94,19.58 5.93,17.57Z" />
                 </svg>
                 Tozalash
             </a>
@@ -207,14 +210,9 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th style="width: 50px;">#</th>
+                    <th style="width: 60px;"></th> <!-- Rasm uchun bo'sh header -->
                     <th>F.I.O</th>
-                    <th style="white-space: nowrap;">
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <img src="{{ asset('assets/images/man.svg') }}" width="20" height="20" alt="Jinsi">
-                            Jinsi
-                        </div>
-                    </th>
                     <th style="white-space: nowrap;">
                         <div style="display: flex; align-items: center; gap: 6px;">
                             <img src="{{ asset('assets/images/telefon.svg') }}" width="20" height="20" alt="Telefon">
@@ -229,208 +227,110 @@
                     </th>
                     <th style="white-space: nowrap;">
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <img src="{{ asset('assets/images/location.svg') }}" width="20" height="20" alt="Hududlar">
-                            Hududlar
+                            <img src="{{ asset('assets/images/location.svg') }}" width="20" height="20" alt="Filial">
+                            Filial
                         </div>
                     </th>
                 </tr>
             </thead>
            <tbody>
-    <!-- Row 1 -->
-    <tr>
-        <td>1</td>
-        <td class="fio-cell">Karimov Jasurbek</td>
-        <td class="jinsi-cell">
-            <img src="{{ asset('assets/images/erkak.svg') }}" class="gender-icon male" alt="Erkak">
-            Erkak
-        </td>
-        <td>+998 (90) 456-78-12</td>
-        <td><span class="status-badge onlayn">Onlayn</span></td>
-        <td>Chilonzor 12-mavze</td>
-    </tr>
-
-    <!-- Row 2 -->
-    <tr>
-        <td>2</td>
-        <td class="fio-cell">Saidov Bekzod</td>
-        <td class="jinsi-cell">
-            <img src="{{ asset('assets/images/erkak.svg') }}" class="gender-icon male" alt="Erkak">
-            Erkak
-        </td>
-        <td>+998 (91) 223-11-45</td>
-        <td><span class="status-badge oflayn">Oflayn</span></td>
-        <td>Yunusobod 4-daha</td>
-    </tr>
-
-    <!-- Row 3 -->
-    <tr>
-        <td>3</td>
-        <td class="fio-cell">Tursunov Akmal</td>
-        <td class="jinsi-cell">
-            <img src="{{ asset('assets/images/erkak.svg') }}" class="gender-icon male" alt="Erkak">
-            Erkak
-        </td>
-        <td>+998 (93) 654-32-10</td>
-        <td><span class="status-badge onlayn">Onlayn</span></td>
-        <td>Olmazor tumani</td>
-    </tr>
-
-    <!-- Row 4 -->
-    <tr>
-        <td>4</td>
-        <td class="fio-cell">Abdullayev Sherzod</td>
-        <td class="jinsi-cell">
-            <img src="{{ asset('assets/images/erkak.svg') }}" class="gender-icon male" alt="Erkak">
-            Erkak
-        </td>
-        <td>+998 (94) 778-90-22</td>
-        <td><span class="status-badge oflayn">Oflayn</span></td>
-        <td>Sergeli 6-mavze</td>
-    </tr>
-
-    <!-- Row 5 -->
-    <tr>
-        <td>5</td>
-        <td class="fio-cell">Islomov Diyor</td>
-        <td class="jinsi-cell">
-            <img src="{{ asset('assets/images/erkak.svg') }}" class="gender-icon male" alt="Erkak">
-            Erkak
-        </td>
-        <td>+998 (99) 345-67-89</td>
-        <td><span class="status-badge onlayn">Onlayn</span></td>
-        <td>Mirzo Ulug‘bek tumani</td>
-    </tr>
-
-    <!-- Row 6 -->
-    <tr>
-        <td>6</td>
-        <td class="fio-cell">Qodirov Shaxzod</td>
-        <td class="jinsi-cell">
-            <img src="{{ asset('assets/images/erkak.svg') }}" class="gender-icon male" alt="Erkak">
-            Erkak
-        </td>
-        <td>+998 (88) 123-45-98</td>
-        <td><span class="status-badge oflayn">Oflayn</span></td>
-        <td>Bektemir tumani</td>
-    </tr>
-
-    <!-- Row 7 -->
-    <tr>
-        <td>7</td>
-        <td class="fio-cell">Raxmonov Farrux</td>
-        <td class="jinsi-cell">
-            <img src="{{ asset('assets/images/erkak.svg') }}" class="gender-icon male" alt="Erkak">
-            Erkak
-        </td>
-        <td>+998 (95) 567-89-01</td>
-        <td><span class="status-badge onlayn">Onlayn</span></td>
-        <td>Shayxontohur tumani</td>
-    </tr>
-
-    <!-- Row 8 -->
-    <tr>
-        <td>8</td>
-        <td class="fio-cell">Yo‘ldosheva Mohira</td>
-        <td class="jinsi-cell">
-            <img src="{{ asset('assets/images/ayol.svg') }}" class="gender-icon female" alt="Ayol">
-            Ayol
-        </td>
-        <td>+998 (97) 222-44-66</td>
-        <td><span class="status-badge onlayn">Onlayn</span></td>
-        <td>Uchtepa tumani</td>
-    </tr>
-
-    <!-- Row 9 -->
-    <tr>
-        <td>9</td>
-        <td class="fio-cell">Nazarova Dilnoza</td>
-        <td class="jinsi-cell">
-            <img src="{{ asset('assets/images/ayol.svg') }}" class="gender-icon female" alt="Ayol">
-            Ayol
-        </td>
-        <td>+998 (90) 111-22-33</td>
-        <td><span class="status-badge oflayn">Oflayn</span></td>
-        <td>Yakkasaroy tumani</td>
-    </tr>
-
-    <!-- Row 10 -->
-    <tr>
-        <td>10</td>
-        <td class="fio-cell">Ergasheva Zilola</td>
-        <td class="jinsi-cell">
-            <img src="{{ asset('assets/images/ayol.svg') }}" class="gender-icon female" alt="Ayol">
-            Ayol
-        </td>
-        <td>+998 (93) 909-88-77</td>
-        <td><span class="status-badge onlayn">Onlayn</span></td>
-        <td>Qibray tumani</td>
-    </tr>
-
-    <!-- Row 11 -->
-    <tr>
-        <td>11</td>
-        <td class="fio-cell">To‘xtayeva Nigina</td>
-        <td class="jinsi-cell">
-            <img src="{{ asset('assets/images/ayol.svg') }}" class="gender-icon female" alt="Ayol">
-            Ayol
-        </td>
-        <td>+998 (94) 555-66-77</td>
-        <td><span class="status-badge oflayn">Oflayn</span></td>
-        <td>Zangiota tumani</td>
-    </tr>
-
-    <!-- Row 12 -->
-    <tr>
-        <td>12</td>
-        <td class="fio-cell">Usmonova Shaxnoza</td>
-        <td class="jinsi-cell">
-            <img src="{{ asset('assets/images/ayol.svg') }}" class="gender-icon female" alt="Ayol">
-            Ayol
-        </td>
-        <td>+998 (91) 888-77-66</td>
-        <td><span class="status-badge onlayn">Onlayn</span></td>
-        <td>Yangihayot tumani</td>
-    </tr>
-
-    <!-- Row 13 -->
-    <tr>
-        <td>13</td>
-        <td class="fio-cell">Rahimova Madina</td>
-        <td class="jinsi-cell">
-            <img src="{{ asset('assets/images/ayol.svg') }}" class="gender-icon female" alt="Ayol">
-            Ayol
-        </td>
-        <td>+998 (99) 101-20-30</td>
-        <td><span class="status-badge oflayn">Oflayn</span></td>
-        <td>Bo‘stonliq tumani</td>
-    </tr>
-</tbody>
+            @forelse($usersData as $index => $user)
+            <tr>
+                <td>{{ $index + 1 + (($pagination['page'] ?? 0) * ($pagination['page_size'] ?? 10)) }}</td>
+                <td style="text-align: center;">
+                    @if(!empty($user['image']))
+                        <img src="{{ $user['image'] }}" alt="Avatar" onclick="openImageModal(this.src)" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto; cursor: pointer; transition: transform 0.2s;">
+                    @else
+                        <div style="width: 44px; height: 44px; border-radius: 50%; background: #E0E0E0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; color: #555; margin: 0 auto;">
+                            {{ mb_substr($user['name'] ?? 'U', 0, 1) }}
+                        </div>
+                    @endif
+                </td>
+                <td class="fio-cell">
+                    <span style="font-weight: 500; font-size: 15px; color: #151515;">{{ $user['name'] ?? 'Noma\'lum' }}</span>
+                </td>
+                <td>
+                    @php
+                        $phone = $user['phone'] ?? '';
+                        $formattedPhone = $phone;
+                        if (strlen($phone) >= 9) {
+                            $code = substr($phone, -9, 2);
+                            $p1 = substr($phone, -7, 3);
+                            $p2 = substr($phone, -4, 2);
+                            $p3 = substr($phone, -2, 2);
+                            $formattedPhone = "+998 ($code) $p1-$p2-$p3";
+                        }
+                    @endphp
+                    {{ $formattedPhone }}
+                </td>
+                <td>
+                    @if(isset($user['is_active']) && $user['is_active'])
+                        <span class="status-badge onlayn">Onlayn</span>
+                    @else
+                        <span class="status-badge oflayn">Oflayn</span>
+                    @endif
+                </td>
+                <td>{{ empty($user['branch']) ? 'Noma\'lum' : $user['branch'] }}</td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px;">Ma'lumot topilmadi</td>
+            </tr>
+            @endforelse
+        </tbody>
         </table>
 
         <!-- Pagination -->
-        <div class="pagination-wrapper">
+        <div class="pagination-wrapper" style="margin-top: 50px;">
             <div class="pagination-links">
-                <a href="#" class="page-link prev-link">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                    Orqaga
-                </a>
-                <a href="#" class="page-number active">1</a>
-                <a href="#" class="page-number">2</a>
-                <a href="#" class="page-number">3</a>
-                <span class="page-dots">...</span>
-                <a href="#" class="page-number">20</a>
-                <a href="#" class="page-link next-link">
-                    Keyingi
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </a>
+                @if(($pagination['has_previous_page'] ?? false) || ($pagination['page'] ?? 0) > 0)
+                    <a href="{{ request()->fullUrlWithQuery(['page' => ($pagination['page'] ?? 0) - 1]) }}" class="page-link prev-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        Orqaga
+                    </a>
+                @else
+                    <span class="page-link prev-link" style="opacity: 0.5; cursor: not-allowed;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        Orqaga
+                    </span>
+                @endif
+                
+                <a href="#" class="page-number active">{{ ($pagination['page'] ?? 0) + 1 }}</a>
+                @if(($pagination['total_pages'] ?? 0) > 1)
+                    <span class="page-dots">...</span>
+                    <!-- Last page link to allow fast skipping to end -->
+                    <a href="{{ request()->fullUrlWithQuery(['page' => ($pagination['total_pages'] ?? 1) - 1]) }}" class="page-number">{{ $pagination['total_pages'] ?? 1 }}</a>
+                @endif
+
+                @if($pagination['has_next_page'] ?? false)
+                    <a href="{{ request()->fullUrlWithQuery(['page' => ($pagination['page'] ?? 0) + 1]) }}" class="page-link next-link">
+                        Keyingi
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </a>
+                @else
+                    <span class="page-link next-link" style="opacity: 0.5; cursor: not-allowed;">
+                        Keyingi
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </span>
+                @endif
             </div>
             
             <div class="total-records">
-                <span>( 600 ) ta undiruvchilar</span>
+                <span>( {{ $pagination['total_count'] ?? 0 }} ) ta undiruvchilar</span>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Image Modal -->
+<div id="imageModal" style="display: none; position: fixed; z-index: 9999; padding-top: 100px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.3s ease;">
+    <!-- Yopish tugmasi -->
+    <span onclick="closeImageModal()" style="position: absolute; top: 30px; right: 45px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; transition: color 0.3s;">&times;</span>
+    
+    <!-- Modal Rasm -->
+    <img id="imageModalContent" style="margin: auto; display: block; max-width: 90%; max-height: 80vh; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); transform: scale(0.8); transition: transform 0.3s ease;">
+</div>
+
 @endsection
 
 @push('scripts')
@@ -787,6 +687,79 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setupCalendar();
     updateDisplay();
+
+    // Auto-search logic (typing with debounce)
+    const searchInput = document.getElementById('searchInput');
+    const searchForm = document.getElementById('searchForm');
+    let searchTimeout;
+
+    if (searchInput) {
+        // Fokusni uzib qo'ymaslik
+        if (searchInput.value) {
+            searchInput.focus();
+            const val = searchInput.value;
+            searchInput.value = '';
+            searchInput.value = val;
+        }
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                // Sahifa yangilanishiga page=0 qilamiz, agarda qidirganida hamma list birinchisidan chiqishi uchun
+                const currentUrl = new URL(window.location.href);
+                if (this.value) {
+                    currentUrl.searchParams.set('search', this.value);
+                } else {
+                    currentUrl.searchParams.delete('search');
+                }
+                currentUrl.searchParams.delete('page');
+                window.location.href = currentUrl.toString();
+            }, 800); // 800ms kutiladi tanaffus uchun
+        });
+    }
+
+});
+
+// Image Modal Functions
+function openImageModal(imgSrc) {
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("imageModalContent");
+    
+    modal.style.display = "block";
+    modalImg.src = imgSrc;
+    
+    // Animate in
+    setTimeout(() => {
+        modal.style.opacity = "1";
+        modalImg.style.transform = "scale(1)";
+    }, 10);
+}
+
+function closeImageModal() {
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("imageModalContent");
+    
+    // Animate out
+    modal.style.opacity = "0";
+    modalImg.style.transform = "scale(0.8)";
+    
+    setTimeout(() => {
+        modal.style.display = "none";
+    }, 300); // 300ms transition vaqtiga mos
+}
+
+// Esc tugmasi bosilganda ham modallikni yopish
+document.addEventListener('keydown', function(event) {
+    if (event.key === "Escape") {
+        closeImageModal();
+    }
+});
+
+// Rasmdan tashqari hududga bosilganda ham modallikni yopish
+document.getElementById('imageModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        closeImageModal();
+    }
 });
 </script>
 @endpush
