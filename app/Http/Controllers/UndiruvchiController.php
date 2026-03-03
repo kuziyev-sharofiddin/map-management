@@ -26,6 +26,17 @@ class UndiruvchiController extends Controller
             $selectedStatusName = 'Oflayn';
         }
 
+        $selectedDate = $request->query('date');
+        $selectedDateText = 'Sanani tanlang';
+        if ($selectedDate) {
+            $monthsArr = ['yan', 'fev', 'mar', 'apr', 'may', 'iyn', 'iyl', 'avg', 'sen', 'okt', 'noy', 'dek'];
+            $timestamp = strtotime($selectedDate);
+            if ($timestamp) {
+                $monthIndex = (int)date('n', $timestamp) - 1;
+                $selectedDateText = date('j', $timestamp) . ' ' . $monthsArr[$monthIndex] . ' ' . date('Y', $timestamp);
+            }
+        }
+
         if ($token) {
             /** @var \Illuminate\Http\Client\Response $response */
             $response = Http::timeout(10)->withToken($token)->post("{$this->baseUrl}/branches/branch-list", [
@@ -45,7 +56,7 @@ class UndiruvchiController extends Controller
             }
         }
 
-        return view('undiruvchilar.index', compact('branches', 'selectedBranch', 'selectedBranchName', 'isActive', 'selectedStatusName'));
+        return view('undiruvchilar.index', compact('branches', 'selectedBranch', 'selectedBranchName', 'isActive', 'selectedStatusName', 'selectedDate', 'selectedDateText'));
     }
 
     public function map()

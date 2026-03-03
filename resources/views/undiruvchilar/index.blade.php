@@ -99,7 +99,9 @@
             <!-- Filter Filiallar -->
             <div class="status-filter-wrapper" id="branchFilterWrapper" style="margin-right: 12px;">
                 <button class="filter-btn" id="branchFilterBtn">
-                    <img src="{{ asset('assets/images/barchasi.svg') }}" width="20" height="20" alt="Barchasi">
+                    <svg width="24" height="24" viewBox="10 10 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M21 12C16.5678 12 13 15.7029 13 20.2389C13 22.4908 13.8783 24.9032 15.2835 26.757C16.6854 28.6066 18.6944 30 21 30C23.3056 30 25.3146 28.6066 26.7165 26.757C28.1217 24.9032 29 22.4908 29 20.2389C29 15.7029 25.4322 12 21 12ZM18.1657 19.6154C18.1657 18.035 19.4347 16.7538 21 16.7538C22.5653 16.7538 23.8343 18.035 23.8343 19.6154C23.8343 21.1958 22.5653 22.4769 21 22.4769C19.4347 22.4769 18.1657 21.1958 18.1657 19.6154ZM21 17.8615C20.0406 17.8615 19.2629 18.6468 19.2629 19.6154C19.2629 20.584 20.0406 21.3692 21 21.3692C21.9594 21.3692 22.7371 20.584 22.7371 19.6154C22.7371 18.6468 21.9594 17.8615 21 17.8615Z" fill="#7B48FF"/>
+                    </svg>
                     <span id="branchFilterText" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; vertical-align: middle;">{{ $selectedBranchName ?? 'Barchasi (Filiallar)' }}</span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -120,16 +122,16 @@
             <div class="status-filter-wrapper" id="statusFilterWrapper">
                 <button class="filter-btn" id="statusFilterBtn">
                     <img src="{{ asset('assets/images/barchasi.svg') }}" width="20" height="20" alt="Barchasi">
-                    <span id="statusFilterText">Barchasi</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <span id="statusFilterText" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; vertical-align: middle;">{{ $selectedStatusName ?? 'Barchasi (Holati)' }}</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
                         <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
                 </button>
                 
                 <div class="custom-status-dropdown" id="statusDropdown">
-                    <div class="status-item active" data-status="barchasi">Barchasi</div>
-                    <div class="status-item" data-status="onlayn">Onlayn</div>
-                    <div class="status-item" data-status="oflayn">Oflayn</div>
+                    <div class="status-item {{ !isset($isActive) ? 'active' : '' }}" data-active="">Barchasi (Holati)</div>
+                    <div class="status-item {{ isset($isActive) && $isActive === 'true' ? 'active' : '' }}" data-active="true">Onlayn</div>
+                    <div class="status-item {{ isset($isActive) && $isActive === 'false' ? 'active' : '' }}" data-active="false">Oflayn</div>
                 </div>
             </div>
 
@@ -137,7 +139,7 @@
             <div class="date-filter-wrapper" style="position: relative;">
                 <button class="filter-btn date-filter-btn" id="dateFilterBtn">
                     <img src="{{ asset('assets/images/calendar_icon.svg') }}" width="20" height="20" alt="Calendar">
-                    <span id="dateFilterText">Fev 1 - Fev 28 gacha</span>
+                    <span id="dateFilterText">{{ $selectedDateText ?? 'Sanani tanlang' }}</span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
@@ -145,8 +147,8 @@
 
                 <div class="custom-calendar-dropdown" id="customCalendarDropdown">
                     <div class="calendar-header">
-                        <div class="date-range-display" id="calendarDisplayRange">
-                            21 oct 2026 - dan / 6 noy 2026-gacha
+                        <div class="date-range-display" id="calendarDisplayRange" style="font-size: 14px; font-weight: 500;">
+                            {{ $selectedDateText ?? 'Sanani tanlang' }}
                         </div>
                         <div class="year-selector" id="yearSelectorBtn">
                             <span id="calendarYearText">2026</span>
@@ -159,10 +161,10 @@
                         </div>
                     </div>
                     <div class="calendar-body">
-                        <div class="months-sidebar" id="calendarMonths">
+                        <div class="months-sidebar" id="calendarMonths" style="display: none;">
                             <!-- Months populated by JS -->
                         </div>
-                        <div class="calendar-grid">
+                        <div class="calendar-grid" style="width: 100%;">
                             <div class="weekdays">
                                 <span>Du</span><span>Se</span><span>Cho</span><span>Pa</span><span>Ju</span><span>Sha</span><span>Ya</span>
                             </div>
@@ -172,7 +174,7 @@
                         </div>
                     </div>
                     <div class="calendar-footer">
-                        <div class="duration-display" id="calendarDuration">0 kunlik</div>
+                        <div class="duration-display" id="calendarDuration" style="display: none;">0 kunlik</div>
                         <div class="footer-actions">
                             <button class="reset-btn" id="calendarResetBtn">Qayta tiklash</button>
                             <button class="save-btn" id="calendarSaveBtn">Saqlash</button>
@@ -180,6 +182,17 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Barcha filtrlarni tozalash (Faqat parametrlar bo'lganda chiqadi) -->
+            @if(request()->hasAny(['branch_guid', 'is_active', 'date']))
+            <a href="{{ route('undiruvchilar.index') }}" class="filter-btn" style="text-decoration: none; color: #FF4D4D; border-color: #FF4D4D; display: flex; align-items: center; gap: 6px; box-sizing: border-box;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                </svg>
+                Tozalash
+            </a>
+            @endif
 
             <!-- Xarita Button -->
             <a href="{{ route('undiruvchilar.map') }}" class="primary-btn xarita-btn" style="text-decoration:none;">
@@ -472,11 +485,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const months = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'];
     const shortMonths = ['yan', 'fev', 'mar', 'apr', 'may', 'iyn', 'iyl', 'avg', 'sen', 'okt', 'noy', 'dek'];
     
-    let currentYear = 2026;
+    let currentYear = new Date().getFullYear();
     const startYear = 2015;
     let startDate = null;
     let endDate = null;
-    let hoverDate = null;
+
+    const initialDateStr = "{{ $selectedDate ?? '' }}";
+    if (initialDateStr) {
+        startDate = new Date(initialDateStr);
+        currentYear = startDate.getFullYear();
+    }
+    
+    calendarYearText.innerText = currentYear;
 
     // Populate years
     for (let y = startYear; y <= 2026; y++) {
@@ -551,7 +571,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // AJAX emas, to'g'ridan-to'g'ri GET surov
                 const branchGuid = item.getAttribute('data-guid') || '';
-                window.location.href = "{{ route('undiruvchilar.index') }}" + (branchGuid ? "?branch_guid=" + encodeURIComponent(branchGuid) : "");
+                const currentUrl = new URL(window.location.href);
+                if (branchGuid) {
+                    currentUrl.searchParams.set('branch_guid', branchGuid);
+                } else {
+                    currentUrl.searchParams.delete('branch_guid');
+                }
+                window.location.href = currentUrl.toString();
             });
         });
     }
@@ -579,6 +605,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 statusDropdown.classList.remove('active');
                 statusFilterBtn.classList.remove('active');
+
+                // AJAX emas, to'g'ridan-to'g'ri GET surov
+                const isActive = item.getAttribute('data-active') || '';
+                const currentUrl = new URL(window.location.href);
+                if (isActive) {
+                    currentUrl.searchParams.set('is_active', isActive);
+                } else {
+                    currentUrl.searchParams.delete('is_active');
+                }
+                window.location.href = currentUrl.toString();
             });
         });
     }
@@ -660,127 +696,92 @@ document.addEventListener('DOMContentLoaded', function() {
                 cell.appendChild(span);
 
                 cell.addEventListener('click', () => {
-                    if (!startDate || (startDate && endDate)) {
-                        startDate = new Date(cellTime);
-                        endDate = null;
-                    } else if (startDate && !endDate) {
-                        const cDate = new Date(cellTime);
-                        if (cDate < startDate) {
-                            endDate = startDate;
-                            startDate = cDate;
-                        } else {
-                            endDate = cDate;
-                        }
-                    }
+                    startDate = new Date(cellTime);
                     updateRangeClasses();
                     updateDisplay();
                 });
 
+                // Single date logic doesn't need hover
                 cell.addEventListener('mouseenter', () => {
-                    if (startDate && !endDate) {
-                        hoverDate = new Date(cellTime);
-                        updateRangeClasses();
-                    }
+                    // Mute hover
                 });
 
                 daysContainer.appendChild(cell);
             }
         });
 
-        // Intersection Observer for highlighting sidebar
+        // Intersection Observer for highlighting sidebar (muted)
         const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting) {
-                    const mIdx = entry.target.dataset.gridMonth;
-                    document.querySelectorAll('.month-item').forEach(el => el.classList.remove('active'));
-                    const activeEl = document.querySelector(`.month-item[data-idx="${mIdx}"]`);
-                    if(activeEl) {
-                        activeEl.classList.add('active');
-                        // Optional: auto scroll sidebar to keep active item in view
-                        monthsContainer.scrollTo({
-                            top: activeEl.offsetTop - monthsContainer.offsetTop - 50,
-                            behavior: 'smooth'
-                        });
-                    }
-                }
-            });
+            // Do nothing as sidebar is hidden
         }, { root: daysContainer, rootMargin: '0px 0px -80% 0px' });
 
         document.querySelectorAll('.grid-month-title').forEach(t => observer.observe(t));
+
+        // Scroll to the current month if initial date is set
+        if (startDate) {
+            setTimeout(() => {
+                const initialMonth = startDate.getMonth();
+                const el = daysContainer.querySelector(`[data-grid-month="${initialMonth}"]`);
+                if(el) {
+                    daysContainer.scrollTo({
+                        top: el.offsetTop - daysContainer.offsetTop,
+                        behavior: 'auto'
+                    });
+                }
+            }, 50);
+        }
     }
 
     daysContainer.addEventListener('mouseleave', () => {
-        if (startDate && !endDate) {
-            hoverDate = null;
-            updateRangeClasses();
-        }
+        // Mute range leave
     });
 
     function updateRangeClasses() {
         const cells = daysContainer.querySelectorAll('.day-cell:not(.empty)');
         const sTime = startDate ? startDate.getTime() : null;
-        const eTime = endDate ? endDate.getTime() : null;
-        const hTime = hoverDate ? hoverDate.getTime() : null;
 
         cells.forEach(cell => {
             const cTime = parseInt(cell.dataset.time);
             cell.classList.remove('selected-start', 'selected-end', 'in-range');
 
             if (sTime && cTime === sTime) cell.classList.add('selected-start');
-            if (eTime && cTime === eTime) cell.classList.add('selected-end');
-
-            if (sTime && eTime) {
-                if (cTime > sTime && cTime < eTime) {
-                    cell.classList.add('in-range');
-                }
-            } else if (sTime && hTime && !eTime) {
-                const min = Math.min(sTime, hTime);
-                const max = Math.max(sTime, hTime);
-                if (cTime > min && cTime < max) {
-                    cell.classList.add('in-range');
-                }
-                if (cTime === hTime) {
-                    cell.classList.add('selected-end');
-                }
-            }
         });
     }
 
     function updateDisplay() {
-        if (startDate && endDate) {
-            const startStr = `${startDate.getDate()} ${shortMonths[startDate.getMonth()]} ${startDate.getFullYear()}`;
-            const endStr = `${endDate.getDate()} ${shortMonths[endDate.getMonth()]} ${endDate.getFullYear()}`;
-            displayRange.innerHTML = `${startStr} - dan / ${endStr}-gacha`;
-            
-            const diffTime = Math.abs(endDate - startDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
-            displayDuration.innerText = `${diffDays} kunlik`;
-        } else if (startDate) {
+        if (startDate) {
             const startStr = `${startDate.getDate()} ${shortMonths[startDate.getMonth()]} ${startDate.getFullYear()}`;
             displayRange.innerHTML = startStr;
-            displayDuration.innerText = `1 kunlik`;
         } else {
-            displayRange.innerHTML = '21 oct 2026 - dan / 6 noy 2026-gacha';
-            displayDuration.innerText = `16 kunlik`;
+            displayRange.innerHTML = 'Sanani tanlang';
         }
     }
 
     resetBtn.addEventListener('click', () => {
         startDate = null;
-        endDate = null;
         updateDisplay();
         updateRangeClasses();
+        
+        // Optionally redirect directly on reset
+        // const currentUrl = new URL(window.location.href);
+        // currentUrl.searchParams.delete('date');
+        // window.location.href = currentUrl.toString();
     });
 
     saveBtn.addEventListener('click', () => {
-        if (startDate && endDate) {
-            const startStr = `${shortMonths[startDate.getMonth()]} ${startDate.getDate()}`;
-            const endStr = `${shortMonths[endDate.getMonth()]} ${endDate.getDate()}`;
-            filterText.innerText = `${startStr} - ${endStr} gacha`;
-            dropdown.classList.remove('active');
-        } else if (startDate) {
-            filterText.innerText = `${shortMonths[startDate.getMonth()]} ${startDate.getDate()}`;
-            dropdown.classList.remove('active');
+        if (startDate) {
+            const y = startDate.getFullYear();
+            const m = String(startDate.getMonth() + 1).padStart(2, '0');
+            const d = String(startDate.getDate()).padStart(2, '0');
+            const dateStr = `${y}-${m}-${d}`;
+            
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('date', dateStr);
+            window.location.href = currentUrl.toString();
+        } else {
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.delete('date');
+            window.location.href = currentUrl.toString();
         }
     });
 
