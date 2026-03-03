@@ -46,8 +46,42 @@
     </nav>
 
     <div class="sidebar-footer">
-        <a href="#" class="logout-btn" aria-label="Ilovadan chiqish">
-            <img src="{{ asset('assets/images/logout.svg') }}" alt="Ilovadan chiqish">
-        </a>
+        <form method="POST" action="{{ route('logout') }}" id="logoutForm">
+            @csrf
+            <button type="button" class="logout-btn" id="logoutTrigger" aria-label="Ilovadan chiqish">
+                <img src="{{ asset('assets/images/logout.svg') }}" alt="Ilovadan chiqish">
+            </button>
+        </form>
     </div>
 </aside>
+
+{{-- ========== LOGOUT MODAL ========== --}}
+<div class="logout-modal-overlay" id="logoutModalOverlay">
+    <div class="logout-modal">
+        <div class="logout-modal-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.9 2H5C3.34315 2 2 3.34315 2 5V19C2 20.6569 3.34315 22 5 22H8.9" stroke="#7B48FF" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M15 16.5L20 12M20 12L15 7.5M20 12H9" stroke="#7B48FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <h3 class="logout-modal-title">Ilovadan chiqish</h3>
+        <p class="logout-modal-desc">Tizimdan chiqmoqchimisiz?<br>Barcha faol sessiyalar yopiladi.</p>
+        <div class="logout-modal-actions">
+            <button type="button" class="logout-modal-cancel" id="logoutCancel">Bekor qilish</button>
+            <button type="button" class="logout-modal-confirm" id="logoutConfirm">Ha, chiqish</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const overlay    = document.getElementById('logoutModalOverlay');
+    const trigger    = document.getElementById('logoutTrigger');
+    const cancelBtn  = document.getElementById('logoutCancel');
+    const confirmBtn = document.getElementById('logoutConfirm');
+    const form       = document.getElementById('logoutForm');
+
+    trigger.addEventListener('click', () => overlay.classList.add('active'));
+    cancelBtn.addEventListener('click', () => overlay.classList.remove('active'));
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); });
+    confirmBtn.addEventListener('click', () => form.submit());
+</script>

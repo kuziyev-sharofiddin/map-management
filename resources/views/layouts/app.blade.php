@@ -27,12 +27,44 @@
                 <h1 class="page-title">@yield('page-title', 'Dashboard')</h1>
 
                 <div class="user-profile">
+                    @php
+                        $authUser = session('auth.user', []);
+                        $userName = $authUser['name'] ?? 'Mehmon';
+                        $userRole = $authUser['role'] ?? '';
+                        $userImage = $authUser['image'] ?? null;
+
+                        // Initials (SN ← Sharofiddin Kuziev)
+                        $nameParts = explode(' ', $userName);
+                        $initials = collect($nameParts)->take(2)->map(fn($p) => mb_strtoupper(mb_substr($p, 0, 1)))->implode('');
+
+                        // Rol matnini o'zbek tiliga o'girish
+                        $roleLabels = [
+                            'admin'            => 'Admin',
+                            'shopir_delivery'  => 'Haydovchi',
+                            'undiruvchi'       => 'Undiruvchi',
+                            'supervisor'       => 'Supervisor',
+                            'superadmin'       => 'Super Admin',
+                        ];
+                        $roleLabel = $roleLabels[$userRole] ?? ucfirst(str_replace('_', ' ', $userRole));
+                    @endphp
+
                     <div class="avatar">
-                        <img src="https://ui-avatars.com/api/?name=Shokirov+Nodir&background=random" alt="Admin Avatar">
+                        @if($userImage)
+                            <img src="{{ $userImage }}" alt="{{ $userName }}">
+                        @else
+                            <div style="
+                                width: 40px; height: 40px; border-radius: 50%;
+                                background: linear-gradient(135deg, #7B48FF, #a78bfa);
+                                display: flex; align-items: center; justify-content: center;
+                                color: #fff; font-weight: 700; font-size: 14px; letter-spacing: 0.5px;
+                            ">{{ $initials }}</div>
+                        @endif
                     </div>
                     <div class="user-details">
-                        <span class="user-name">Shokirov Nodir</span>
-                        <span class="user-role">Admin</span>
+                        <span class="user-name">{{ $userName }}</span>
+                        @if($roleLabel)
+                            <span class="user-role">{{ $roleLabel }}</span>
+                        @endif
                     </div>
                 </div>
             </header>
