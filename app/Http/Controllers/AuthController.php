@@ -55,11 +55,22 @@ class AuthController extends Controller
             ]);
 
             if ($response->successful() && $response->json('status')) {
+                $token = $response->json('data.token');
+
+                // /api/auth/me ga token bilan murojaat
+                /** @var \Illuminate\Http\Client\Response $meResponse */
+                $meResponse = Http::timeout(10)->withToken($token)->get("{$this->baseUrl}/me");
+                if ($meResponse->successful() && $meResponse->json('status')) {
+                    // Yangi ma'lumotlarni sessiyaga saqlaymiz
+                    session(['auth.user' => $meResponse->json('data')]);
+                }
+
                 $user = session('auth.user', []);
+                $userId = $user['user_id'] ?? $user['id'] ?? 0;
 
                 // Device token saqlash (web browser uchun)
                 Http::timeout(10)->post("{$this->baseUrl}/save_device_token", [
-                    'user_id' => $user['id'] ?? 0,
+                    'user_id' => $userId,
                     'device_info' => [
                         'device_system'     => 'Web',
                         'model'             => $request->header('User-Agent', 'Browser'),
@@ -69,7 +80,7 @@ class AuthController extends Controller
                     ],
                 ]);
 
-                session(['auth_token' => $response->json('data.token')]);
+                session(['auth_token' => $token]);
                 return redirect()->route('undiruvchilar.index');
             }
     
@@ -84,11 +95,12 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $user = session('auth.user', []);
+        $userId = $user['user_id'] ?? $user['id'] ?? 0;
 
         // API ga logout so'rov yuborish
         try {
             Http::timeout(10)->post("{$this->baseUrl}/logout", [
-                'user_id' => $user['id'] ?? 0,
+                'user_id' => $userId,
             ]);
         } catch (\Throwable) {
             // API xato qaytarsa ham chiqishni davom ettiramiz

@@ -72,7 +72,7 @@
         <!-- Card 4 -->
         <div class="stat-card">
             <div class="stat-header">
-                <span class="stat-title">Hududlar soni</span>
+                <span class="stat-title">Filiallar soni</span>
                 <div class="custom-icon-container">
                     <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect x="0.5" y="0.5" width="41" height="41" rx="11.5" fill="white"/>
@@ -82,7 +82,7 @@
                 </div>
             </div>
             <div class="stat-value-area">
-                <span class="stat-number">10</span><span class="stat-label">/ta</span>
+                <span class="stat-number">40</span><span class="stat-label">/ta</span>
             </div>
         </div>
     </div>

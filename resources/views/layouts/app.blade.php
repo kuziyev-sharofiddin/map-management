@@ -44,6 +44,7 @@
                             'undiruvchi'       => 'Undiruvchi',
                             'supervisor'       => 'Supervisor',
                             'superadmin'       => 'Super Admin',
+                            'client'           => 'Mijoz',
                         ];
                         $roleLabel = $roleLabels[$userRole] ?? ucfirst(str_replace('_', ' ', $userRole));
                     @endphp
