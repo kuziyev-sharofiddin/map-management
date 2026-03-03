@@ -15,11 +15,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const eyeOffIcon = toggleBtn.querySelector('.eye-off-icon');
 
         toggleBtn.addEventListener('click', function () {
-            // Toggle type attribute
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
 
-            // Toggle icons
             if (type === 'text') {
                 eyeIcon.classList.add('hidden');
                 eyeOffIcon.classList.remove('hidden');
@@ -36,172 +34,105 @@ document.addEventListener('DOMContentLoaded', function () {
     const phoneInput = document.getElementById('phone');
 
     if (phoneInput) {
-        // Set initial value if empty when focused
         phoneInput.addEventListener('focus', function () {
             if (this.value === '') {
                 this.value = '+998 ';
             }
         });
 
-        // Format on input
         phoneInput.addEventListener('input', function (e) {
             let value = this.value;
 
-            // Allow deleting the prefix if needed (though we try to keep it)
-            if (value.length < 5 && e.inputType === 'deleteContentBackward') {
-                // If they deleted part of the prefix, let them, but it'll validate to false
-                return;
+            // Raqamlardan boshqa barcha belgilarni tozalash
+            let digits = value.replace(/\D/g, '');
+
+            // "998" yozilgan taqdirda uni boshidan olib tashlaymiz (faqat qolgan raqamlar bilan ishlash uchun)
+            if (digits.startsWith('998')) {
+                digits = digits.substring(3);
             }
 
-            // Ensure prefix
-            if (!value.startsWith('+998')) {
-                // If they pasted a number starting with 998, or just typed a number
-                const digitsOnly = value.replace(/\D/g, '');
-                if (digitsOnly.startsWith('998')) {
-                    value = digitsOnly;
-                } else if (digitsOnly.length > 0) {
-                    value = '998' + digitsOnly;
-                } else {
-                    value = '+998 ';
-                }
-            } else {
-                // Extract just the digits after 998
-                value = '998' + value.substring(4).replace(/\D/g, '');
+            // Maksimal uzunlikni cheklash (9 ta raqam)
+            digits = digits.substring(0, 9);
+
+            // Yangi formatlangan qiymatni yaratish
+            let formattedValue = '+998 ';
+
+            if (digits.length > 0) {
+                formattedValue += '(' + digits.substring(0, 2);
             }
-
-            // Format appropriately
-            let formattedValue = '';
-
-            if (value.length > 0) {
-                formattedValue = '+';
-
-                // Add Country Code
-                if (value.length >= 3) {
-                    formattedValue += value.substring(0, 3);
-                } else {
-                    formattedValue += value;
-                }
-
-                // Add Operator Code
-                if (value.length > 3) {
-                    formattedValue += ' (' + value.substring(3, 5);
-                }
-
-                // Add Closing parenthesis
-                if (value.length >= 5) {
-                    formattedValue += ') ';
-                }
-
-                // Add first 3 digits
-                if (value.length > 5) {
-                    formattedValue += value.substring(5, 8);
-                }
-
-                // Add first hyphen
-                if (value.length >= 8) {
-                    formattedValue += '-';
-                }
-
-                // Add next 2 digits
-                if (value.length > 8) {
-                    formattedValue += value.substring(8, 10);
-                }
-
-                // Add second hyphen
-                if (value.length >= 10) {
-                    formattedValue += '-';
-                }
-
-                // Add final 2 digits
-                if (value.length > 10) {
-                    formattedValue += value.substring(10, 12);
-                }
+            if (digits.length >= 3) {
+                formattedValue += ') ' + digits.substring(2, 5);
+            }
+            if (digits.length >= 6) {
+                formattedValue += '-' + digits.substring(5, 7);
+            }
+            if (digits.length >= 8) {
+                formattedValue += '-' + digits.substring(7, 9);
             }
 
             this.value = formattedValue;
         });
 
-        // Prevent moving cursor before the prefix
         phoneInput.addEventListener('keydown', function (e) {
             const cursorPosition = this.selectionStart;
-            // Prevent backspace deleting prefix
-            if (e.key === 'Backspace' && cursorPosition <= 5) {
+            const selectionLength = this.selectionEnd - this.selectionStart;
+
+            // +998 ni o'chirib yuborishning oldini olish (agar matn belgilanmagan bo'lsa)
+            if (e.key === 'Backspace' && cursorPosition <= 5 && selectionLength === 0) {
                 e.preventDefault();
             }
         });
     }
 
     // ----------------------------------------------------------------------
-    // Basic Client-Side Validation (UI showcase)
+    // Form Submit — faqat validatsiya, haqiqiy submit amalga oshadi
     // ----------------------------------------------------------------------
-    const loginForm = document.getElementById('loginForm');
+    const loginForm = document.querySelector('.auth-form');
 
     if (loginForm) {
         loginForm.addEventListener('submit', function (e) {
-            e.preventDefault();
 
-            let isValid = true;
-
-            // Validate Phone
-            const phoneGroup = document.getElementById('phone-group');
-            const phoneError = document.getElementById('phone-error');
-            // Complete format: +998 (XX) XXX-XX-XX length is 19 characters
-            if (!phoneInput.value || phoneInput.value.length < 19) {
-                phoneGroup.classList.add('has-error');
-                phoneError.textContent = "Iltimos, telefon raqamni to'liq kiriting";
-                isValid = false;
-            } else {
-                phoneGroup.classList.remove('has-error');
+            // 1-QADAM: Telefon validatsiyasi
+            if (phoneInput) {
+                const phoneVal = phoneInput.value || '';
+                if (phoneVal.length < 19) {
+                    e.preventDefault();
+                    phoneInput.style.borderColor = 'var(--error, #ef4444)';
+                    phoneInput.focus();
+                    return;
+                }
+                phoneInput.style.borderColor = '';
             }
 
-            // Validate Password
-            const passwordGroup = document.getElementById('password-group');
-            const passwordError = document.getElementById('password-error');
-            if (!passwordInput.value) {
-                passwordGroup.classList.add('has-error');
-                passwordError.textContent = "Parolni kiritish shart";
-                isValid = false;
-            } else if (passwordInput.value.length < 6) {
-                passwordGroup.classList.add('has-error');
-                passwordError.textContent = "Parol kamida 6ta belgi bo'lishi kerak";
-                isValid = false;
-            } else {
-                passwordGroup.classList.remove('has-error');
+            // OTP validatsiyasi
+            const otpInput = document.getElementById('otp_code');
+            if (otpInput) {
+                const otpVal = otpInput.value.trim();
+                if (otpVal.length < 4) {
+                    e.preventDefault();
+                    otpInput.style.borderColor = 'var(--error, #ef4444)';
+                    otpInput.focus();
+                    return;
+                }
+                otpInput.style.borderColor = '';
             }
 
-            // Only submit if valid (Since this is UI only, just console log)
-            if (isValid) {
-                const btn = document.getElementById('submitBtn');
-                const originalText = btn.innerHTML;
-
+            // Tugmani yuklanmoqda holatiga o'tkazish
+            const btn = loginForm.querySelector('[type="submit"]');
+            if (btn) {
                 btn.disabled = true;
-                btn.innerHTML = 'Yuklanmoqda...';
-
-                // Simulate network request
-                setTimeout(() => {
-                    console.log('Form validated successfully!');
-                    console.log('Phone:', phoneInput.value);
-                    // Reset UI
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
-
-                    // Note: actual form submission would happen here in real app
-                    // this.submit();
-                }, 1000);
+                btn.textContent = 'Yuklanmoqda...';
             }
+
+            // Haqiqiy forma submit — e.preventDefault() CHAQIRILMAYDI
         });
 
-        // Clear errors on input
+        // Xatoni tozalash
         if (phoneInput) {
             phoneInput.addEventListener('input', function () {
-                document.getElementById('phone-group').classList.remove('has-error');
-            });
-        }
-
-        if (passwordInput) {
-            passwordInput.addEventListener('input', function () {
-                document.getElementById('password-group').classList.remove('has-error');
+                this.style.borderColor = '';
             });
         }
     }
+
 });

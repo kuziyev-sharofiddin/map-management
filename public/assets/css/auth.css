@@ -11,8 +11,8 @@
     /* Purple background */
     --card-bg: #F8F9FA;
     /* Softer, brighter off-white tone for outer edges */
-    --card-right-bg: #272141;
-    /* Dark right panel */
+    --card-right-bg: #FFFFFF;
+    /* White right panel */
     --form-bg: #FFFFFF;
     /* Pure, exceptionally white inner form */
     --text-primary: #111827;
@@ -111,13 +111,68 @@ body {
 }
 
 .auth-form-wrapper {
-    width: calc(100% - 240px);
-    /* Exactly 120px margin on each side (240px total) */
+    width: calc(100% - 60px);
     max-width: none;
-    /* Remove max-width limit to allow full expansion */
     min-width: 320px;
     display: flex;
     flex-direction: column;
+    padding: 280px 44px;
+    border-radius: 28px;
+    box-shadow:
+        0 0 0 8px rgba(139, 92, 246, 0.05),
+        0 0 0 16px rgba(139, 92, 246, 0.025),
+        0 8px 32px rgba(139, 92, 246, 0.08);
+    background: #fff;
+    position: relative;
+    /* Rotating border uchun kerak */
+    isolation: isolate;
+    overflow: hidden;
+}
+
+/* Aylanib yuradigan border (conic-gradient) */
+.auth-form-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 30px;
+    background: conic-gradient(from var(--angle, 0deg),
+            transparent 0deg,
+            transparent 60deg,
+            #8B5CF6 80deg,
+            #A78BFA 120deg,
+            #C4B5FD 160deg,
+            #A78BFA 200deg,
+            #8B5CF6 240deg,
+            transparent 260deg,
+            transparent 360deg);
+    animation: rotate-border 3s linear infinite;
+    z-index: -1;
+}
+
+/* Ichki oq fon (border effektini ko'rsatish uchun) */
+.auth-form-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 26px;
+    background: #ffffff;
+    z-index: -1;
+}
+
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes rotate-border {
+    from {
+        --angle: 0deg;
+    }
+
+    to {
+        --angle: 360deg;
+    }
 }
 
 .auth-header {
@@ -412,16 +467,45 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .graphic-container {
-    width: 400px;
-    height: 400px;
-    position: relative;
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Massive static scale to guarantee it stays extremely huge regardless of screen width */
-    transform: scale(2.2);
-    /* Establish the 3D camera distance */
-    perspective: 1000px;
+}
+
+.auth-logotip {
+    width: 120%;
+    max-width: 980px;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Logotip + brand text wrapper */
+.logotip-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logotip-brand {
+    text-align: center;
+}
+
+.logotip-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+}
+
+.logotip-subtitle {
+    font-size: 0.975rem;
+    color: var(--text-secondary);
+    font-weight: 400;
 }
 
 /* Wrapper that actually handles the 3D tilting */
