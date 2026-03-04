@@ -286,6 +286,20 @@ ymaps.ready(function () {
     });
     map.geoObjects.add(polyline);
 
+        // Custom Marker Layout with Glow
+        var MarkerLayout = ymaps.templateLayoutFactory.createClass(
+            '<div style="cursor: pointer; width: 44px; height: 44px; margin-top: -22px; margin-left: -22px; border-radius: 50%; box-shadow: 0 0 16px 4px $[properties.glowColor]; display: flex; align-items: center; justify-content: center; background: #fff; transition: all 0.2s;">' +
+                '<img src="$[properties.iconUrl]" style="width: 40px; height: 40px; border-radius: 50%; border: 3px solid $[properties.borderColor]; object-fit: cover; background: #eee;">' +
+            '</div>'
+        );
+
+        // ---- Active Avatar pin layout (Bigger and glowing) ----
+        var activeMarkerLayout = ymaps.templateLayoutFactory.createClass(
+            '<div style="cursor: pointer; width: 64px; height: 64px; margin-top: -32px; margin-left: -32px; border-radius: 50%; box-shadow: 0 0 24px 6px $[properties.glowColor]; display: flex; align-items: center; justify-content: center; background: #fff; z-index: 1000; position: relative; transition: all 0.2s;">' +
+                '<img src="$[properties.iconUrl]" style="width: 58px; height: 58px; border-radius: 50%; border: 4px solid $[properties.borderColor]; object-fit: cover; background: #eee;">' +
+            '</div>'
+        );
+
         // Build custom markers
         var placemarks = [];
         coords.forEach(function(c, i) {
@@ -358,12 +372,11 @@ ymaps.ready(function () {
                 </div>
             `;
 
-            // Custom Marker Layout with Glow
-            var MarkerLayout = ymaps.templateLayoutFactory.createClass(
-                '<div style="cursor: pointer; width: 44px; height: 44px; margin-top: -22px; margin-left: -22px; border-radius: 50%; box-shadow: 0 0 16px 4px $[properties.glowColor]; display: flex; align-items: center; justify-content: center; background: #fff;">' +
-                    '<img src="$[properties.iconUrl]" style="width: 40px; height: 40px; border-radius: 50%; border: 3px solid $[properties.borderColor]; object-fit: cover; background: #eee;">' +
-                '</div>'
-            );
+            // Ensure initial row active state matches the marker layout (first one active by default)
+            var currentLayout = (i === 0) ? activeMarkerLayout : MarkerLayout;
+            if (i === 0 && statuses[i]) {
+                glowColor = statuses[i] === 'green' ? 'rgba(33, 150, 243, 0.8)' : 'rgba(244, 67, 54, 0.8)';
+            }
 
             var pm = new ymaps.Placemark(c, {
                 balloonContentBody: customBalloonContent,
@@ -374,72 +387,53 @@ ymaps.ready(function () {
                 balloonPanelMaxMapArea: 0,
                 hideIconOnBalloonOpen: false,
                 balloonOffset: [0, -26],
-                iconLayout: MarkerLayout,
+                iconLayout: currentLayout,
                 iconShape: {
                     type: 'Rectangle',
-                    coordinates: [[-22, -22], [22, 22]]
-                }
+                    coordinates: [[-32, -32], [32, 32]] // Make the clickable area large enough
+                },
+                zIndex: (i === 0) ? 1000 : 0
             });
             map.geoObjects.add(pm);
             placemarks.push(pm);
             pm.events.add('click', function(){ setActive(i); });
         });
 
-        let activeIdx = 0;
-        var activeMarkerLayout = null;
-        var avatarPm = null;
-
-        if (coords.length > 0) {
-            // ---- Active Avatar pin layout (Bigger and glowing) ----
-            activeMarkerLayout = ymaps.templateLayoutFactory.createClass(
-                '<div style="cursor: pointer; width: 64px; height: 64px; margin-top: -32px; margin-left: -32px; border-radius: 50%; box-shadow: 0 0 24px 6px $[properties.glowColor]; display: flex; align-items: center; justify-content: center; background: #fff; z-index: 1000; position: relative;">' +
-                    '<img src="$[properties.iconUrl]" style="width: 58px; height: 58px; border-radius: 50%; border: 4px solid $[properties.borderColor]; object-fit: cover; background: #eee;">' +
-                '</div>'
-            );
-
-            var initialGlow = statuses[0] === 'green' ? 'rgba(33, 150, 243, 0.8)' : 'rgba(244, 67, 54, 0.8)';
-            var initialBorder = statuses[0] === 'green' ? '#2196F3' : '#F44336';
-            var initialImg = rows[0].dataset.image || 'https://ui-avatars.com/api/?background=random&color=fff&name=' + encodeURIComponent(rows[0].dataset.name.charAt(0));
-
-            avatarPm = new ymaps.Placemark(coords[0], {
-                iconUrl: initialImg,
-                glowColor: initialGlow,
-                borderColor: initialBorder
-            }, {
-                iconLayout: activeMarkerLayout,
-                iconShape: {
-                    type: 'Rectangle',
-                    coordinates: [[-32, -32], [32, 32]]
-                },
-                zIndex: 1000
-            });
-            
-            avatarPm.events.add('click', function() {
-                placemarks[activeIdx].balloon.open();
-            });
-            
-            map.geoObjects.add(avatarPm);
-        }
-
     // ---- Row click ----
     function setActive(idx) {
-        activeIdx = idx;
-        rows.forEach(function(r, i){ r.classList.toggle('active', i === idx); });
+        // Find the corresponding marker and row
+        var row = rows[idx];
+        var pm = placemarks[idx];
         
-        if (avatarPm) {
-            var newImg = rows[idx].dataset.image || 'https://ui-avatars.com/api/?background=random&color=fff&name=' + encodeURIComponent(rows[idx].dataset.name.charAt(0));
-            var newGlow = statuses[idx] === 'green' ? 'rgba(33, 150, 243, 0.8)' : 'rgba(244, 67, 54, 0.8)';
-            var newBorder = statuses[idx] === 'green' ? '#2196F3' : '#F44336';
+        // Toggle the active class visually on the sidebar
+        row.classList.toggle('active');
+        var isActive = row.classList.contains('active');
+        
+        // Define colors based on state
+        var newImg = row.dataset.image || 'https://ui-avatars.com/api/?background=random&color=fff&name=' + encodeURIComponent(row.dataset.name.charAt(0));
+        var newBorder = statuses[idx] === 'green' ? '#2196F3' : '#F44336';
+        var newGlow = statuses[idx] === 'green' ? 'rgba(33, 150, 243, 0.7)' : 'rgba(244, 67, 54, 0.7)';
+        
+        if (isActive) {
+            // Stronger glow for active
+            newGlow = statuses[idx] === 'green' ? 'rgba(33, 150, 243, 0.8)' : 'rgba(244, 67, 54, 0.8)';
             
-            avatarPm.geometry.setCoordinates(coords[idx]);
-            avatarPm.properties.set('iconUrl', newImg);
-            avatarPm.properties.set('glowColor', newGlow);
-            avatarPm.properties.set('borderColor', newBorder);
-        }
+            // Switch layout to large active avatar
+            pm.options.set('iconLayout', activeMarkerLayout);
+            pm.options.set('zIndex', 1000);
+            pm.properties.set('glowColor', newGlow);
 
-        map.panTo(coords[idx], { flying: true, duration: 600 });
-        map.setZoom(15, { smooth: true, duration: 400 });
-        placemarks[idx].balloon.open();
+            // Pan map to chosen marker and open its balloon
+            map.panTo(coords[idx], { flying: true, duration: 600 });
+            // map.setZoom(15, { smooth: true, duration: 400 }); // Optional: Re-enable zoom if wanted
+            pm.balloon.open();
+        } else {
+            // Revert layout to smaller avatar
+            pm.options.set('iconLayout', MarkerLayout);
+            pm.options.set('zIndex', 0);
+            pm.properties.set('glowColor', newGlow);
+            pm.balloon.close();
+        }
     }
     rows.forEach(function(r, i){ r.addEventListener('click', function(){ setActive(i); }); });
 
