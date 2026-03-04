@@ -167,6 +167,8 @@ class UndiruvchiController extends Controller
                 'has_next_page' => false,
                 'has_previous_page' => false,
             ];
+            $locationLimit = (int) $request->query('location_limit', 1);
+            $locationIndex = [];
 
             if ($token) {
                 // Branches from API
@@ -225,11 +227,82 @@ class UndiruvchiController extends Controller
                         'has_previous_page' => $usersResponse->json('has_previous_page') ?? false,
                     ];
                 }
+
+                // ---- Faqat URL da tanlangan userlarni lokatsiyasini olish ----
+                // Sidebar da user tanlanganda URL da ?selected_users[]=ID bo'ladi
+                $selectedUserIds = array_values(array_filter(
+                    array_map('intval', $request->query('selected_users', []))
+                ));
+
+                if (!empty($selectedUserIds)) {
+                    $locResponse = app(\App\Services\ApiService::class)->client()
+                        ->asJson()
+                        ->post('http://location-undiruv.garant.uz/api/locations/multiple_users', [
+                            'user_ids'   => $selectedUserIds,
+                            'date'       => $dateApi ?: date('Y-m-d'),
+                            'start_hour' => $startHour ?: null,
+                            'end_hour'   => $endHour   ?: null,
+                            'limit'      => $locationLimit,
+                            'is_active'  => false,
+                            'is_stopped' => null,
+                        ]);
+
+                    if ($locResponse->successful() && $locResponse->json('status')) {
+                        foreach ($locResponse->json('data') ?? [] as $userData) {
+                            $uid = $userData['user_id'] ?? $userData['id'] ?? null;
+                            if ($uid) {
+                                $locationIndex[(string)$uid] = array_map(fn($l) => [
+                                    'lat'     => $l['latitude'],
+                                    'lng'     => $l['longitude'],
+                                    'time'    => $l['recorded_at'] ?? null,
+                                    'stopped' => $l['stopped_time'] ?? null,
+                                ], $userData['locations'] ?? []);
+                            }
+                        }
+                    }
+                }
             }
 
-            return view('undiruvchilar.map', compact('branches', 'selectedBranch', 'selectedBranchName', 'isActive', 'selectedStatusName', 'selectedDate', 'selectedDateText', 'startHour', 'endHour', 'selectedTimeText', 'usersData', 'pagination', 'search'));
+            return view('undiruvchilar.map', compact(
+                'branches', 'selectedBranch', 'selectedBranchName',
+                'isActive', 'selectedStatusName',
+                'selectedDate', 'selectedDateText',
+                'startHour', 'endHour', 'selectedTimeText',
+                'usersData', 'pagination', 'search',
+                'locationLimit', 'locationIndex'
+            ));
         } catch (\Throwable $e) {
             return back()->with('error', "Xarita yuklanishida xatolik yuz berdi: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Map page AJAX ko'p userlar lokatsiyasini (yo'nalishni) olish
+     */
+    public function getMultipleLocations(\Illuminate\Http\Request $request)
+    {
+        try {
+            $payload = [
+                'user_ids' => $request->json('user_ids', []),
+                'date' => $request->json('date'),
+                'start_hour' => $request->json('start_hour'),
+                'end_hour' => $request->json('end_hour'),
+                'limit' => $request->json('limit', 0),
+                'is_active' => $request->json('is_active', false) === 'true' || $request->json('is_active', false) === true,
+                'is_stopped' => $request->json('is_stopped', null)
+            ];
+
+            $response = app(\App\Services\ApiService::class)->client()
+                ->post("http://location-undiruv.garant.uz/api/locations/multiple_users", $payload);
+
+            if ($response->successful()) {
+                return response()->json($response->json());
+            }
+
+            return response()->json(['status' => false, 'message' => 'API Error', 'details' => $response->body()], 400);
+
+        } catch (\Throwable $e) {
+            return response()->json(['status' => false, 'message' => 'Tarmoq xatosi: ' . $e->getMessage()], 500);
         }
     }
 }

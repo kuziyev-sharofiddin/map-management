@@ -167,7 +167,7 @@
                 <div class="map-switch-wrapper" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: #FFF; border: 1px solid #EFEFEF; border-radius: 12px; margin-top: 8px;">
                     <span style="font-size: 16px; font-weight: 500; color: #151515; font-family: 'Inter', sans-serif;">Yo'nalishlar orqali</span>
                     <label class="switch-custom" style="position: relative; display: inline-block; width: 44px; height: 24px; margin: 0;">
-                        <input type="checkbox" id="mapDirectionSwitch" style="opacity: 0; width: 0; height: 0;">
+                        <input type="checkbox" id="mapDirectionSwitch" style="opacity: 0; width: 0; height: 0;" {{ ($locationLimit ?? 1) === 0 ? 'checked' : '' }}>
                         <span class="slider-custom" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #E6E4EA; transition: .3s; border-radius: 24px;"></span>
                         <span class="slider-circle" style="position: absolute; content: ''; height: 20px; width: 20px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></span>
                     </label>
@@ -188,11 +188,29 @@
         <div class="map-person-list" id="mapPersonList">
             @forelse($usersData ?? [] as $i => $user)
             @php
-                $statusStr = (isset($user['is_active']) && $user['is_active']) ? 'green' : 'orange';
-                // Koordinatalar bo'lmasa test uchun fallback (xarita ishlashi uchun)
-                $lat = !empty($user['latitude']) ? $user['latitude'] : (!empty($user['map_location_lat']) ? $user['map_location_lat'] : 41.311081 + ($i * 0.005));
-                $lng = !empty($user['longitude']) ? $user['longitude'] : (!empty($user['map_location_lng']) ? $user['map_location_lng'] : 69.240562 + ($i * 0.005));
+                $uId = $user['user_id'] ?? $user['id'] ?? null;
+                $isUserSelected = in_array($uId, $selectedUserIds ?? []);
                 
+                // Agar userlar tanlangan bo'lsa va bu user tanlanmagan bo'lsa, uni xaritada umuman chiqarmaymiz
+                if (!empty($selectedUserIds) && !$isUserSelected) continue;
+
+                $statusStr = (isset($user['is_active']) && $user['is_active']) ? 'green' : 'orange';
+                
+                // Haqiqiy lokatsiya bo'yicha marker qo'yamiz.
+                // Dummy fallback kerak emas, aks holda hamma diagonal bo'lib qoladi.
+                // Lekin agar umuman koordinata bo'lmasa, marker qo'shilmaydi.
+                $lat = $user['latitude'] ?? $user['map_location_lat'] ?? null;
+                $lng = $user['longitude'] ?? $user['map_location_lng'] ?? null;
+                
+                // Agar tanlangan user bo'lsa, uning xaritasini $locationIndex dan olamiz (oxirgi joylashuvi)
+                if ($isUserSelected && isset($locationIndex[$uId]) && !empty($locationIndex[$uId])) {
+                    $lastL = end($locationIndex[$uId]);
+                    $lat = $lastL['lat'];
+                    $lng = $lastL['lng'];
+                }
+
+                if (!$lat || !$lng) continue; // Koordinatasi yo'q odam xaritaga tushmaydi!
+
                 $phone = $user['phone'] ?? '';
                 $formattedPhone = $phone;
                 if (strlen($phone) >= 9) {
@@ -205,7 +223,8 @@
                 
                 $imageUrl = !empty($user['image']) ? $user['image'] : 'https://ui-avatars.com/api/?name=' . urlencode($user['name'] ?? 'A') . '&background=7B48FF&color=fff';
             @endphp
-            <div class="map-person-item {{ $i === 0 ? 'active' : '' }}"
+            <div class="map-person-item {{ ($i === 0 && empty($selectedUserIds)) || $isUserSelected ? 'active' : '' }}"
+                 data-id="{{ $uId }}"
                  data-lat="{{ $lat }}" data-lng="{{ $lng }}"
                  data-name="{{ $user['name'] ?? 'Noma\'lum' }}" data-status="{{ $statusStr }}"
                  data-phone="{{ $formattedPhone }}" data-image="{{ $imageUrl }}">
@@ -238,6 +257,15 @@
 @endsection
 
 @push('scripts')
+<script>
+    window.appParams = {
+        csrfToken: '{{ csrf_token() }}',
+        locationsUrl: '{{ route("undiruvchilar.locations") }}',
+        selectedDate: '{{ $selectedDate ?? date("Y-m-d") }}',
+        startHour: '{{ $startHour ?? "" }}',
+        endHour: '{{ $endHour ?? "" }}'
+    };
+</script>
 <script src="https://api-maps.yandex.ru/2.1/?apikey={{ env('YANDEX_MAPS_API_KEY') }}&lang=uz_UZ" type="text/javascript"></script>
 <script>
 ymaps.ready(function () {
@@ -277,14 +305,7 @@ ymaps.ready(function () {
         map.setZoom(z - 1, { smooth: true, duration: 200 });
     });
 
-    // ---- Route polyline ----
-    var polyline = new ymaps.Polyline(coords, {}, {
-        strokeColor: '#333333',
-        strokeWidth: 2,
-        strokeStyle: 'dash',
-        strokeOpacity: 0.8,
-    });
-    map.geoObjects.add(polyline);
+    // ---- Route polyline (Removed: was incorrectly connecting all user markers together) ----
 
         // Custom Marker Layout with Glow
         var MarkerLayout = ymaps.templateLayoutFactory.createClass(
@@ -396,46 +417,91 @@ ymaps.ready(function () {
             });
             map.geoObjects.add(pm);
             placemarks.push(pm);
-            pm.events.add('click', function(){ setActive(i); });
         });
 
-    // ---- Row click ----
-    function setActive(idx) {
-        // Find the corresponding marker and row
-        var row = rows[idx];
-        var pm = placemarks[idx];
-        
-        // Toggle the active class visually on the sidebar
-        row.classList.toggle('active');
-        var isActive = row.classList.contains('active');
-        
-        // Define colors based on state
-        var newImg = row.dataset.image || 'https://ui-avatars.com/api/?background=random&color=fff&name=' + encodeURIComponent(row.dataset.name.charAt(0));
-        var newBorder = statuses[idx] === 'green' ? '#2196F3' : '#F44336';
-        var newGlow = statuses[idx] === 'green' ? 'rgba(33, 150, 243, 0.7)' : 'rgba(244, 67, 54, 0.7)';
-        
-        if (isActive) {
-            // Stronger glow for active
-            newGlow = statuses[idx] === 'green' ? 'rgba(33, 150, 243, 0.8)' : 'rgba(244, 67, 54, 0.8)';
-            
-            // Switch layout to large active avatar
-            pm.options.set('iconLayout', activeMarkerLayout);
-            pm.options.set('zIndex', 1000);
-            pm.properties.set('glowColor', newGlow);
+        // ---- Location index from server (preloaded, no extra AJAX) ----
+        var locationIndex = {!! json_encode($locationIndex ?? []) !!};
+        var locationLimit = {{ $locationLimit ?? 1 }};
+        var drawnPolylines = {};
 
-            // Pan map to chosen marker and open its balloon
-            map.panTo(coords[idx], { flying: true, duration: 600 });
-            // map.setZoom(15, { smooth: true, duration: 400 }); // Optional: Re-enable zoom if wanted
-            pm.balloon.open();
-        } else {
-            // Revert layout to smaller avatar
-            pm.options.set('iconLayout', MarkerLayout);
-            pm.options.set('zIndex', 0);
-            pm.properties.set('glowColor', newGlow);
-            pm.balloon.close();
+        // helper: toggling polyline for a given userId
+        function togglePolyline(idx) {
+            var userId = rows[idx].dataset.id;
+            if (!userId) return;
+
+            console.log('[Polyline] userId:', userId, 'locs:', (locationIndex[userId] || []).length, 'allKeys:', Object.keys(locationIndex));
+
+            if (drawnPolylines[userId]) {
+                map.geoObjects.remove(drawnPolylines[userId]);
+                delete drawnPolylines[userId];
+                return;
+            }
+
+            var locs = locationIndex[userId] || [];
+            if (locs.length > 1) {
+                var lineCoords = locs.map(function(l) { return [l.lat, l.lng]; });
+                var poly = new ymaps.Polyline(lineCoords, {}, {
+                    strokeColor: statuses[idx] === 'green' ? '#2196F3' : '#F44336',
+                    strokeWidth: 4,
+                    strokeOpacity: 0.85
+                });
+                map.geoObjects.add(poly);
+                drawnPolylines[userId] = poly;
+                // Pan to the last location point
+                map.panTo(lineCoords[lineCoords.length - 1], { flying: true, duration: 400 });
+            } else {
+                console.warn('[Polyline] No location data for userId:', userId);
+            }
         }
+
+        // Marker click: toggle polyline + open balloon
+        coords.forEach(function(c, i) {
+            placemarks[i].events.add('click', function() {
+                togglePolyline(i);
+                var row = rows[i];
+                var pm = placemarks[i];
+                var isActive = !pm._drawn; // simple toggle flag
+                pm._drawn = !pm._drawn;
+
+                var newGlow = statuses[i] === 'green' ? 'rgba(33, 150, 243, 0.8)' : 'rgba(244, 67, 54, 0.8)';
+                pm.options.set('iconLayout', activeMarkerLayout);
+                pm.options.set('zIndex', 1000);
+                pm.properties.set('glowColor', newGlow);
+                pm.balloon.open();
+            });
+        });
+
+    // ---- Row click: URL orqali navigate ----
+    function setActive(idx) {
+        var row = rows[idx];
+        var userId = row.dataset.id;
+        if (!userId) return;
+
+        var currentUrl = new URL(window.location.href);
+        // Get current selected_users list from URL
+        var selected = currentUrl.searchParams.getAll('selected_users[]');
+
+        if (selected.includes(userId)) {
+            // Deselect: remove from list
+            currentUrl.searchParams.delete('selected_users[]');
+            selected.filter(id => id !== userId).forEach(id => currentUrl.searchParams.append('selected_users[]', id));
+        } else {
+            // Select: add to list
+            currentUrl.searchParams.append('selected_users[]', userId);
+        }
+
+        window.location.href = currentUrl.toString();
     }
+
+    // Attach listener to individual rows
     rows.forEach(function(r, i){ r.addEventListener('click', function(){ setActive(i); }); });
+
+    // Listener for Switch: toggle location_limit URL param
+    document.getElementById('mapDirectionSwitch').addEventListener('change', function() {
+        var currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('location_limit', this.checked ? '0' : '1');
+        window.location.href = currentUrl.toString();
+    });
 
     // ---- Tabs ----
     document.querySelectorAll('.map-tab').forEach(function(tab) {
