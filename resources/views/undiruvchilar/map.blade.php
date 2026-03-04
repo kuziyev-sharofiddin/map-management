@@ -10,22 +10,6 @@
 
 @section('content')
 
-@php
-$people = [
-    ['name'=>'Karimova Shahlo', 'status'=>'orange', 'lat'=>41.3200, 'lng'=>69.2450],
-    ['name'=>'Usmonov Jamshid', 'status'=>'orange', 'lat'=>41.3150, 'lng'=>69.2490],
-    ['name'=>'Nodirova Nodiraxon', 'status'=>'orange', 'lat'=>41.3100, 'lng'=>69.2540],
-    ['name'=>'Rustamov Alisher', 'status'=>'orange', 'lat'=>41.3050, 'lng'=>69.2590],
-    ['name'=>'Otaxonov Murod', 'status'=>'orange', 'lat'=>41.3000, 'lng'=>69.2640],
-    ['name'=>'Nodirov Shokirbek',  'status'=>'green',  'lat'=>41.2950, 'lng'=>69.2690],
-    ['name'=>'Qosimov Bekzod',  'status'=>'green',  'lat'=>41.2900, 'lng'=>69.2740],
-    ['name'=>'Yuldasheva Malika',  'status'=>'green',  'lat'=>41.2850, 'lng'=>69.2790],
-    ['name'=>'Ismailov Doston',  'status'=>'green',  'lat'=>41.2800, 'lng'=>69.2840],
-    ['name'=>'Tursunova Feruza',  'status'=>'green',  'lat'=>41.2750, 'lng'=>69.2890],
-    ['name'=>'Xusanov Jasur',  'status'=>'green',  'lat'=>41.2700, 'lng'=>69.2940],
-];
-@endphp
-
 <div class="map-page-wrapper">
 
     {{-- LEFT PANEL --}}
@@ -44,42 +28,83 @@ $people = [
 
             <div class="map-search-box">
                 <img src="{{ asset('assets/images/search.svg') }}" class="search-icon" width="20" height="20" alt="Qidiruv">
-                <input type="text" id="mapSearchInput" placeholder="Undiruvchini qidirish...">
+                <input type="text" id="mapSearchInput" value="{{ $search ?? '' }}" placeholder="Undiruvchini qidirish..." autocomplete="off">
             </div>
 
             <div class="map-filter-row">
+                <!-- Filter Filiallar -->
+                <div class="status-filter-wrapper" id="mapBranchFilterWrapper" style="position: relative; margin-bottom: 8px;">
+                    <button class="map-filter-btn" id="mapBranchFilterBtn" style="justify-content: flex-start;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+                            <path d="M20 11.1755C20 15.6907 16.4183 21 12 21C7.58172 21 4 15.6907 4 11.1755C4 6.66029 7.58172 3 12 3C16.4183 3 20 6.66029 20 11.1755Z" fill="#7B48FF"/>
+                            <path d="M9.5 10.5C9.5 9.11929 10.6193 8 12 8C13.3807 8 14.5 9.11929 14.5 10.5C14.5 11.8807 13.3807 13 12 13C10.6193 13 9.5 11.8807 9.5 10.5Z" fill="#FFFFFF"/>
+                        </svg>
+                        <span class="map-filter-btn-label" id="mapBranchFilterText" style="flex: 1; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; vertical-align: middle;">{{ $selectedBranchName ?? 'Barchasi (Filiallar)' }}</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="map-filter-btn-arrow"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    
+                    <div class="custom-calendar-dropdown" id="mapBranchDropdown" style="max-height: 300px; overflow-y: auto; padding: 12px; display: none; margin-top: 8px;">
+                        <style>
+                            .map-branch-item {
+                                padding: 10px 14px;
+                                border-radius: 8px;
+                                cursor: pointer;
+                                font-size: 15px;
+                                font-weight: 500;
+                                color: #807B89;
+                                transition: all 0.2s;
+                                margin-bottom: 4px;
+                            }
+                            .map-branch-item:hover {
+                                background: #F9F8FF;
+                                color: #151515;
+                            }
+                            .map-branch-item.active {
+                                background: #F4F0FF;
+                                color: #7B48FF;
+                            }
+                        </style>
+                        <div class="map-branch-item {{ empty($selectedBranch) ? 'active' : '' }}" data-guid="">Barchasi (Filiallar)</div>
+                        @if(isset($branches) && is_array($branches))
+                            @foreach($branches as $branch)
+                                <div class="map-branch-item {{ ($selectedBranch ?? '') == ($branch['branch_guid'] ?? '') ? 'active' : '' }}" data-guid="{{ $branch['branch_guid'] ?? '' }}">{{ $branch['name'] ?? 'Noma\'lum' }}</div>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+
                 <div class="date-filter-wrapper" style="position: relative;">
                     <button class="map-filter-btn" id="mapDateFilterBtn">
                         <img src="{{ asset('assets/images/calendar_icon.svg') }}" width="20" height="20" alt="Calendar">
-                        <span class="map-filter-btn-label" id="mapDateFilterText">Fev 1 - Fev 28 gacha</span>
+                        <span class="map-filter-btn-label" id="mapDateFilterText">{{ $selectedDateText }}</span>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="map-filter-btn-arrow"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
 
-                    <div class="custom-calendar-dropdown" id="mapCalendarDropdown">
-                        <div class="calendar-header">
-                            <div class="date-range-display" id="mapCalendarDisplayRange">
-                                21 oct 2026 - dan / 6 noy 2026-gacha
-                            </div>
-                            <div class="year-selector" id="mapYearSelectorBtn">
-                                <span id="mapCalendarYearText">2026</span>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#151515" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                </svg>
-                                <div class="year-dropdown" id="mapYearDropdown"></div>
-                            </div>
+                <div class="custom-calendar-dropdown" id="mapCalendarDropdown">
+                    <div class="calendar-header">
+                        <div class="date-range-display" id="mapCalendarDisplayRange" style="font-size: 14px; font-weight: 500;">
+                            {{ $selectedDateText }}
                         </div>
-                        <div class="calendar-body">
-                            <div class="months-sidebar" id="mapCalendarMonths"></div>
-                            <div class="calendar-grid">
-                                <div class="weekdays">
-                                    <span>Du</span><span>Se</span><span>Cho</span><span>Pa</span><span>Ju</span><span>Sha</span><span>Ya</span>
-                                </div>
-                                <div class="days-grid" id="mapCalendarDays"></div>
-                            </div>
+                        <div class="year-selector" id="mapYearSelectorBtn">
+                            <span id="mapCalendarYearText">2026</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#151515" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                            <div class="year-dropdown" id="mapYearDropdown"></div>
                         </div>
-                        <div class="calendar-footer">
-                            <div class="duration-display" id="mapCalendarDuration">0 kunlik</div>
-                            <div class="footer-actions">
+                    </div>
+                    <div class="calendar-body">
+                        <div class="months-sidebar" id="mapCalendarMonths" style="display: none;"></div>
+                        <div class="calendar-grid" style="width: 100%;">
+                            <div class="weekdays">
+                                <span>Du</span><span>Se</span><span>Cho</span><span>Pa</span><span>Ju</span><span>Sha</span><span>Ya</span>
+                            </div>
+                            <div class="days-grid" id="mapCalendarDays"></div>
+                        </div>
+                    </div>
+                    <div class="calendar-footer">
+                        <div class="duration-display" id="mapCalendarDuration" style="display: none;">0 kunlik</div>
+                        <div class="footer-actions">
                                 <button class="reset-btn" id="mapCalendarResetBtn">Qayta tiklash</button>
                                 <button class="save-btn" id="mapCalendarSaveBtn">Saqlash</button>
                             </div>
@@ -93,7 +118,7 @@ $people = [
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M11.9466 2H12.0534C14.2007 1.99999 15.8835 1.99998 17.1966 2.17651C18.5405 2.3572 19.601 2.73426 20.4334 3.56664C21.2657 4.39902 21.6428 5.45951 21.8235 6.80345C22 8.11646 22 9.79929 22 11.9466V12.0534C22 14.2007 22 15.8835 21.8235 17.1966C21.6428 18.5405 21.2657 19.601 20.4334 20.4334C19.601 21.2657 18.5405 21.6428 17.1966 21.8235C15.8835 22 14.2007 22 12.0534 22H11.9466C9.79929 22 8.11646 22 6.80345 21.8235C5.45951 21.6428 4.39902 21.2657 3.56664 20.4334C2.73426 19.601 2.3572 18.5405 2.17651 17.1966C1.99998 15.8835 1.99999 14.2007 2 12.0534V11.9466C1.99999 9.79928 1.99998 8.11646 2.17651 6.80345C2.3572 5.45951 2.73426 4.39902 3.56664 3.56664C4.39902 2.73426 5.45951 2.3572 6.80345 2.17651C8.11646 1.99998 9.79928 1.99999 11.9466 2ZM6.98937 3.55941C5.80016 3.7193 5.08321 4.02339 4.5533 4.5533C4.02339 5.08321 3.7193 5.80016 3.55941 6.98937C3.39683 8.19866 3.39535 9.7877 3.39535 12C3.39535 14.2123 3.39683 15.8013 3.55941 17.0106C3.7193 18.1998 4.02339 18.9168 4.5533 19.4467C5.08321 19.9766 5.80016 20.2807 6.98937 20.4406C8.19866 20.6032 9.7877 20.6047 12 20.6047C14.2123 20.6047 15.8013 20.6032 17.0106 20.4406C18.1998 20.2807 18.9168 19.9766 19.4467 19.4467C19.9766 18.9168 20.2807 18.1998 20.4406 17.0106C20.6032 15.8013 20.6047 14.2123 20.6047 12C20.6047 9.7877 20.6032 8.19866 20.4406 6.98937C20.2807 5.80016 19.9766 5.08321 19.4467 4.5533C18.9168 4.02339 18.1998 3.7193 17.0106 3.55941C15.8013 3.39683 14.2123 3.39535 12 3.39535C9.7877 3.39535 8.19866 3.39683 6.98937 3.55941ZM12 7.5814C12.3853 7.5814 12.6977 7.89376 12.6977 8.27907V11.711L14.8189 13.8323C15.0914 14.1047 15.0914 14.5465 14.8189 14.8189C14.5465 15.0914 14.1047 15.0914 13.8323 14.8189L11.8472 12.8339C11.5784 12.565 11.4439 12.4306 11.3731 12.2597C11.3023 12.0887 11.3023 11.8986 11.3023 11.5184V8.27907C11.3023 7.89376 11.6147 7.5814 12 7.5814Z" fill="#7B48FF"/>
                         </svg>
-                        <span class="map-filter-btn-label" id="mapTimeFilterText">12:45 - 00:00 gacha</span>
+                        <span class="map-filter-btn-label" id="mapTimeFilterText">{{ $selectedTimeText }}</span>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="map-filter-btn-arrow"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
 
@@ -137,25 +162,60 @@ $people = [
                         </div>
                     </div>
                 </div>
+
+                {{-- DIRECTION SWITCH (Ahamiyatsiz, hozircha zapros ketmaydi) --}}
+                <div class="map-switch-wrapper" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: #FFF; border: 1px solid #EFEFEF; border-radius: 12px; margin-top: 8px;">
+                    <span style="font-size: 16px; font-weight: 500; color: #151515; font-family: 'Inter', sans-serif;">Yo'nalishlar orqali</span>
+                    <label class="switch-custom" style="position: relative; display: inline-block; width: 44px; height: 24px; margin: 0;">
+                        <input type="checkbox" id="mapDirectionSwitch" style="opacity: 0; width: 0; height: 0;">
+                        <span class="slider-custom" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #E6E4EA; transition: .3s; border-radius: 24px;"></span>
+                        <span class="slider-circle" style="position: absolute; content: ''; height: 20px; width: 20px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></span>
+                    </label>
+                    <style>
+                        input:checked + .slider-custom { background-color: #45BF84 !important; }
+                        input:checked ~ .slider-circle { transform: translateX(20px); }
+                    </style>
+                </div>
             </div>
         </div>{{-- /map-top-card --}}
 
         <div class="map-tabs">
-            <button class="map-tab active" data-tab="all">Barchasi</button>
-            <button class="map-tab" data-tab="online">Onlayn</button>
-            <button class="map-tab" data-tab="offline">Oflayn</button>
+            <button class="map-tab {{ empty($isActive) ? 'active' : '' }}" data-tab="all">Barchasi</button>
+            <button class="map-tab {{ ($isActive === 'true') ? 'active' : '' }}" data-tab="true">Onlayn</button>
+            <button class="map-tab {{ ($isActive === 'false') ? 'active' : '' }}" data-tab="false">Oflayn</button>
         </div>
 
         <div class="map-person-list" id="mapPersonList">
-            @foreach($people as $i => $p)
+            @forelse($usersData ?? [] as $i => $user)
+            @php
+                $statusStr = (isset($user['is_active']) && $user['is_active']) ? 'green' : 'orange';
+                // Koordinatalar bo'lmasa test uchun fallback (xarita ishlashi uchun)
+                $lat = !empty($user['latitude']) ? $user['latitude'] : (!empty($user['map_location_lat']) ? $user['map_location_lat'] : 41.311081 + ($i * 0.005));
+                $lng = !empty($user['longitude']) ? $user['longitude'] : (!empty($user['map_location_lng']) ? $user['map_location_lng'] : 69.240562 + ($i * 0.005));
+                
+                $phone = $user['phone'] ?? '';
+                $formattedPhone = $phone;
+                if (strlen($phone) >= 9) {
+                    $code = substr($phone, -9, 2);
+                    $p1 = substr($phone, -7, 3);
+                    $p2 = substr($phone, -4, 2);
+                    $p3 = substr($phone, -2, 2);
+                    $formattedPhone = "+998 ($code) $p1-$p2-$p3";
+                }
+                
+                $imageUrl = !empty($user['image']) ? $user['image'] : 'https://ui-avatars.com/api/?name=' . urlencode($user['name'] ?? 'A') . '&background=7B48FF&color=fff';
+            @endphp
             <div class="map-person-item {{ $i === 0 ? 'active' : '' }}"
-                 data-lat="{{ $p['lat'] }}" data-lng="{{ $p['lng'] }}"
-                 data-name="{{ $p['name'] }}" data-status="{{ $p['status'] }}">
-                <span class="map-person-dot dot-{{ $p['status'] }}"></span>
-                <span class="map-person-name" style="flex: 1;">{{ $p['name'] }}</span>
+                 data-lat="{{ $lat }}" data-lng="{{ $lng }}"
+                 data-name="{{ $user['name'] ?? 'Noma\'lum' }}" data-status="{{ $statusStr }}"
+                 data-phone="{{ $formattedPhone }}" data-image="{{ $imageUrl }}">
+                <span class="map-person-dot dot-{{ $statusStr }}"></span>
+                <span class="map-person-name" style="flex: 1;">{{ $user['name'] ?? 'Noma\'lum' }}</span>
                 <img src="{{ asset('assets/images/strelka.svg') }}" width="24" height="24" class="map-person-arrow" alt="Arrow">
             </div>
-            @endforeach
+            @empty
+            <div style="padding: 20px; text-align: center; color: #888;">Undiruvchilar topilmadi</div>
+            @endforelse
         </div>
 
     </div>
@@ -186,15 +246,25 @@ ymaps.ready(function () {
     var coords   = rows.map(function(r){ return [parseFloat(r.dataset.lat), parseFloat(r.dataset.lng)]; });
     var statuses = rows.map(function(r){ return r.dataset.status; });
 
-    // ---- Init map ----
-    var map = new ymaps.Map('yandexMap', {
-        center: [40.386, 71.786], // Farg'ona shahri markazi
-        zoom: 13,
-        controls: [],
-        type: 'yandex#map',
-    }, {
-        suppressMapOpenBlock: true,
-    });
+    if (coords.length === 0) {
+        var map = new ymaps.Map('yandexMap', {
+            center: [41.311081, 69.240562], // Toshkent markazi fallback
+            zoom: 6,
+            controls: [],
+            type: 'yandex#map',
+        }, {
+            suppressMapOpenBlock: true,
+        });
+    } else {
+        var map = new ymaps.Map('yandexMap', {
+            center: coords[0],
+            zoom: 13,
+            controls: [],
+            type: 'yandex#map',
+        }, {
+            suppressMapOpenBlock: true,
+        });
+    }
 
     // Custom Zoom Events
     document.getElementById('mapZoomIn').addEventListener('click', function() {
@@ -216,113 +286,157 @@ ymaps.ready(function () {
     });
     map.geoObjects.add(polyline);
 
-    // ---- Dot markers ----
-    var placemarks = [];
-    coords.forEach(function(c, i) {
-        var color = statuses[i] === 'green' ? '#45BF84' : '#D49859';
-        
-        // Build custom balloon layout matching user_info.svg design without the background image
-        var customBalloonContent = `
-            <div style="min-width: 260px; font-family: Inter, sans-serif; padding: 5px 0;">
-                <div style="display:flex; align-items:center; margin-bottom: 16px;">
-                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(rows[i].dataset.name)}&background=7B48FF&color=fff" style="width:40px; height:40px; border-radius:10px; margin-right:12px; object-fit: cover;">
-                    <div>
-                        <div style="font-weight: 600; font-size: 15px; color:#151515; line-height:1.2; margin-bottom: 2px;">${rows[i].dataset.name}</div>
-                        <div style="font-size: 13px; color:#807b89;">Undiruvchi</div>
-                    </div>
-                </div>
-                
-                <div style="height:1px; background:#F0F0F0; margin: 0 -15px 16px -15px;"></div>
-                
-                <div style="display:flex; flex-direction:column; gap:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
-                        <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                            <span>Telefon:</span>
+        // Build custom markers
+        var placemarks = [];
+        coords.forEach(function(c, i) {
+            var color = statuses[i] === 'green' ? '#45BF84' : '#D49859';
+            var glowColor = statuses[i] === 'green' ? 'rgba(33, 150, 243, 0.7)' : 'rgba(244, 67, 54, 0.7)'; // Blue for online, Red for offline
+            var borderColor = statuses[i] === 'green' ? '#2196F3' : '#F44336';
+            var imgUrl = rows[i].dataset.image || 'https://ui-avatars.com/api/?background=random&color=fff&name=' + encodeURIComponent(rows[i].dataset.name.charAt(0));
+
+            // Custom Balloon Layout
+            var customBalloonContent = `
+                <div style="min-width: 260px; font-family: Inter, sans-serif; padding: 5px 0;">
+                    <div style="display:flex; align-items:center; margin-bottom: 16px;">
+                        <img src="${imgUrl}" style="width:40px; height:40px; border-radius:10px; margin-right:12px; object-fit: cover;">
+                        <div>
+                            <div style="font-weight: 600; font-size: 15px; color:#151515; line-height:1.2; margin-bottom: 2px;">${rows[i].dataset.name}</div>
+                            <div style="font-size: 13px; color:#807b89;">Undiruvchi</div>
                         </div>
-                        <span style="font-weight: 600; color:#151515;">+998 (90) 123-45-67</span>
                     </div>
                     
-                    <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
-                        <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
-                            <span>Status:</span>
+                    <div style="height:1px; background:#F0F0F0; margin: 0 -15px 16px -15px;"></div>
+                    
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                            <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                <span>Telefon:</span>
+                            </div>
+                            <span style="font-weight: 600; color:#151515;">${rows[i].dataset.phone}</span>
                         </div>
-                        <span style="font-weight: 600; color:${color};">${statuses[i] === 'green' ? 'Aktiv' : 'Nofaol'}</span>
-                    </div>
+                        
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                            <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+                                <span>Status:</span>
+                            </div>
+                            <span style="font-weight: 600; color:${color};">${statuses[i] === 'green' ? 'Onlayn' : 'Oflayn'}</span>
+                        </div>
 
-                    <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
-                        <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                            <span>Vaqt:</span>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                            <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                <span>Vaqt:</span>
+                            </div>
+                            <span style="font-weight: 600; color:#151515;">22.01.2026 / 12:00</span>
                         </div>
-                        <span style="font-weight: 600; color:#151515;">22.01.2026 / 12:00</span>
-                    </div>
 
-                    <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
-                        <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="10" y1="15" x2="10" y2="9"></line><line x1="14" y1="15" x2="14" y2="9"></line></svg>
-                            <span>To'xtab turgan vaqt:</span>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                            <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="10" y1="15" x2="10" y2="9"></line><line x1="14" y1="15" x2="14" y2="9"></line></svg>
+                                <span>To'xtab turgan vaqt:</span>
+                            </div>
+                            <span style="font-weight: 600; color:#45BF84;">Noma'lum</span>
                         </div>
-                        <span style="font-weight: 600; color:#45BF84;">0 min</span>
+                    </div>
+                    
+                    <div style="height:1px; background:#F0F0F0; margin: 16px -15px 12px -15px;"></div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                        <div style="display:flex; align-items:center; color:#807b89; gap:6px;">
+                            <span>Kordinata:</span>
+                            <span style="font-weight: 600; color:#151515; letter-spacing: 0.5px;">${c[0].toFixed(6)} - ${c[1].toFixed(6)}</span>
+                        </div>
+                        <div style="position:relative; display:flex; align-items:center;">
+                            <span id="copyMsg-${i}" style="position:absolute; right:35px; background:#45BF84; color:#fff; font-size:11px; padding:3px 6px; border-radius:4px; opacity:0; transition:opacity 0.3s ease; pointer-events:none; white-space:nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Nusxa olindi</span>
+                            <div style="cursor:pointer; display:flex; padding: 5px; border-radius: 6px; background: #F5F4F9; transition: background 0.2s;" title="Nusxa olish" onclick="navigator.clipboard.writeText('${c[0].toFixed(6)}, ${c[1].toFixed(6)}').then(() => { var msg = document.getElementById('copyMsg-${i}'); if(msg) { msg.style.opacity='1'; msg.style.transform='translateY(-2px)'; setTimeout(()=>{ msg.style.opacity='0'; msg.style.transform='translateY(0)'; }, 1500); } var t=this; t.style.background='#d1f0e1'; setTimeout(()=>t.style.background='#F5F4F9', 500); })">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#807b89" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <div style="height:1px; background:#F0F0F0; margin: 16px -15px 12px -15px;"></div>
-                
-                <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
-                    <div style="display:flex; align-items:center; color:#807b89; gap:6px;">
-                        <span>Kordinata:</span>
-                        <span style="font-weight: 600; color:#151515; letter-spacing: 0.5px;">${c[0].toFixed(6)} - ${c[1].toFixed(6)}</span>
-                    </div>
-                    <div style="position:relative; display:flex; align-items:center;">
-                        <span id="copyMsg-${i}" style="position:absolute; right:35px; background:#45BF84; color:#fff; font-size:11px; padding:3px 6px; border-radius:4px; opacity:0; transition:opacity 0.3s ease; pointer-events:none; white-space:nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Nusxa olindi</span>
-                        <div style="cursor:pointer; display:flex; padding: 5px; border-radius: 6px; background: #F5F4F9; transition: background 0.2s;" title="Nusxa olish" onclick="navigator.clipboard.writeText('${c[0].toFixed(6)}, ${c[1].toFixed(6)}').then(() => { var msg = document.getElementById('copyMsg-${i}'); if(msg) { msg.style.opacity='1'; msg.style.transform='translateY(-2px)'; setTimeout(()=>{ msg.style.opacity='0'; msg.style.transform='translateY(0)'; }, 1500); } var t=this; t.style.background='#d1f0e1'; setTimeout(()=>t.style.background='#F5F4F9', 500); })">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#807b89" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
+            `;
 
-        var pm = new ymaps.Placemark(c, {
-            balloonContentBody: customBalloonContent,
-        }, {
-            balloonPanelMaxMapArea: 0,
-            hideIconOnBalloonOpen: false,
-            balloonOffset: [0, -20],
-            iconLayout: 'default#image',
-            iconImageHref: 'data:image/svg+xml,' + encodeURIComponent(
-                '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">' +
-                '<circle cx="8" cy="8" r="6" fill="' + color + '" stroke="#fff" stroke-width="2"/>' +
-                '</svg>'
-            ),
-            iconImageSize: [16, 16],
-            iconImageOffset: [-8, -8],
+            // Custom Marker Layout with Glow
+            var MarkerLayout = ymaps.templateLayoutFactory.createClass(
+                '<div style="cursor: pointer; width: 44px; height: 44px; margin-top: -22px; margin-left: -22px; border-radius: 50%; box-shadow: 0 0 16px 4px $[properties.glowColor]; display: flex; align-items: center; justify-content: center; background: #fff;">' +
+                    '<img src="$[properties.iconUrl]" style="width: 40px; height: 40px; border-radius: 50%; border: 3px solid $[properties.borderColor]; object-fit: cover; background: #eee;">' +
+                '</div>'
+            );
+
+            var pm = new ymaps.Placemark(c, {
+                balloonContentBody: customBalloonContent,
+                iconUrl: imgUrl,
+                glowColor: glowColor,
+                borderColor: borderColor
+            }, {
+                balloonPanelMaxMapArea: 0,
+                hideIconOnBalloonOpen: false,
+                balloonOffset: [0, -26],
+                iconLayout: MarkerLayout,
+                iconShape: {
+                    type: 'Rectangle',
+                    coordinates: [[-22, -22], [22, 22]]
+                }
+            });
+            map.geoObjects.add(pm);
+            placemarks.push(pm);
+            pm.events.add('click', function(){ setActive(i); });
         });
-        map.geoObjects.add(pm);
-        placemarks.push(pm);
-        pm.events.add('click', function(){ setActive(i); });
-    });
 
-    // ---- Avatar pin on first point ----
-    var avatarPm = new ymaps.Placemark(coords[0], {}, {
-        iconLayout: 'default#image',
-        iconImageHref: 'data:image/svg+xml,' + encodeURIComponent(
-            '<svg xmlns="http://www.w3.org/2000/svg" width="42" height="52">' +
-            '<rect x="1" y="1" width="40" height="40" rx="20" fill="#7B48FF"/>' +
-            '<text x="21" y="28" font-family="Arial" font-size="16" fill="white" text-anchor="middle">SN</text>' +
-            '<polygon points="21,52 10,38 32,38" fill="#7B48FF"/>' +
-            '</svg>'
-        ),
-        iconImageSize: [42, 52],
-        iconImageOffset: [-21, -52],
-    });
-    map.geoObjects.add(avatarPm);
+        let activeIdx = 0;
+        var activeMarkerLayout = null;
+        var avatarPm = null;
+
+        if (coords.length > 0) {
+            // ---- Active Avatar pin layout (Bigger and glowing) ----
+            activeMarkerLayout = ymaps.templateLayoutFactory.createClass(
+                '<div style="cursor: pointer; width: 64px; height: 64px; margin-top: -32px; margin-left: -32px; border-radius: 50%; box-shadow: 0 0 24px 6px $[properties.glowColor]; display: flex; align-items: center; justify-content: center; background: #fff; z-index: 1000; position: relative;">' +
+                    '<img src="$[properties.iconUrl]" style="width: 58px; height: 58px; border-radius: 50%; border: 4px solid $[properties.borderColor]; object-fit: cover; background: #eee;">' +
+                '</div>'
+            );
+
+            var initialGlow = statuses[0] === 'green' ? 'rgba(33, 150, 243, 0.8)' : 'rgba(244, 67, 54, 0.8)';
+            var initialBorder = statuses[0] === 'green' ? '#2196F3' : '#F44336';
+            var initialImg = rows[0].dataset.image || 'https://ui-avatars.com/api/?background=random&color=fff&name=' + encodeURIComponent(rows[0].dataset.name.charAt(0));
+
+            avatarPm = new ymaps.Placemark(coords[0], {
+                iconUrl: initialImg,
+                glowColor: initialGlow,
+                borderColor: initialBorder
+            }, {
+                iconLayout: activeMarkerLayout,
+                iconShape: {
+                    type: 'Rectangle',
+                    coordinates: [[-32, -32], [32, 32]]
+                },
+                zIndex: 1000
+            });
+            
+            avatarPm.events.add('click', function() {
+                placemarks[activeIdx].balloon.open();
+            });
+            
+            map.geoObjects.add(avatarPm);
+        }
 
     // ---- Row click ----
     function setActive(idx) {
+        activeIdx = idx;
         rows.forEach(function(r, i){ r.classList.toggle('active', i === idx); });
+        
+        if (avatarPm) {
+            var newImg = rows[idx].dataset.image || 'https://ui-avatars.com/api/?background=random&color=fff&name=' + encodeURIComponent(rows[idx].dataset.name.charAt(0));
+            var newGlow = statuses[idx] === 'green' ? 'rgba(33, 150, 243, 0.8)' : 'rgba(244, 67, 54, 0.8)';
+            var newBorder = statuses[idx] === 'green' ? '#2196F3' : '#F44336';
+            
+            avatarPm.geometry.setCoordinates(coords[idx]);
+            avatarPm.properties.set('iconUrl', newImg);
+            avatarPm.properties.set('glowColor', newGlow);
+            avatarPm.properties.set('borderColor', newBorder);
+        }
+
         map.panTo(coords[idx], { flying: true, duration: 600 });
         map.setZoom(15, { smooth: true, duration: 400 });
         placemarks[idx].balloon.open();
@@ -332,23 +446,86 @@ ymaps.ready(function () {
     // ---- Tabs ----
     document.querySelectorAll('.map-tab').forEach(function(tab) {
         tab.addEventListener('click', function() {
-            document.querySelectorAll('.map-tab').forEach(function(t){ t.classList.remove('active'); });
-            tab.classList.add('active');
             var type = tab.dataset.tab;
-            rows.forEach(function(r) {
-                var st = r.dataset.status;
-                r.style.display = type === 'all' ? '' : (type === 'online' ? (st === 'green' ? '' : 'none') : (st === 'orange' ? '' : 'none'));
-            });
+            const currentUrl = new URL(window.location.href);
+            if(type === 'all') {
+                currentUrl.searchParams.delete('is_active');
+            } else {
+                currentUrl.searchParams.set('is_active', type);
+            }
+            window.location.href = currentUrl.toString();
         });
     });
 
     // ---- Search (person filter) ----
-    document.getElementById('mapSearchInput').addEventListener('input', function() {
-        var q = this.value.toLowerCase();
-        rows.forEach(function(r) {
-            r.style.display = (!q || r.dataset.name.toLowerCase().indexOf(q) !== -1) ? '' : 'none';
+    const searchInput = document.getElementById('mapSearchInput');
+    let searchTimeout;
+    if (searchInput) {
+        if (searchInput.value) {
+            searchInput.focus();
+            const val = searchInput.value;
+            searchInput.value = '';
+            searchInput.value = val;
+        }
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const currentUrl = new URL(window.location.href);
+                if (this.value) {
+                    currentUrl.searchParams.set('search', this.value);
+                } else {
+                    currentUrl.searchParams.delete('search');
+                }
+                currentUrl.searchParams.delete('page');
+                window.location.href = currentUrl.toString();
+            }, 800);
         });
-    });
+    }
+
+    // ---- Branch filter ----
+    const branchBtn = document.getElementById('mapBranchFilterBtn');
+    const branchDropdown = document.getElementById('mapBranchDropdown');
+    const branchFilterText = document.getElementById('mapBranchFilterText');
+
+    if (branchBtn && branchDropdown) {
+        branchBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (branchDropdown.style.display === 'none' || branchDropdown.style.display === '') {
+                branchDropdown.style.display = 'block';
+            } else {
+                branchDropdown.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!branchBtn.contains(e.target) && !branchDropdown.contains(e.target)) {
+                branchDropdown.style.display = 'none';
+            }
+        });
+
+        branchDropdown.querySelectorAll('.map-branch-item').forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                branchDropdown.querySelectorAll('.map-branch-item').forEach(function(el) { el.classList.remove('active'); });
+                item.classList.add('active');
+                
+                branchFilterText.innerText = item.innerText;
+                branchDropdown.style.display = 'none';
+
+                const branchGuid = item.getAttribute('data-guid') || '';
+                const currentUrl = new URL(window.location.href);
+                if (branchGuid) {
+                    currentUrl.searchParams.set('branch_guid', branchGuid);
+                } else {
+                    currentUrl.searchParams.delete('branch_guid');
+                }
+                currentUrl.searchParams.delete('page');
+                window.location.href = currentUrl.toString();
+            });
+        });
+    }
 
     // ============================================================
     //  MAP PAGE — Custom Calendar (identical to undiruvchilar page)
@@ -372,11 +549,16 @@ ymaps.ready(function () {
         const months = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'];
         const shortMonths = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyn', 'Iyl', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'];
 
-        let currentYear = 2026;
-        const startYear = 2015;
         let startDate = null;
-        let endDate = null;
-        let hoverDate = null;
+        let currentYear = new Date().getFullYear();
+        const startYear = 2015;
+        const initialDateStr = "{{ $selectedDate ?? '' }}";
+        if (initialDateStr) {
+            startDate = new Date(initialDateStr);
+            currentYear = startDate.getFullYear();
+        }
+        
+        calendarYearText.innerText = currentYear;
 
         // Populate years
         for (let y = startYear; y <= 2026; y++) {
@@ -390,8 +572,10 @@ ymaps.ready(function () {
                 calendarYearText.innerText = y;
                 yearDropdown.classList.remove('active');
                 yearSelectorBtn.classList.remove('active');
+                
                 yearDropdown.querySelectorAll('.year-item').forEach(function(el) { el.classList.remove('active'); });
                 yearDiv.classList.add('active');
+                
                 setupCalendar();
                 updateRangeClasses();
                 updateDisplay();
@@ -472,27 +656,13 @@ ymaps.ready(function () {
                         cell.appendChild(span);
 
                         cell.addEventListener('click', function() {
-                            if (!startDate || (startDate && endDate)) {
-                                startDate = new Date(cellTime);
-                                endDate = null;
-                            } else if (startDate && !endDate) {
-                                var cDate = new Date(cellTime);
-                                if (cDate < startDate) {
-                                    endDate = startDate;
-                                    startDate = cDate;
-                                } else {
-                                    endDate = cDate;
-                                }
-                            }
+                            startDate = new Date(cellTime);
                             updateRangeClasses();
                             updateDisplay();
                         });
 
                         cell.addEventListener('mouseenter', function() {
-                            if (startDate && !endDate) {
-                                hoverDate = new Date(cellTime);
-                                updateRangeClasses();
-                            }
+                            // Mute hover
                         });
 
                         daysContainer.appendChild(cell);
@@ -501,88 +671,72 @@ ymaps.ready(function () {
             });
 
             var observer = new IntersectionObserver(function(entries) {
-                entries.forEach(function(entry) {
-                    if (entry.isIntersecting) {
-                        var mIdx = entry.target.dataset.gridMonth;
-                        dropdown.querySelectorAll('.month-item').forEach(function(el) { el.classList.remove('active'); });
-                        var activeEl = dropdown.querySelector('.month-item[data-idx="' + mIdx + '"]');
-                        if (activeEl) {
-                            activeEl.classList.add('active');
-                            monthsContainer.scrollTo({ top: activeEl.offsetTop - monthsContainer.offsetTop - 50, behavior: 'smooth' });
-                        }
-                    }
-                });
+                // Muted sidebar highlighting as sidebar is hidden
             }, { root: daysContainer, rootMargin: '0px 0px -80% 0px' });
 
             dropdown.querySelectorAll('.grid-month-title').forEach(function(t) { observer.observe(t); });
+
+            // Scroll to the current month if initial date is set
+            if (startDate) {
+                setTimeout(() => {
+                    const initialMonth = startDate.getMonth();
+                    const el = daysContainer.querySelector(`[data-grid-month="${initialMonth}"]`);
+                    if(el) {
+                        daysContainer.scrollTo({
+                            top: el.offsetTop - daysContainer.offsetTop,
+                            behavior: 'auto'
+                        });
+                    }
+                }, 50);
+            }
         }
 
         daysContainer.addEventListener('mouseleave', function() {
-            if (startDate && !endDate) {
-                hoverDate = null;
-                updateRangeClasses();
-            }
+            // Mute range leave
         });
 
         function updateRangeClasses() {
             var cells = daysContainer.querySelectorAll('.day-cell:not(.empty)');
             var sTime = startDate ? startDate.getTime() : null;
-            var eTime = endDate ? endDate.getTime() : null;
-            var hTime = hoverDate ? hoverDate.getTime() : null;
 
             cells.forEach(function(cell) {
                 var cTime = parseInt(cell.dataset.time);
                 cell.classList.remove('selected-start', 'selected-end', 'in-range');
                 if (sTime && cTime === sTime) cell.classList.add('selected-start');
-                if (eTime && cTime === eTime) cell.classList.add('selected-end');
-                if (sTime && eTime) {
-                    if (cTime > sTime && cTime < eTime) cell.classList.add('in-range');
-                } else if (sTime && hTime && !eTime) {
-                    var min = Math.min(sTime, hTime);
-                    var max = Math.max(sTime, hTime);
-                    if (cTime > min && cTime < max) cell.classList.add('in-range');
-                    if (cTime === hTime) cell.classList.add('selected-end');
-                }
             });
         }
 
         function updateDisplay() {
-            if (startDate && endDate) {
-                var startStr = startDate.getDate() + ' ' + shortMonths[startDate.getMonth()] + ' ' + startDate.getFullYear();
-                var endStr = endDate.getDate() + ' ' + shortMonths[endDate.getMonth()] + ' ' + endDate.getFullYear();
-                displayRange.innerHTML = startStr + ' - dan / ' + endStr + '-gacha';
-                var diffTime = Math.abs(endDate - startDate);
-                var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                displayDuration.innerText = diffDays + ' kunlik';
-            } else if (startDate) {
+            if (startDate) {
                 var sStr = startDate.getDate() + ' ' + shortMonths[startDate.getMonth()] + ' ' + startDate.getFullYear();
                 displayRange.innerHTML = sStr;
-                displayDuration.innerText = '1 kunlik';
             } else {
-                displayRange.innerHTML = '21 oct 2026 - dan / 6 noy 2026-gacha';
-                displayDuration.innerText = '16 kunlik';
+                displayRange.innerHTML = 'Sanani tanlang';
             }
         }
 
         resetBtn.addEventListener('click', function() {
             startDate = null;
-            endDate = null;
             updateDisplay();
             updateRangeClasses();
         });
 
         saveBtn.addEventListener('click', function() {
-            if (startDate && endDate) {
-                var sStr = shortMonths[startDate.getMonth()] + ' ' + startDate.getDate();
-                var eStr = shortMonths[endDate.getMonth()] + ' ' + endDate.getDate();
-                filterText.innerText = sStr + ' - ' + eStr + ' gacha';
-                dropdown.classList.remove('active');
-            } else if (startDate) {
-                filterText.innerText = shortMonths[startDate.getMonth()] + ' ' + startDate.getDate();
-                dropdown.classList.remove('active');
+            if (startDate) {
+                const y = startDate.getFullYear();
+                const m = String(startDate.getMonth() + 1).padStart(2, '0');
+                const d = String(startDate.getDate()).padStart(2, '0');
+                const dateStr = `${y}-${m}-${d}`;
+                
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('date', dateStr);
+                window.location.href = currentUrl.toString();
+            } else {
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.delete('date');
+                window.location.href = currentUrl.toString();
             }
         });
-
         setupCalendar();
         updateDisplay();
     })();
@@ -611,8 +765,13 @@ ymaps.ready(function () {
         if (!timeBtn || !timeDropdown) return;
 
         let activeTab = 'from'; // 'from' or 'to'
-        let timeFrom = { h: 12, m: 0 };
-        let timeTo = { h: 16, m: 0 };
+        
+        // Parse current startHour and endHour if available
+        const initStartHourStr = "{{ $startHour ?? '12:00' }}";
+        const initEndHourStr = "{{ $endHour ?? '16:00' }}";
+        
+        let timeFrom = { h: parseInt(initStartHourStr.split(':')[0] || '12'), m: parseInt(initStartHourStr.split(':')[1] || '0') };
+        let timeTo = { h: parseInt(initEndHourStr.split(':')[0] || '16'), m: parseInt(initEndHourStr.split(':')[1] || '0') };
 
         // Generate wheel items
         function pad(n) { return n < 10 ? '0'+n : n; }
@@ -730,8 +889,12 @@ ymaps.ready(function () {
         });
 
         btnSave.addEventListener('click', () => {
-            timeText.innerText = pad(timeFrom.h) + ':' + pad(timeFrom.m) + ' - ' + pad(timeTo.h) + ':' + pad(timeTo.m) + ' gacha';
-            timeDropdown.style.display = 'none';
+            const sh = pad(timeFrom.h) + ':' + pad(timeFrom.m);
+            const eh = pad(timeTo.h) + ':' + pad(timeTo.m);
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('start_hour', sh);
+            currentUrl.searchParams.set('end_hour', eh);
+            window.location.href = currentUrl.toString();
         });
 
         document.addEventListener('click', function(e) {
