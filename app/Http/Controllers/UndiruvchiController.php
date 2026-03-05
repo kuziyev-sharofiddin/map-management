@@ -256,17 +256,6 @@ class UndiruvchiController extends Controller
                             'is_active'  => null,
                             'is_stopped' => null,
                         ]);
-                        // dd($locResponse->json('data'));
-
-                        // dd([
-                        //     'user_ids'   => $selectedUserIds,
-                        //     'date'       => $dateApi ?: date('Y-m-d'),
-                        //     'start_hour' => $startHour ?: null,
-                        //     'end_hour'   => $endHour   ?: null,
-                        //     'limit'      => $locationLimit,
-                        //     'is_active'  => false,
-                        //     'is_stopped' => null,
-                        // ]);
 
                     $responseData = $locResponse->json('data');
                     if ($locResponse->successful() && is_array($responseData)) {

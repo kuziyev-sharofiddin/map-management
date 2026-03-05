@@ -214,9 +214,6 @@
             @php
                 $uId = $user['user_id'] ?? $user['id'] ?? null;
                 $isUserSelected = in_array($uId, $selectedUserIds ?? []);
-                
-                // Agar userlar tanlangan bo'lsa va bu user tanlanmagan bo'lsa, uni xaritada umuman chiqarmaymiz
-                if (!empty($selectedUserIds) && !$isUserSelected) continue;
 
                 $statusStr = (isset($user['is_active']) && $user['is_active']) ? 'green' : 'orange';
                 
@@ -226,19 +223,23 @@
                 $lat = $user['latitude'] ?? $user['map_location_lat'] ?? null;
                 $lng = $user['longitude'] ?? $user['map_location_lng'] ?? null;
                 
-                // Agar tanlangan user bo'lsa, uning xaritasini $locationIndex dan olamiz (oxirgi joylashuvi)
-                if ($isUserSelected && isset($locationIndex[$uId]) && !empty($locationIndex[$uId])) {
+                // $locationIndex dan olamiz (API dagi eng oxirgi joylashuvi)
+                if (isset($locationIndex[$uId]) && !empty($locationIndex[$uId])) {
                     // API jo'natgan ro'yhat xronologik bo'lsa, massiv oxiridagi eng oxirgi yangi lokatsiyani olamiz.
                     $lastL = end($locationIndex[$uId]);
                     if (isset($lastL['lat'], $lastL['lng'])) {
                         $lat = $lastL['lat'];
                         $lng = $lastL['lng'];
                     }
+                    if (isset($lastL['time'])) {
+                        $lastTime = $lastL['time'];
+                    }
                 }
 
                 // Vergul (,) muammosini oldini olish
                 $latStr = $lat ? str_replace(',', '.', (string)$lat) : '';
                 $lngStr = $lng ? str_replace(',', '.', (string)$lng) : '';
+                $timeStr = $lastTime ?? '';
 
                 $phone = $user['phone'] ?? '';
                 $formattedPhone = $phone;
@@ -254,9 +255,10 @@
             @endphp
             <div class="map-person-item {{ $isUserSelected ? 'active' : '' }}"
                  data-id="{{ $uId }}"
-                 data-lat="{{ $latStr }}" data-lng="{{ $lngStr }}"
+                 data-lat="{{ $latStr }}" data-lng="{{ $lngStr }}" data-time="{{ $timeStr }}"
                  data-name="{{ $user['name'] ?? 'Noma\'lum' }}" data-status="{{ $statusStr }}"
-                 data-phone="{{ $formattedPhone }}" data-image="{{ $imageUrl }}">
+                 data-phone="{{ $formattedPhone }}" data-image="{{ $imageUrl }}"
+                 data-selected="{{ $isUserSelected ? 'true' : 'false' }}">
                 
                 {{-- Kvadrat galichka (Checkbox) --}}
                 <div class="map-checkbox-wrapper" style="margin-right: 12px; display: flex; align-items: center;">
@@ -363,7 +365,9 @@ ymaps.ready(function () {
     var coords   = rows.map(function(r){ return [parseFloat(r.dataset.lat), parseFloat(r.dataset.lng)]; });
     var statuses = rows.map(function(r){ return r.dataset.status; });
 
-    var validCoords = coords.filter(function(c) { return !isNaN(c[0]) && !isNaN(c[1]); });
+    var validCoords = coords.filter(function(c, i) { 
+        return rows[i].dataset.selected === 'true' && !isNaN(c[0]) && !isNaN(c[1]); 
+    });
 
     if (validCoords.length === 0) {
         var map = new ymaps.Map('yandexMap', {
@@ -415,7 +419,9 @@ ymaps.ready(function () {
         // (Marker initialization remains the same but zIndex logic for the first item was removed if not explicitly selected)
         var placemarks = [];
         coords.forEach(function(c, i) {
-            if (isNaN(c[0]) || isNaN(c[1])) {
+            var isSelectedOnMap = rows[i].dataset.selected === 'true';
+
+            if (!isSelectedOnMap || isNaN(c[0]) || isNaN(c[1])) {
                 placemarks.push(null);
                 return;
             }
@@ -460,7 +466,11 @@ ymaps.ready(function () {
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                                 <span>Vaqt:</span>
                             </div>
-                            <span style="font-weight: 600; color:#151515;">22.01.2026 / 12:00</span>
+                            <span style="font-weight: 600; color:#151515;">${
+                                rows[i].dataset.time 
+                                ? new Date(rows[i].dataset.time).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', ' /') 
+                                : "Noma'lum"
+                            }</span>
                         </div>
 
                         <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
