@@ -15,6 +15,7 @@ Route::middleware('auth.check')->group(function () {
 
     Route::get('/undiruvchilar', [UndiruvchiController::class, 'index'])->name('undiruvchilar.index');
     Route::get('/undiruvchilar/xarita', [UndiruvchiController::class, 'map'])->name('undiruvchilar.map');
+    Route::post('/undiruvchilar/locations', [UndiruvchiController::class, 'getMultipleLocations'])->name('undiruvchilar.locations');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

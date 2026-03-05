@@ -296,4 +296,32 @@ class UndiruvchiController extends Controller
         }
     }
 
+    /**
+     * Map page AJAX ko'p userlar lokatsiyasini (yo'nalishni) olish
+     */
+    public function getMultipleLocations(\Illuminate\Http\Request $request)
+    {
+        try {
+            $payload = [
+                'user_ids' => $request->json('user_ids', []),
+                'date' => $request->json('date'),
+                'start_hour' => $request->json('start_hour'),
+                'end_hour' => $request->json('end_hour'),
+                'limit' => $request->json('limit', 0),
+                'is_active' => $request->json('is_active', false) === 'true' || $request->json('is_active', false) === true,
+                'is_stopped' => $request->json('is_stopped', null)
+            ];
+
+            $response = $this->api->post('/locations/multiple_users', $payload);
+
+            if ($response->successful()) {
+                return response()->json($response->json());
+            }
+
+            return response()->json(['status' => false, 'message' => 'API Error', 'details' => $response->body()], 400);
+
+        } catch (\Throwable $e) {
+            return response()->json(['status' => false, 'message' => 'Tarmoq xatosi: ' . $e->getMessage()], 500);
+        }
+    }
 }
