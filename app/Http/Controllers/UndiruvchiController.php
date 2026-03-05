@@ -3,117 +3,325 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Services\ApiService;
+use Exception;
 
 class UndiruvchiController extends Controller
 {
-    private string $baseUrl = "http://10.100.104.128:5084/api";
+    public function __construct(protected ApiService $api)
+    {
+    }
 
     public function index(Request $request)
     {
-        $token = session('auth_token');
-        $branches = [];
-        $selectedBranch = $request->query('branch_guid'); // Tanlangan filial ID si
-        // Hozirgi tanlangan filial nomi
-        $selectedBranchName = 'Barchasi (Filiallar)';
+        try {
+            $token = session('auth_token');
+            $branches = [];
+            $selectedBranch = $request->query('branch_guid'); // Tanlangan filial ID si
+            // Hozirgi tanlangan filial nomi
+            $selectedBranchName = 'Barchasi (Filiallar)';
 
-        $isActive = $request->query('is_active');
-        $selectedStatusName = 'Barchasi (Holati)';
-        
-        if ($isActive === 'true') {
-            $selectedStatusName = 'Onlayn';
-        } elseif ($isActive === 'false') {
-            $selectedStatusName = 'Oflayn';
-        }
-
-        $selectedDate = $request->query('date');
-        $selectedDateText = 'Sanani tanlang';
-        if ($selectedDate) {
-            $monthsArr = ['yan', 'fev', 'mar', 'apr', 'may', 'iyn', 'iyl', 'avg', 'sen', 'okt', 'noy', 'dek'];
-            $timestamp = strtotime($selectedDate);
-            if ($timestamp) {
-                $monthIndex = (int)date('n', $timestamp) - 1;
-                $selectedDateText = date('j', $timestamp) . ' ' . $monthsArr[$monthIndex] . ' ' . date('Y', $timestamp);
+            $isActive = $request->query('is_active');
+            $selectedStatusName = 'Barchasi (Holati)';
+            
+            if ($isActive === 'true') {
+                $selectedStatusName = 'Onlayn';
+            } elseif ($isActive === 'false') {
+                $selectedStatusName = 'Oflayn';
             }
+
+            $selectedDate = $request->query('date');
+            $selectedDateText = 'Sanani tanlang';
+            if ($selectedDate) {
+                $monthsArr = ['yan', 'fev', 'mar', 'apr', 'may', 'iyn', 'iyl', 'avg', 'sen', 'okt', 'noy', 'dek'];
+                $timestamp = strtotime($selectedDate);
+                if ($timestamp) {
+                    $monthIndex = (int)date('n', $timestamp) - 1;
+                    $selectedDateText = date('j', $timestamp) . ' ' . $monthsArr[$monthIndex] . ' ' . date('Y', $timestamp);
+                }
+            }
+
+            $page = (int) $request->query('page', 0);
+            $search = $request->query('search');
+
+            $usersData = [];
+            $pagination = [
+                'total_count' => 0,
+                'page' => $page,
+                'page_size' => 10,
+                'total_pages' => 0,
+                'has_next_page' => false,
+                'has_previous_page' => false,
+            ];
+
+            if ($token) {
+                // Branches from API
+                /** @var \Illuminate\Http\Client\Response $response */
+                $response = $this->api->post("/branches/branch-list", [
+                    'search' => null
+                ]);
+                if ($response->successful() && $response->json('status')) {
+                    $branches = $response->json('data') ?? [];
+                    if ($selectedBranch) {
+                        $found = collect($branches)->firstWhere('branch_guid', $selectedBranch);
+                        if ($found) {
+                            $selectedBranchName = data_get($found, 'name', 'Barchasi (Filiallar)');
+                        }
+                    }
+                }
+
+                // Users from API
+                $isActiveApi = null;
+                if ($isActive === 'true') {
+                    $isActiveApi = "true";
+                } elseif ($isActive === 'false') {
+                    $isActiveApi = "false";
+                }
+
+                $dateApi = null;
+                if ($selectedDate) {
+                    $timestamp = strtotime($selectedDate);
+                    if ($timestamp) {
+                        $dateApi = date('Y-m-d', $timestamp);
+                    }
+                }
+
+                /** @var \Illuminate\Http\Client\Response $usersResponse */
+                $usersResponse = $this->api->post("/users", [
+                    'search_term' => $search,
+                    'is_active' => $isActiveApi,
+                    'branch_guid' => $selectedBranch ?: null,
+                    'is_stopped' => null,
+                    'date' => $dateApi,
+                    'start_hour' => null,
+                    'end_hour' => null,
+                    'min_stopped_minutes' => 0,
+                    'page' => $page,
+                    'page_size' => 10, // Changed to 10
+                ]);
+
+                if ($usersResponse->successful() && $usersResponse->json('status')) {
+                    $usersData = $usersResponse->json('data') ?? [];
+                    $pagination = [
+                        'total_count' => $usersResponse->json('total_count') ?? 0,
+                        'page' => $usersResponse->json('page') ?? $page,
+                        'page_size' => $usersResponse->json('page_size') ?? 10,
+                        'total_pages' => $usersResponse->json('total_pages') ?? 0,
+                        'has_next_page' => $usersResponse->json('has_next_page') ?? false,
+                        'has_previous_page' => $usersResponse->json('has_previous_page') ?? false,
+                    ];
+                }
+            }
+
+            return view('undiruvchilar.index', compact('branches', 'selectedBranch', 'selectedBranchName', 'isActive', 'selectedStatusName', 'selectedDate', 'selectedDateText', 'usersData', 'pagination'));
+        } catch (Exception $e) {
+            return back()->with('error', "Kutilmagan xato yuz berdi: " . $e->getMessage());
         }
+    }
 
-        $page = (int) $request->query('page', 0);
-        $search = $request->query('search');
+    public function map(Request $request)
+    {
+        try {
+            $token = session('auth_token');
+            $branches = [];
+            $selectedBranch = $request->query('branch_guid'); // Tanlangan filial ID si
+            $selectedBranchName = 'Barchasi (Filiallar)';
 
-        $usersData = [];
-        $pagination = [
-            'total_count' => 0,
-            'page' => $page,
-            'page_size' => 10,
-            'total_pages' => 0,
-            'has_next_page' => false,
-            'has_previous_page' => false,
-        ];
+            $isActive = $request->query('is_active');
+            $selectedStatusName = 'Barchasi (Holati)';
+            
+            if ($isActive === 'true') {
+                $selectedStatusName = 'Onlayn';
+            } elseif ($isActive === 'false') {
+                $selectedStatusName = 'Oflayn';
+            }
 
-        if ($token) {
-            // Branches from API
-            /** @var \Illuminate\Http\Client\Response $response */
-            $response = Http::timeout(10)->withToken($token)->post("{$this->baseUrl}/branches/branch-list", [
-                'search' => null
-            ]);
-            if ($response->successful() && $response->json('status')) {
-                $branches = $response->json('data') ?? [];
-                if ($selectedBranch) {
-                    $found = collect($branches)->firstWhere('branch_guid', $selectedBranch);
-                    if ($found) {
-                        $selectedBranchName = data_get($found, 'name', 'Barchasi (Filiallar)');
+            $selectedDate = $request->query('date');
+            $selectedDateText = 'Sanani tanlang';
+            if ($selectedDate) {
+                $monthsArr = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avgust', 'sentyabr', 'oktyabr', 'noyabr', 'dekabr'];
+                $timestamp = strtotime($selectedDate);
+                if ($timestamp) {
+                    $monthIndex = (int)date('n', $timestamp) - 1;
+                    $selectedDateText = date('j', $timestamp) . ' ' . $monthsArr[$monthIndex] . ' ' . date('Y', $timestamp);
+                }
+            }
+
+            $page = (int) $request->query('page', 0);
+            $search = $request->query('search');
+
+            // map uchun alohida vaqt
+            $startHour = $request->query('start_hour');
+            $endHour = $request->query('end_hour');
+            $selectedTimeText = 'Vaqtni o\'rnatish';
+            if (!empty($startHour) && !empty($endHour)) {
+                $selectedTimeText = $startHour . ' - ' . $endHour . ' gacha';
+            }
+
+            $usersData = [];
+            $pagination = [
+                'total_count' => 0,
+                'page' => $page,
+                'page_size' => 1000,
+                'total_pages' => 0,
+                'has_next_page' => false,
+                'has_previous_page' => false,
+            ];
+            $locationLimit = (int) $request->query('location_limit', 1);
+            $locationIndex = [];
+
+            if ($token) {
+                // Branches from API
+                /** @var \Illuminate\Http\Client\Response $response */
+                $response = $this->api->post("/branches/branch-list", [
+                    'search' => null
+                ]);
+                if ($response->successful() && $response->json('status')) {
+                    $branches = $response->json('data') ?? [];
+                    if ($selectedBranch) {
+                        $found = collect($branches)->firstWhere('branch_guid', $selectedBranch);
+                        if ($found) {
+                            $selectedBranchName = data_get($found, 'name', 'Barchasi (Filiallar)');
+                        }
+                    }
+                }
+
+                // Users from API
+                $isActiveApi = null;
+                if ($isActive === 'true') {
+                    $isActiveApi = "true";
+                } elseif ($isActive === 'false') {
+                    $isActiveApi = "false";
+                }
+
+                $dateApi = null;
+                if ($selectedDate) {
+                    $timestamp = strtotime($selectedDate);
+                    if ($timestamp) {
+                        $dateApi = date('Y-m-d', $timestamp);
+                    }
+                }
+
+                /** @var \Illuminate\Http\Client\Response $usersResponse */
+                $usersResponse = $this->api->post("/users", [
+                    'search_term' => $search,
+                    'is_active' => $isActiveApi,
+                    'branch_guid' => $selectedBranch ?: null,
+                    'is_stopped' => null,
+                    'date' => $dateApi,
+                    'start_hour' => $startHour,
+                    'end_hour' => $endHour,
+                    'min_stopped_minutes' => 0,
+                    'page' => $page,
+                    'page_size' => 1000, 
+                ]);
+
+                if ($usersResponse->successful() && $usersResponse->json('status')) {
+                    $usersData = $usersResponse->json('data') ?? [];
+                    $pagination = [
+                        'total_count' => $usersResponse->json('total_count') ?? 0,
+                        'page' => $usersResponse->json('page') ?? $page,
+                        'page_size' => $usersResponse->json('page_size') ?? 1000,
+                        'total_pages' => $usersResponse->json('total_pages') ?? 0,
+                        'has_next_page' => $usersResponse->json('has_next_page') ?? false,
+                        'has_previous_page' => $usersResponse->json('has_previous_page') ?? false,
+                    ];
+                }
+
+                // ---- Faqat URL da tanlangan userlarni lokatsiyasini olish ----
+                // Sidebar da user tanlanganda URL da ?selected_users[]=ID bo'ladi
+                $rawSelectedUsers = $request->query('selected_users', []);
+                $selectedUserIds = [];
+                if (is_array($rawSelectedUsers)) {
+                    $selectedUserIds = array_values(array_filter(
+                        array_map('intval', $rawSelectedUsers)
+                    ));
+                } elseif (is_string($rawSelectedUsers)) {
+                    // Agar string ko'rinishida bitta ID kelgan bo'lsa
+                    $selectedUserIds = array_filter([intval($rawSelectedUsers)]);
+                }
+
+                if (!empty($selectedUserIds)) {
+                    // Make explicitly sure it's a numeric array for JSON payload
+                    $apiUserIds = array_values($selectedUserIds);
+                    
+                    $locResponse = $this->api->post('/locations/multiple_users', [
+                            'user_ids'   => $apiUserIds,
+                            'date'       => $dateApi ?: date('Y-m-d'),
+                            'start_hour' => $startHour ?: null,
+                            'end_hour'   => $endHour   ?: null,
+                            'limit'      => $locationLimit <= 0 ? 500 : $locationLimit,
+                            'is_active'  => null,
+                            'is_stopped' => null,
+                        ]);
+
+                    $responseData = $locResponse->json('data');
+                    if ($locResponse->successful() && is_array($responseData)) {
+                        foreach ($responseData as $userData) {
+                            $uid = $userData['user_id'] ?? $userData['id'] ?? null;
+                            if ($uid) {
+                                $locs = array_map(function($l) {
+                                    return [
+                                        'lat'     => $l['latitude'],
+                                        'lng'     => $l['longitude'],
+                                        'time'    => $l['recorded_at'] ?? null,
+                                        'stopped' => $l['stopped_time'] ?? null,
+                                    ];
+                                }, $userData['locations'] ?? []);
+
+                                // Xronologik tartib: Eski muddatdan -> yangi muddatga qarab
+                                usort($locs, function($a, $b) {
+                                    $timeA = $a['time'] ? strtotime($a['time']) : 0;
+                                    $timeB = $b['time'] ? strtotime($b['time']) : 0;
+                                    return $timeA - $timeB;
+                                });
+
+                                $locationIndex[(string)$uid] = $locs;
+                            }
+                        }
                     }
                 }
             }
 
-            // Users from API
-            $isActiveApi = null;
-            if ($isActive === 'true') {
-                $isActiveApi = "true";
-            } elseif ($isActive === 'false') {
-                $isActiveApi = "false";
-            }
-
-            $dateApi = null;
-            if ($selectedDate) {
-                $timestamp = strtotime($selectedDate);
-                if ($timestamp) {
-                    $dateApi = date('Y-m-d', $timestamp);
-                }
-            }
-
-            /** @var \Illuminate\Http\Client\Response $usersResponse */
-            $usersResponse = Http::timeout(10)->withToken($token)->post("{$this->baseUrl}/users", [
-                'search_term' => $search,
-                'is_active' => $isActiveApi,
-                'branch_guid' => $selectedBranch ?: null,
-                'is_stopped' => null,
-                'date' => $dateApi,
-                'start_hour' => null,
-                'end_hour' => null,
-                'min_stopped_minutes' => 0,
-                'page' => $page,
-                'page_size' => 10, // Changed to 10
-            ]);
-
-            if ($usersResponse->successful() && $usersResponse->json('status')) {
-                $usersData = $usersResponse->json('data') ?? [];
-                $pagination = [
-                    'total_count' => $usersResponse->json('total_count') ?? 0,
-                    'page' => $usersResponse->json('page') ?? $page,
-                    'page_size' => $usersResponse->json('page_size') ?? 10,
-                    'total_pages' => $usersResponse->json('total_pages') ?? 0,
-                    'has_next_page' => $usersResponse->json('has_next_page') ?? false,
-                    'has_previous_page' => $usersResponse->json('has_previous_page') ?? false,
-                ];
-            }
+            return view('undiruvchilar.map', compact(
+                'branches', 'selectedBranch', 'selectedBranchName',
+                'isActive', 'selectedStatusName',
+                'selectedDate', 'selectedDateText',
+                'startHour', 'endHour', 'selectedTimeText',
+                'usersData', 'pagination', 'search',
+                'locationLimit', 'locationIndex', 'selectedUserIds'
+            ));
+        } catch (\Throwable $e) {
+            return back()->with('error', "Xarita yuklanishida xatolik yuz berdi: " . $e->getMessage());
         }
-
-        return view('undiruvchilar.index', compact('branches', 'selectedBranch', 'selectedBranchName', 'isActive', 'selectedStatusName', 'selectedDate', 'selectedDateText', 'usersData', 'pagination'));
     }
 
-    public function map()
+    /**
+     * Map page AJAX ko'p userlar lokatsiyasini (yo'nalishni) olish
+     */
+    public function getMultipleLocations(\Illuminate\Http\Request $request)
     {
-        return view('undiruvchilar.map');
+        try {
+            $payload = [
+                'user_ids' => $request->json('user_ids', []),
+                'date' => $request->json('date'),
+                'start_hour' => $request->json('start_hour'),
+                'end_hour' => $request->json('end_hour'),
+                'limit' => $request->json('limit', 0),
+                'is_active' => $request->json('is_active', false) === 'true' || $request->json('is_active', false) === true,
+                'is_stopped' => $request->json('is_stopped', null)
+            ];
+
+            $response = $this->api->post('/locations/multiple_users', $payload);
+
+            if ($response->successful()) {
+                return response()->json($response->json());
+            }
+
+            return response()->json(['status' => false, 'message' => 'API Error', 'details' => $response->body()], 400);
+
+        } catch (\Throwable $e) {
+            return response()->json(['status' => false, 'message' => 'Tarmoq xatosi: ' . $e->getMessage()], 500);
+        }
     }
 }
