@@ -256,7 +256,7 @@ class UndiruvchiController extends Controller
                             'is_active'  => null,
                             'is_stopped' => null,
                         ]);
-                        dd($locResponse->json('data'));
+                        // dd($locResponse->json('data'));
 
                         // dd([
                         //     'user_ids'   => $selectedUserIds,
@@ -268,8 +268,9 @@ class UndiruvchiController extends Controller
                         //     'is_stopped' => null,
                         // ]);
 
-                    if ($locResponse->successful() && $locResponse->json('status')) {
-                        foreach ($locResponse->json('data') ?? [] as $userData) {
+                    $responseData = $locResponse->json('data');
+                    if ($locResponse->successful() && is_array($responseData)) {
+                        foreach ($responseData as $userData) {
                             $uid = $userData['user_id'] ?? $userData['id'] ?? null;
                             if ($uid) {
                                 $locationIndex[(string)$uid] = array_map(fn($l) => [

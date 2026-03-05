@@ -228,8 +228,8 @@
                 
                 // Agar tanlangan user bo'lsa, uning xaritasini $locationIndex dan olamiz (oxirgi joylashuvi)
                 if ($isUserSelected && isset($locationIndex[$uId]) && !empty($locationIndex[$uId])) {
-                    // Xavfsiz usul - birinchi elementni olish (chunki 0 indeksda bo'lmasligi mumkin)
-                    $lastL = reset($locationIndex[$uId]);
+                    // API jo'natgan ro'yhat xronologik bo'lsa, massiv oxiridagi eng oxirgi yangi lokatsiyani olamiz.
+                    $lastL = end($locationIndex[$uId]);
                     if (isset($lastL['lat'], $lastL['lng'])) {
                         $lat = $lastL['lat'];
                         $lng = $lastL['lng'];
@@ -333,6 +333,10 @@
             
             if (currentUrl.searchParams.has('selected_users[]')) {
                 currentUrl.searchParams.delete('selected_users[]');
+                shouldRedirect = true;
+            }
+            if (currentUrl.searchParams.has('date')) {
+                currentUrl.searchParams.delete('date');
                 shouldRedirect = true;
             }
             if (currentUrl.searchParams.has('start_hour')) {
