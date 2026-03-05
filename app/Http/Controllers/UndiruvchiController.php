@@ -230,22 +230,43 @@ class UndiruvchiController extends Controller
 
                 // ---- Faqat URL da tanlangan userlarni lokatsiyasini olish ----
                 // Sidebar da user tanlanganda URL da ?selected_users[]=ID bo'ladi
-                $selectedUserIds = array_values(array_filter(
-                    array_map('intval', $request->query('selected_users', []))
-                ));
+                $rawSelectedUsers = $request->query('selected_users', []);
+                $selectedUserIds = [];
+                if (is_array($rawSelectedUsers)) {
+                    $selectedUserIds = array_values(array_filter(
+                        array_map('intval', $rawSelectedUsers)
+                    ));
+                } elseif (is_string($rawSelectedUsers)) {
+                    // Agar string ko'rinishida bitta ID kelgan bo'lsa
+                    $selectedUserIds = array_filter([intval($rawSelectedUsers)]);
+                }
 
                 if (!empty($selectedUserIds)) {
+                    // Make explicitly sure it's a numeric array for JSON payload
+                    $apiUserIds = array_values($selectedUserIds);
+                    
                     $locResponse = app(\App\Services\ApiService::class)->client()
                         ->asJson()
                         ->post('http://location-undiruv.garant.uz/api/locations/multiple_users', [
-                            'user_ids'   => $selectedUserIds,
+                            'user_ids'   => $apiUserIds,
                             'date'       => $dateApi ?: date('Y-m-d'),
                             'start_hour' => $startHour ?: null,
                             'end_hour'   => $endHour   ?: null,
                             'limit'      => $locationLimit,
-                            'is_active'  => false,
+                            'is_active'  => null,
                             'is_stopped' => null,
                         ]);
+                        dd($locResponse->json('data'));
+
+                        // dd([
+                        //     'user_ids'   => $selectedUserIds,
+                        //     'date'       => $dateApi ?: date('Y-m-d'),
+                        //     'start_hour' => $startHour ?: null,
+                        //     'end_hour'   => $endHour   ?: null,
+                        //     'limit'      => $locationLimit,
+                        //     'is_active'  => false,
+                        //     'is_stopped' => null,
+                        // ]);
 
                     if ($locResponse->successful() && $locResponse->json('status')) {
                         foreach ($locResponse->json('data') ?? [] as $userData) {

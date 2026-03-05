@@ -6,6 +6,30 @@
 
 @push('styles')
 <link href="{{ asset('assets/css/map.css') }}?v={{ time() }}" rel="stylesheet">
+<style>
+    .custom-checkbox {
+        width: 20px; 
+        height: 20px; 
+        border-radius: 4px; 
+        border: 2px solid #E6E4EA; 
+        background-color: #FFF; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        transition: all 0.2s; 
+        pointer-events: none;
+    }
+    .custom-checkbox.checked {
+        border-color: #7B48FF;
+        background-color: #7B48FF;
+    }
+    .custom-checkbox .check-icon {
+        display: none;
+    }
+    .custom-checkbox.checked .check-icon {
+        display: block;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -204,12 +228,17 @@
                 
                 // Agar tanlangan user bo'lsa, uning xaritasini $locationIndex dan olamiz (oxirgi joylashuvi)
                 if ($isUserSelected && isset($locationIndex[$uId]) && !empty($locationIndex[$uId])) {
-                    $lastL = end($locationIndex[$uId]);
-                    $lat = $lastL['lat'];
-                    $lng = $lastL['lng'];
+                    // Xavfsiz usul - birinchi elementni olish (chunki 0 indeksda bo'lmasligi mumkin)
+                    $lastL = reset($locationIndex[$uId]);
+                    if (isset($lastL['lat'], $lastL['lng'])) {
+                        $lat = $lastL['lat'];
+                        $lng = $lastL['lng'];
+                    }
                 }
 
-                if (!$lat || !$lng) continue; // Koordinatasi yo'q odam xaritaga tushmaydi!
+                // Vergul (,) muammosini oldini olish
+                $latStr = $lat ? str_replace(',', '.', (string)$lat) : '';
+                $lngStr = $lng ? str_replace(',', '.', (string)$lng) : '';
 
                 $phone = $user['phone'] ?? '';
                 $formattedPhone = $phone;
@@ -223,12 +252,22 @@
                 
                 $imageUrl = !empty($user['image']) ? $user['image'] : 'https://ui-avatars.com/api/?name=' . urlencode($user['name'] ?? 'A') . '&background=7B48FF&color=fff';
             @endphp
-            <div class="map-person-item {{ ($i === 0 && empty($selectedUserIds)) || $isUserSelected ? 'active' : '' }}"
+            <div class="map-person-item {{ $isUserSelected ? 'active' : '' }}"
                  data-id="{{ $uId }}"
-                 data-lat="{{ $lat }}" data-lng="{{ $lng }}"
+                 data-lat="{{ $latStr }}" data-lng="{{ $lngStr }}"
                  data-name="{{ $user['name'] ?? 'Noma\'lum' }}" data-status="{{ $statusStr }}"
                  data-phone="{{ $formattedPhone }}" data-image="{{ $imageUrl }}">
-                <span class="map-person-dot dot-{{ $statusStr }}"></span>
+                
+                {{-- Kvadrat galichka (Checkbox) --}}
+                <div class="map-checkbox-wrapper" style="margin-right: 12px; display: flex; align-items: center;">
+                    <div class="custom-checkbox {{ $isUserSelected ? 'checked' : '' }}">
+                        <svg class="check-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                </div>
+
+                <span class="map-person-dot dot-{{ $statusStr }}" style="margin-right: 12px;"></span>
                 <span class="map-person-name" style="flex: 1;">{{ $user['name'] ?? 'Noma\'lum' }}</span>
                 <img src="{{ asset('assets/images/strelka.svg') }}" width="24" height="24" class="map-person-arrow" alt="Arrow">
             </div>
@@ -265,6 +304,52 @@
         startHour: '{{ $startHour ?? "" }}',
         endHour: '{{ $endHour ?? "" }}'
     };
+
+    // --- Sahifa yangilanganda yoki Orqaga/Oldinga qaytilgan bo'lsa tanlanganlarni tozalash ---
+    (function() {
+        // performance.navigation is deprecated in modern browsers but still widely supported.
+        // We also check PerformanceNavigationTiming
+        var isReloadOrBack = false;
+        
+        if (window.performance) {
+            var navEntries = window.performance.getEntriesByType('navigation');
+            if (navEntries.length > 0) {
+                var navType = navEntries[0].type;
+                if (navType === 'reload' || navType === 'back_forward') {
+                    isReloadOrBack = true;
+                }
+            } else if (window.performance.navigation) {
+                // Fallback for older browsers
+                var type = window.performance.navigation.type;
+                if (type === 1 || type === 2) {
+                    isReloadOrBack = true;
+                }
+            }
+        }
+
+        if (isReloadOrBack) {
+            const currentUrl = new URL(window.location.href);
+            let shouldRedirect = false;
+            
+            if (currentUrl.searchParams.has('selected_users[]')) {
+                currentUrl.searchParams.delete('selected_users[]');
+                shouldRedirect = true;
+            }
+            if (currentUrl.searchParams.has('start_hour')) {
+                currentUrl.searchParams.delete('start_hour');
+                currentUrl.searchParams.delete('end_hour');
+                shouldRedirect = true;
+            }
+            if (currentUrl.searchParams.has('is_active')) {
+                currentUrl.searchParams.delete('is_active');
+                shouldRedirect = true;
+            }
+
+            if (shouldRedirect) {
+                window.location.replace(currentUrl.toString());
+            }
+        }
+    })();
 </script>
 <script src="https://api-maps.yandex.ru/2.1/?apikey={{ env('YANDEX_MAPS_API_KEY') }}&lang=uz_UZ" type="text/javascript"></script>
 <script>
@@ -274,10 +359,12 @@ ymaps.ready(function () {
     var coords   = rows.map(function(r){ return [parseFloat(r.dataset.lat), parseFloat(r.dataset.lng)]; });
     var statuses = rows.map(function(r){ return r.dataset.status; });
 
-    if (coords.length === 0) {
+    var validCoords = coords.filter(function(c) { return !isNaN(c[0]) && !isNaN(c[1]); });
+
+    if (validCoords.length === 0) {
         var map = new ymaps.Map('yandexMap', {
-            center: [41.311081, 69.240562], // Toshkent markazi fallback
-            zoom: 6,
+            center: [40.383333, 71.783333], // Farg'ona shahri fallback
+            zoom: 14,
             controls: [],
             type: 'yandex#map',
         }, {
@@ -285,7 +372,7 @@ ymaps.ready(function () {
         });
     } else {
         var map = new ymaps.Map('yandexMap', {
-            center: coords[0],
+            center: validCoords[0],
             zoom: 13,
             controls: [],
             type: 'yandex#map',
@@ -321,9 +408,14 @@ ymaps.ready(function () {
             '</div>'
         );
 
-        // Build custom markers
+        // (Marker initialization remains the same but zIndex logic for the first item was removed if not explicitly selected)
         var placemarks = [];
         coords.forEach(function(c, i) {
+            if (isNaN(c[0]) || isNaN(c[1])) {
+                placemarks.push(null);
+                return;
+            }
+
             var color = statuses[i] === 'green' ? '#45BF84' : '#D49859';
             var glowColor = statuses[i] === 'green' ? 'rgba(33, 150, 243, 0.7)' : 'rgba(244, 67, 54, 0.7)'; // Blue for online, Red for offline
             var borderColor = statuses[i] === 'green' ? '#2196F3' : '#F44336';
@@ -393,9 +485,9 @@ ymaps.ready(function () {
                 </div>
             `;
 
-            // Ensure initial row active state matches the marker layout (first one active by default)
-            var currentLayout = (i === 0) ? activeMarkerLayout : MarkerLayout;
-            if (i === 0 && statuses[i]) {
+            var isSelected = rows[i].classList.contains('active');
+            var currentLayout = isSelected ? activeMarkerLayout : MarkerLayout;
+            if (isSelected && statuses[i]) {
                 glowColor = statuses[i] === 'green' ? 'rgba(33, 150, 243, 0.8)' : 'rgba(244, 67, 54, 0.8)';
             }
 
@@ -413,7 +505,7 @@ ymaps.ready(function () {
                     type: 'Rectangle',
                     coordinates: [[-32, -32], [32, 32]] // Make the clickable area large enough
                 },
-                zIndex: (i === 0) ? 1000 : 0
+                zIndex: isSelected ? 1000 : 0
             });
             map.geoObjects.add(pm);
             placemarks.push(pm);
@@ -429,8 +521,6 @@ ymaps.ready(function () {
             var userId = rows[idx].dataset.id;
             if (!userId) return;
 
-            console.log('[Polyline] userId:', userId, 'locs:', (locationIndex[userId] || []).length, 'allKeys:', Object.keys(locationIndex));
-
             if (drawnPolylines[userId]) {
                 map.geoObjects.remove(drawnPolylines[userId]);
                 delete drawnPolylines[userId];
@@ -439,7 +529,7 @@ ymaps.ready(function () {
 
             var locs = locationIndex[userId] || [];
             if (locs.length > 1) {
-                var lineCoords = locs.map(function(l) { return [l.lat, l.lng]; });
+                var lineCoords = locs.map(function(l) { return [parseFloat(l.lat), parseFloat(l.lng)]; });
                 var poly = new ymaps.Polyline(lineCoords, {}, {
                     strokeColor: statuses[idx] === 'green' ? '#2196F3' : '#F44336',
                     strokeWidth: 4,
@@ -449,13 +539,56 @@ ymaps.ready(function () {
                 drawnPolylines[userId] = poly;
                 // Pan to the last location point
                 map.panTo(lineCoords[lineCoords.length - 1], { flying: true, duration: 400 });
-            } else {
-                console.warn('[Polyline] No location data for userId:', userId);
             }
         }
 
+        // Draw initially if we have any route array
+        coords.forEach(function(c, i) {
+            var userId = rows[i] ? rows[i].dataset.id : null;
+            if (!userId) return;
+            
+            var locs = locationIndex[userId] || [];
+            if (locs.length > 1) {
+                var lineColor = statuses[i] === 'green' ? '#2196F3' : '#F44336';
+                var lineCoords = locs.map(function(l) { return [parseFloat(l.lat), parseFloat(l.lng)]; });
+                var poly = new ymaps.Polyline(lineCoords, {}, {
+                    strokeColor: lineColor,
+                    strokeWidth: 4,
+                    strokeOpacity: 0.85
+                });
+                map.geoObjects.add(poly);
+                drawnPolylines[userId] = poly;
+                
+                // Kichik tarixiy nuqtalarni (dot) chizish
+                locs.forEach(function(l) {
+                    var isAvatarPoint = (Math.abs(c[0] - parseFloat(l.lat)) < 0.000001 && Math.abs(c[1] - parseFloat(l.lng)) < 0.000001);
+                    if (!isAvatarPoint) {
+                        var pointPm = new ymaps.Placemark([parseFloat(l.lat), parseFloat(l.lng)], {}, {
+                            iconLayout: ymaps.templateLayoutFactory.createClass(
+                                '<div style="width: 14px; height: 14px; margin-top:-7px; margin-left:-7px; background: #fff; border: 3px solid ' + lineColor + '; border-radius: 50%;"></div>'
+                            ),
+                            zIndex: 100 // Avatar emas, orqa fonda turishi uchun
+                        });
+                        map.geoObjects.add(pointPm);
+                    }
+                });
+            }
+        });
+
+        // Hamma elementlar qo'shilib bo'lgandan so'ng xaritani ularga moslash
+        setTimeout(function() {
+            var bounds = map.geoObjects.getBounds();
+            if (bounds) {
+                var marginPx = window.innerWidth > 900 ? [40, 40, 40, 360] : 40; // chap panel uchun margin [top, right, bottom, left]
+                map.setBounds(bounds, { checkZoomRange: true, zoomMargin: marginPx, duration: 400 }).then(function() {
+                    if (map.getZoom() > 16) map.setZoom(16);
+                });
+            }
+        }, 150);
+
         // Marker click: toggle polyline + open balloon
         coords.forEach(function(c, i) {
+            if (!placemarks[i]) return;
             placemarks[i].events.add('click', function() {
                 togglePolyline(i);
                 var row = rows[i];
@@ -471,23 +604,62 @@ ymaps.ready(function () {
             });
         });
 
+    // ---- Checkbox o'ziga bosilganda faqat belgilash (Sahifa yangilanmaydi) ----
+    document.querySelectorAll('.map-checkbox-wrapper').forEach(function(wrapper) {
+        wrapper.addEventListener('click', function(e) {
+            e.stopPropagation(); // Muxim: Qator clickini to'xtatadi (zamros ketmaydi)
+            var cb = this.querySelector('.custom-checkbox');
+            if (cb) cb.classList.toggle('checked');
+            
+            var row = this.closest('.map-person-item');
+            if (row) row.classList.toggle('active');
+        });
+    });
+
     // ---- Row click: URL orqali navigate ----
     function setActive(idx) {
         var row = rows[idx];
         var userId = row.dataset.id;
         if (!userId) return;
 
+        // Visual feedback
+        var cb = row.querySelector('.custom-checkbox');
+        if (cb) cb.classList.toggle('checked');
+        row.classList.toggle('active');
+        
         var currentUrl = new URL(window.location.href);
-        // Get current selected_users list from URL
-        var selected = currentUrl.searchParams.getAll('selected_users[]');
+        currentUrl.searchParams.delete('selected_users[]');
+        
+        // Barcha belgilangan ismlarni (aktiv qatorlarni) yig'ib bazaga jo'natamiz
+        document.querySelectorAll('.map-person-item.active').forEach(function(r) {
+            if (r.dataset.id) {
+                currentUrl.searchParams.append('selected_users[]', r.dataset.id);
+            }
+        });
 
-        if (selected.includes(userId)) {
-            // Deselect: remove from list
-            currentUrl.searchParams.delete('selected_users[]');
-            selected.filter(id => id !== userId).forEach(id => currentUrl.searchParams.append('selected_users[]', id));
+        // "Yo'nalishlar orqali" swichining holatini ham olib urlga qo'shib yuboramiz
+        var directionSwitch = document.getElementById('mapDirectionSwitch');
+        if (directionSwitch) {
+            currentUrl.searchParams.set('location_limit', directionSwitch.checked ? '0' : '1');
+        }
+
+        // Kutib turgan Sana filterini olib jo'natamiz
+        var calendarDropdown = document.getElementById('mapCalendarDropdown');
+        if (calendarDropdown && calendarDropdown.dataset.selectedDate) {
+            currentUrl.searchParams.set('date', calendarDropdown.dataset.selectedDate);
         } else {
-            // Select: add to list
-            currentUrl.searchParams.append('selected_users[]', userId);
+            // Agar tanlanmagan yoki tozalangan bo'lsa
+            currentUrl.searchParams.delete('date');
+        }
+
+        // Kutib turgan Vaqt filterlarini olib jo'natamiz
+        var timeDropdown = document.getElementById('mapTimeDropdown');
+        if (timeDropdown && timeDropdown.dataset.startHour && timeDropdown.dataset.endHour) {
+            currentUrl.searchParams.set('start_hour', timeDropdown.dataset.startHour);
+            currentUrl.searchParams.set('end_hour', timeDropdown.dataset.endHour);
+        } else {
+            currentUrl.searchParams.delete('start_hour');
+            currentUrl.searchParams.delete('end_hour');
         }
 
         window.location.href = currentUrl.toString();
@@ -496,11 +668,10 @@ ymaps.ready(function () {
     // Attach listener to individual rows
     rows.forEach(function(r, i){ r.addEventListener('click', function(){ setActive(i); }); });
 
-    // Listener for Switch: toggle location_limit URL param
+    // Listener for Switch: toggle location_limit URL param (Faqat state o'zgaradi, reload bo'lmaydi)
     document.getElementById('mapDirectionSwitch').addEventListener('change', function() {
-        var currentUrl = new URL(window.location.href);
-        currentUrl.searchParams.set('location_limit', this.checked ? '0' : '1');
-        window.location.href = currentUrl.toString();
+        // Bu joyda endi sahifa yangilanishiga ehtiyoj yo'q, chunki
+        // biz holatni setActive funksiyasi chaqirilganda URL'ga qo'shamiz
     });
 
     // ---- Tabs ----
@@ -508,6 +679,10 @@ ymaps.ready(function () {
         tab.addEventListener('click', function() {
             var type = tab.dataset.tab;
             const currentUrl = new URL(window.location.href);
+            
+            // To'plamni yengilash: Tanlanganlarni o'chirish
+            currentUrl.searchParams.delete('selected_users[]');
+
             if(type === 'all') {
                 currentUrl.searchParams.delete('is_active');
             } else {
@@ -532,6 +707,9 @@ ymaps.ready(function () {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 const currentUrl = new URL(window.location.href);
+                // To'plamni yengilash: Tanlanganlarni o'chirish
+                currentUrl.searchParams.delete('selected_users[]');
+                
                 if (this.value) {
                     currentUrl.searchParams.set('search', this.value);
                 } else {
@@ -788,14 +966,14 @@ ymaps.ready(function () {
                 const d = String(startDate.getDate()).padStart(2, '0');
                 const dateStr = `${y}-${m}-${d}`;
                 
-                const currentUrl = new URL(window.location.href);
-                currentUrl.searchParams.set('date', dateStr);
-                window.location.href = currentUrl.toString();
+                // Sahifani yangilamasdan faqat vizual turni o'zgartiramiz
+                document.getElementById('mapDateFilterText').innerText = `${d} ${shortMonths[startDate.getMonth()]} ${y}`;
+                dropdown.dataset.selectedDate = dateStr;
             } else {
-                const currentUrl = new URL(window.location.href);
-                currentUrl.searchParams.delete('date');
-                window.location.href = currentUrl.toString();
+                document.getElementById('mapDateFilterText').innerText = 'Sanani tanlang';
+                delete dropdown.dataset.selectedDate;
             }
+            dropdown.classList.remove('active');
         });
         setupCalendar();
         updateDisplay();
@@ -951,10 +1129,13 @@ ymaps.ready(function () {
         btnSave.addEventListener('click', () => {
             const sh = pad(timeFrom.h) + ':' + pad(timeFrom.m);
             const eh = pad(timeTo.h) + ':' + pad(timeTo.m);
-            const currentUrl = new URL(window.location.href);
-            currentUrl.searchParams.set('start_hour', sh);
-            currentUrl.searchParams.set('end_hour', eh);
-            window.location.href = currentUrl.toString();
+            
+            // Sahifani yangilamasdan vizual va data qadriyatlarini o'zgartiramiz
+            document.getElementById('mapTimeFilterText').innerText = `${sh} - ${eh}`;
+            timeDropdown.dataset.startHour = sh;
+            timeDropdown.dataset.endHour = eh;
+            
+            timeDropdown.style.display = 'none';
         });
 
         document.addEventListener('click', function(e) {
