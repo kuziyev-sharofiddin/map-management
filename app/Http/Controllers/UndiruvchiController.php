@@ -252,7 +252,7 @@ class UndiruvchiController extends Controller
                             'date'       => $dateApi ?: date('Y-m-d'),
                             'start_hour' => $startHour ?: null,
                             'end_hour'   => $endHour   ?: null,
-                            'limit'      => $locationLimit,
+                            'limit'      => $locationLimit <= 0 ? 500 : $locationLimit,
                             'is_active'  => null,
                             'is_stopped' => null,
                         ]);
@@ -273,12 +273,23 @@ class UndiruvchiController extends Controller
                         foreach ($responseData as $userData) {
                             $uid = $userData['user_id'] ?? $userData['id'] ?? null;
                             if ($uid) {
-                                $locationIndex[(string)$uid] = array_map(fn($l) => [
-                                    'lat'     => $l['latitude'],
-                                    'lng'     => $l['longitude'],
-                                    'time'    => $l['recorded_at'] ?? null,
-                                    'stopped' => $l['stopped_time'] ?? null,
-                                ], $userData['locations'] ?? []);
+                                $locs = array_map(function($l) {
+                                    return [
+                                        'lat'     => $l['latitude'],
+                                        'lng'     => $l['longitude'],
+                                        'time'    => $l['recorded_at'] ?? null,
+                                        'stopped' => $l['stopped_time'] ?? null,
+                                    ];
+                                }, $userData['locations'] ?? []);
+
+                                // Xronologik tartib: Eski muddatdan -> yangi muddatga qarab
+                                usort($locs, function($a, $b) {
+                                    $timeA = $a['time'] ? strtotime($a['time']) : 0;
+                                    $timeB = $b['time'] ? strtotime($b['time']) : 0;
+                                    return $timeA - $timeB;
+                                });
+
+                                $locationIndex[(string)$uid] = $locs;
                             }
                         }
                     }
@@ -291,7 +302,7 @@ class UndiruvchiController extends Controller
                 'selectedDate', 'selectedDateText',
                 'startHour', 'endHour', 'selectedTimeText',
                 'usersData', 'pagination', 'search',
-                'locationLimit', 'locationIndex'
+                'locationLimit', 'locationIndex', 'selectedUserIds'
             ));
         } catch (\Throwable $e) {
             return back()->with('error', "Xarita yuklanishida xatolik yuz berdi: " . $e->getMessage());
