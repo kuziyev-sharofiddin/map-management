@@ -132,6 +132,13 @@
             <div style="padding: 20px; text-align: center; color: #888;">Undiruvchilar topilmadi</div>
             @endforelse
         </div>
+        
+        {{-- Qidirish (Apply Selection) Button --}}
+        <div style="padding: 16px; border-top: 1px solid #EFEFEF; background: #fff;">
+            <button id="mapApplySelectionBtn" style="width: 100%; padding: 12px; background: #7B48FF; color: #fff; border: none; border-radius: 10px; font-weight: 500; font-family: 'Inter', sans-serif; cursor: pointer; transition: background 0.2s;">
+                Xaritadan ko'rish
+            </button>
+        </div>
 
     </div>
 
@@ -276,66 +283,16 @@
         endHour: '{{ $endHour ?? "" }}'
     };
 
-    // --- Sahifa yangilanganda yoki Orqaga/Oldinga qaytilgan bo'lsa tanlanganlarni tozalash ---
+    // --- Default Date Redirect Logic (agar URL da date bo'lmasa) ---
     (function() {
-        // performance.navigation is deprecated in modern browsers but still widely supported.
-        // We also check PerformanceNavigationTiming
-        var isReloadOrBack = false;
-        
-        if (window.performance) {
-            var navEntries = window.performance.getEntriesByType('navigation');
-            if (navEntries.length > 0) {
-                var navType = navEntries[0].type;
-                if (navType === 'reload' || navType === 'back_forward') {
-                    isReloadOrBack = true;
-                }
-            } else if (window.performance.navigation) {
-                // Fallback for older browsers
-                var type = window.performance.navigation.type;
-                if (type === 1 || type === 2) {
-                    isReloadOrBack = true;
-                }
-            }
-        }
-
-        // Agar sahifaga birinchi marta kirilayotgan bo'lsa va date yo'q bo'lsa, bugungi sanani URL ga qo'shib yo'naltir
-        if (!isReloadOrBack) {
-            const currentUrl = new URL(window.location.href);
-            if (!currentUrl.searchParams.has('date')) {
-                const today = new Date();
-                const yyyy = today.getFullYear();
-                const mm = String(today.getMonth() + 1).padStart(2, '0');
-                const dd = String(today.getDate()).padStart(2, '0');
-                currentUrl.searchParams.set('date', yyyy + '-' + mm + '-' + dd);
-                window.location.replace(currentUrl.toString());
-            }
-        }
-
-        if (isReloadOrBack) {
-            const currentUrl = new URL(window.location.href);
-            let shouldRedirect = false;
-            
-            if (currentUrl.searchParams.has('selected_users[]')) {
-                currentUrl.searchParams.delete('selected_users[]');
-                shouldRedirect = true;
-            }
-            if (currentUrl.searchParams.has('date')) {
-                currentUrl.searchParams.delete('date');
-                shouldRedirect = true;
-            }
-            if (currentUrl.searchParams.has('start_hour')) {
-                currentUrl.searchParams.delete('start_hour');
-                currentUrl.searchParams.delete('end_hour');
-                shouldRedirect = true;
-            }
-            if (currentUrl.searchParams.has('is_active')) {
-                currentUrl.searchParams.delete('is_active');
-                shouldRedirect = true;
-            }
-
-            if (shouldRedirect) {
-                window.location.replace(currentUrl.toString());
-            }
+        const currentUrl = new URL(window.location.href);
+        if (!currentUrl.searchParams.has('date')) {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            currentUrl.searchParams.set('date', yyyy + '-' + mm + '-' + dd);
+            window.location.replace(currentUrl.toString());
         }
     })();
 </script>
@@ -612,7 +569,7 @@ ymaps.ready(function () {
         });
     });
 
-    // ---- Row click: URL orqali navigate ----
+    // ---- Row click: Faqat vizual tanlash (URL ga o'tmaydi) ----
     function setActive(idx) {
         var row = rows[idx];
         var userId = row.dataset.id;
@@ -622,43 +579,30 @@ ymaps.ready(function () {
         var cb = row.querySelector('.custom-checkbox');
         if (cb) cb.classList.toggle('checked');
         row.classList.toggle('active');
-        
-        var currentUrl = new URL(window.location.href);
-        currentUrl.searchParams.delete('selected_users[]');
-        
-        // Barcha belgilangan ismlarni (aktiv qatorlarni) yig'ib bazaga jo'natamiz
-        document.querySelectorAll('.map-person-item.active').forEach(function(r) {
-            if (r.dataset.id) {
-                currentUrl.searchParams.append('selected_users[]', r.dataset.id);
-            }
+    }
+
+    // Attach listener to individual rows
+    rows.forEach(function(r, i){ r.addEventListener('click', function(){ setActive(i); }); });
+
+    // ---- Qidirish (Xaritadan ko'rish) tugmasi ----
+    var applySelectionBtn = document.getElementById('mapApplySelectionBtn');
+    if (applySelectionBtn) {
+        applySelectionBtn.addEventListener('click', function() {
+            var currentUrl = new URL(window.location.href);
+            
+            // Avvalgi barcha tanlangan userlarni url dan tozalaymiz
+            currentUrl.searchParams.delete('selected_users[]');
+            
+            // Faqat hozirgi aktiv elementlarni url ga qo'shamiz
+            document.querySelectorAll('.map-person-item.active').forEach(function(r) {
+                if (r.dataset.id) {
+                    currentUrl.searchParams.append('selected_users[]', r.dataset.id);
+                }
+            });
+
+            // Qolgan barcha URL parametrlar o'z o'rnida qoladi (filial, date, time va h.k.)
+            window.location.href = currentUrl.toString();
         });
-
-        // "Yo'nalishlar orqali" swichining holatini ham olib urlga qo'shib yuboramiz
-        var directionSwitch = document.getElementById('mapDirectionSwitch');
-        if (directionSwitch) {
-            currentUrl.searchParams.set('location_limit', directionSwitch.checked ? '0' : '1');
-        }
-
-        // Kutib turgan Sana filterini olib jo'natamiz
-        var calendarDropdown = document.getElementById('mapCalendarDropdown');
-        if (calendarDropdown && calendarDropdown.dataset.selectedDate) {
-            currentUrl.searchParams.set('date', calendarDropdown.dataset.selectedDate);
-        } else {
-            // Agar tanlanmagan yoki tozalangan bo'lsa
-            currentUrl.searchParams.delete('date');
-        }
-
-        // Kutib turgan Vaqt filterlarini olib jo'natamiz
-        var timeDropdown = document.getElementById('mapTimeDropdown');
-        if (timeDropdown && timeDropdown.dataset.startHour && timeDropdown.dataset.endHour) {
-            currentUrl.searchParams.set('start_hour', timeDropdown.dataset.startHour);
-            currentUrl.searchParams.set('end_hour', timeDropdown.dataset.endHour);
-        } else {
-            currentUrl.searchParams.delete('start_hour');
-            currentUrl.searchParams.delete('end_hour');
-        }
-
-        window.location.href = currentUrl.toString();
     }
 
     // Attach listener to individual rows
