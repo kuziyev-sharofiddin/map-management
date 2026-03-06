@@ -246,7 +246,7 @@
                 $mapUrl = route('undiruvchilar.map', $mapUrlParams);
             @endphp
             <tr onclick="window.location.href='{{ $mapUrl }}'" style="cursor: pointer;" class="hover-row">
-                <td>{{ $index + 1 + (($pagination['page'] ?? 0) * ($pagination['page_size'] ?? 10)) }}</td>
+                <td>{{ $index + 1 + ((($pagination['page'] ?? 1) - 1) * ($pagination['page_size'] ?? 10)) }}</td>
                 <td style="text-align: center;">
                     @if(!empty($user['image']))
                         <img src="{{ $user['image'] }}" alt="Avatar" onclick="event.stopPropagation(); openImageModal(this.src)" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto; cursor: pointer; transition: transform 0.2s;">
@@ -293,8 +293,17 @@
         <!-- Pagination -->
         <div class="pagination-wrapper" style="margin-top: 50px;">
             <div class="pagination-links">
-                @if(($pagination['has_previous_page'] ?? false) || ($pagination['page'] ?? 0) > 0)
-                    <a href="{{ request()->fullUrlWithQuery(['page' => ($pagination['page'] ?? 0) - 1]) }}" class="page-link prev-link">
+                @php
+                    $currentPage = $pagination['page'] ?? 1;
+                    $totalPages = $pagination['total_pages'] ?? 1;
+                    if ($totalPages < 1) $totalPages = 1;
+                    
+                    $startPage = max(1, $currentPage - 1);
+                    $endPage = min($totalPages, $currentPage + 1);
+                @endphp
+
+                @if(($pagination['has_previous_page'] ?? false) || $currentPage > 1)
+                    <a href="{{ request()->fullUrlWithQuery(['page' => $currentPage - 1]) }}" class="page-link prev-link">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         Orqaga
                     </a>
@@ -304,16 +313,31 @@
                         Orqaga
                     </span>
                 @endif
-                
-                <a href="#" class="page-number active">{{ ($pagination['page'] ?? 0) + 1 }}</a>
-                @if(($pagination['total_pages'] ?? 0) > 1)
-                    <span class="page-dots">...</span>
-                    <!-- Last page link to allow fast skipping to end -->
-                    <a href="{{ request()->fullUrlWithQuery(['page' => ($pagination['total_pages'] ?? 1) - 1]) }}" class="page-number">{{ $pagination['total_pages'] ?? 1 }}</a>
+
+                @if($startPage > 1)
+                    <a href="{{ request()->fullUrlWithQuery(['page' => 1]) }}" class="page-number">1</a>
+                    @if($startPage > 2)
+                        <span class="page-dots">...</span>
+                    @endif
                 @endif
 
-                @if($pagination['has_next_page'] ?? false)
-                    <a href="{{ request()->fullUrlWithQuery(['page' => ($pagination['page'] ?? 0) + 1]) }}" class="page-link next-link">
+                @for($i = $startPage; $i <= $endPage; $i++)
+                    @if($i == $currentPage)
+                        <span class="page-number active">{{ $i }}</span>
+                    @else
+                        <a href="{{ request()->fullUrlWithQuery(['page' => $i]) }}" class="page-number">{{ $i }}</a>
+                    @endif
+                @endfor
+
+                @if($endPage < $totalPages)
+                    @if($endPage < $totalPages - 1)
+                        <span class="page-dots">...</span>
+                    @endif
+                    <a href="{{ request()->fullUrlWithQuery(['page' => $totalPages]) }}" class="page-number">{{ $totalPages }}</a>
+                @endif
+
+                @if(($pagination['has_next_page'] ?? false) || $currentPage < $totalPages)
+                    <a href="{{ request()->fullUrlWithQuery(['page' => $currentPage + 1]) }}" class="page-link next-link">
                         Keyingi
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </a>

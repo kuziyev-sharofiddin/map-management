@@ -253,10 +253,14 @@
             </div>
 
             {{-- Clear Button --}}
-            <button class="mtf-clear-btn" id="mapClearAllFilters" title="Barcha filtrlarni tozalash">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            @if(request()->hasAny(['branch_guid', 'is_active', 'date', 'start_hour', 'end_hour', 'search', 'selected_users']))
+            <a href="{{ route('undiruvchilar.map') }}" class="filter-btn" style="text-decoration: none; color: #FF4D4D; border-color: #FF4D4D; display: flex; align-items: center; gap: 6px; box-sizing: border-box; background: #fff; height: 38px; padding: 0 12px; border-radius: 8px; border: 1px solid #FF4D4D; font-size: 13px; font-weight: 500;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.36,2.72L20.78,4.14L15.06,9.85C16.13,11.39 16.28,13.24 15.38,14.44L9.06,8.12C10.26,7.22 12.11,7.37 13.65,8.44L19.36,2.72M5.93,17.57C3.92,15.56 2.69,13.16 2.35,10.92L7.23,8.83L14.67,16.27L12.58,21.15C10.34,20.81 7.94,19.58 5.93,17.57Z" />
+                </svg>
                 Tozalash
-            </button>
+            </a>
+            @endif
         </div>
 
         <!-- Custom Zoom Controls -->
@@ -726,14 +730,6 @@ ymaps.ready(function () {
             window.location.href = currentUrl.toString();
         });
     });
-
-    // ---- Clear All Filters Button ----
-    var clearAllBtn = document.getElementById('mapClearAllFilters');
-    if (clearAllBtn) {
-        clearAllBtn.addEventListener('click', function() {
-            window.location.href = window.location.pathname;
-        });
-    }
 
     // ---- Search (person filter) ----
     const searchInput = document.getElementById('mapSearchInput');

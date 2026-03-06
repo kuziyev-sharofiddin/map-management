@@ -47,7 +47,7 @@ class UndiruvchiController extends Controller
                 $selectedDateText = 'Sanani tanlang';
             }
 
-            $page = (int) $request->query('page', 0);
+            $page = (int) $request->query('page', 1);
             $search = $request->query('search');
 
             $usersData = [];
@@ -103,16 +103,24 @@ class UndiruvchiController extends Controller
                     'end_hour' => null,
                     'min_stopped_minutes' => 0,
                     'page' => $page,
-                    'page_size' => 10, // Changed to 10
+                    'page_size' => 10,
                 ]);
 
                 if ($usersResponse->successful() && $usersResponse->json('status')) {
                     $usersData = $usersResponse->json('data') ?? [];
+                    $totalCount = $usersResponse->json('total_count') ?? 0;
+                    $rPageSize = $usersResponse->json('page_size') ?? 10;
+                    $rTotalPages = $usersResponse->json('total_pages');
+                    
+                    if (empty($rTotalPages) && $rPageSize > 0) {
+                        $rTotalPages = ceil($totalCount / $rPageSize);
+                    }
+
                     $pagination = [
-                        'total_count' => $usersResponse->json('total_count') ?? 0,
+                        'total_count' => $totalCount,
                         'page' => $usersResponse->json('page') ?? $page,
-                        'page_size' => $usersResponse->json('page_size') ?? 10,
-                        'total_pages' => $usersResponse->json('total_pages') ?? 0,
+                        'page_size' => $rPageSize,
+                        'total_pages' => (int) $rTotalPages,
                         'has_next_page' => $usersResponse->json('has_next_page') ?? false,
                         'has_previous_page' => $usersResponse->json('has_previous_page') ?? false,
                     ];
