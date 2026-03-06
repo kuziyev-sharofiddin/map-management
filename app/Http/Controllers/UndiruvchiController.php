@@ -48,13 +48,14 @@ class UndiruvchiController extends Controller
             }
 
             $page = (int) $request->query('page', 1);
+            $pageSize = (int) $request->query('page_size', 10);
             $search = $request->query('search');
 
             $usersData = [];
             $pagination = [
                 'total_count' => 0,
                 'page' => $page,
-                'page_size' => 10,
+                'page_size' => $pageSize,
                 'total_pages' => 0,
                 'has_next_page' => false,
                 'has_previous_page' => false,
@@ -103,7 +104,7 @@ class UndiruvchiController extends Controller
                     'end_hour' => null,
                     'min_stopped_minutes' => 0,
                     'page' => $page,
-                    'page_size' => 10,
+                    'page_size' => $pageSize,
                 ]);
 
                 if ($usersResponse->successful() && $usersResponse->json('status')) {

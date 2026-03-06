@@ -349,12 +349,29 @@
                 @endif
             </div>
             
-            <div class="total-records">
-                <span>( {{ $pagination['total_count'] ?? 0 }} ) ta undiruvchilar</span>
+            <div class="total-records" style="display: flex; align-items: center; gap: 16px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <label for="pageSizeSelect" style="font-size: 14px; color: #807b89; white-space: nowrap; font-weight: 500;">Ko'rish:</label>
+                    <select id="pageSizeSelect" onchange="changePageSize(this.value)" class="page-size-select">
+                        @foreach([10, 25, 50, 100] as $ps)
+                            <option value="{{ $ps }}" {{ ($pagination['page_size'] ?? 10) == $ps ? 'selected' : '' }}>{{ $ps }} ta</option>
+                        @endforeach
+                    </select>
+                </div>
+                <span style="font-size: 14px; color: #555;">( {{ $pagination['total_count'] ?? 0 }} ) ta undiruvchilar</span>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+function changePageSize(size) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('page_size', size);
+    url.searchParams.set('page', 1);
+    window.location.href = url.toString();
+}
+</script>
 
 <!-- Image Modal -->
 <div id="imageModal" style="display: none; position: fixed; z-index: 9999; padding-top: 100px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.3s ease;">
@@ -828,4 +845,27 @@ document.getElementById('imageModal').addEventListener('click', function(event) 
     }
 });
 </script>
+<style>
+.page-size-select {
+    height: 44px;
+    padding: 0 36px 0 14px;
+    border: 1px solid #E6E4EA;
+    border-radius: 12px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    background-color: #fff;
+    color: #151515;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23807b89' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    transition: border-color 0.2s;
+}
+.page-size-select:hover {
+    border-color: #7B48FF;
+}
+</style>
 @endpush
