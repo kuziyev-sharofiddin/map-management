@@ -1,0 +1,746 @@
+/* =========================================================================
+   MAP PAGE — map.css
+   ========================================================================= */
+
+/* Lock scroll — prevent page scroll on map page */
+html.map-page-html,
+body.map-page {
+    overflow: hidden;
+    height: 100%;
+}
+
+body.map-page .dashboard-layout {
+    height: 100vh;
+    overflow: hidden;
+}
+
+body.map-page .main-content {
+    overflow: hidden;
+    height: 100vh;
+    padding-bottom: 0;
+}
+
+body.map-page .content-body {
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---- Page Wrapper: matches full-xarita.svg content area (1138×923) ---- */
+.map-page-wrapper {
+    display: flex;
+    height: calc(100vh - 170px);
+    min-height: 400px;
+    background: #FFFFFF;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #EFEFEF;
+    margin-top: 10px;
+    margin-bottom: 24px;
+}
+
+/* =========================================================================
+   LEFT PANEL
+   ========================================================================= */
+.map-left-panel {
+    flex: 0 0 500px;
+    width: 500px;
+    min-width: 500px;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    background: #FFFFFF;
+    overflow: hidden;
+}
+
+/* --- Top card (back + search + filters) --- */
+.map-top-card {
+    background: #F5F4F9;
+    border-radius: 10px;
+    margin: 12px;
+    padding: 6px 0 4px;
+    flex-shrink: 0;
+}
+
+/* --- Back header row --- */
+.map-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 16px 14px;
+}
+
+.map-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #EFEFEF;
+    border-radius: 8px;
+    background: #FFFFFF;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.map-back-btn:hover {
+    background: #F5F4F9;
+}
+
+.map-panel-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #151515;
+}
+
+.map-search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #FFFFFF;
+    border: 1px solid #EFEFEF;
+    border-radius: 12px;
+    padding: 0 16px;
+    height: 50px;
+    margin: 0 16px 12px;
+    transition: border-color 0.2s;
+}
+
+.map-search-box:focus-within {
+    border-color: #7B48FF;
+}
+
+.map-search-box input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+    color: #151515;
+    font-family: 'Inter', sans-serif;
+}
+
+.map-search-box input::placeholder {
+    color: #ABABAB;
+}
+
+/* --- Filter rows (date / time) --- */
+.map-filter-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 16px 12px;
+}
+
+.map-filter-wrapper {
+    position: relative;
+}
+
+.map-hidden-input {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Calendar dropdown override for map page (opens to right) */
+.map-left-panel .custom-calendar-dropdown {
+    right: auto;
+    left: 0;
+    z-index: 1100;
+}
+
+/* =========================================================
+   Interactive Time Picker Custom CSS
+   ========================================================= */
+.time-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 302px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #EFEFEF;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+    z-index: 1100;
+    margin-top: 8px;
+    padding: 16px;
+    font-family: 'Inter', sans-serif;
+}
+
+.time-dropdown-header {
+    font-size: 16px;
+    font-weight: 600;
+    color: #151515;
+    margin-bottom: 16px;
+}
+
+.time-dropdown-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.time-tab {
+    flex: 1;
+    height: 44px;
+    border-radius: 10px;
+    border: 1px solid #EFEFEF;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    color: #807B89;
+    transition: all 0.2s;
+}
+
+.time-tab.active {
+    border-color: #7B48FF;
+    color: #7B48FF;
+}
+
+.time-tab .time-val {
+    color: #151515;
+}
+
+.time-tab.active .time-val {
+    color: #7B48FF;
+}
+
+.time-picker-body {
+    position: relative;
+    height: 160px;
+    background: #F5F4F9;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.time-picker-fade-top,
+.time-picker-fade-bottom {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.time-picker-fade-top {
+    top: 0;
+    background: linear-gradient(to bottom, #F5F4F9 0%, transparent 100%);
+}
+
+.time-picker-fade-bottom {
+    bottom: 0;
+    background: linear-gradient(to top, #F5F4F9 0%, transparent 100%);
+}
+
+.time-picker-select-overlay {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    right: 10%;
+    height: 44px;
+    transform: translateY(-50%);
+    border-top: 1px solid #151515;
+    border-bottom: 1px solid #151515;
+    pointer-events: none;
+    z-index: 4;
+}
+
+.time-wheels {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    position: relative;
+    z-index: 3;
+}
+
+.time-wheel {
+    flex: 1;
+    height: 100%;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    /* Firefox */
+    position: relative;
+    scroll-snap-type: y mandatory;
+}
+
+.time-wheel::-webkit-scrollbar {
+    display: none;
+    /* Safari/Chrome */
+}
+
+.wheel-scroller {
+    padding: 58px 0;
+    /* Padding creates empty space so elements can snap to center */
+}
+
+.time-wheel-item {
+    height: 44px;
+    line-height: 44px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 600;
+    color: #807B89;
+    scroll-snap-align: center;
+    user-select: none;
+    cursor: pointer;
+    transition: color 0.2s, font-size 0.2s;
+}
+
+.time-wheel-item.selected {
+    color: #151515;
+    font-size: 36px;
+}
+
+.time-colon {
+    font-size: 28px;
+    font-weight: 500;
+    color: #807B89;
+    user-select: none;
+}
+
+.time-dropdown-footer {
+    display: flex;
+    gap: 12px;
+}
+
+.time-btn-cancel,
+.time-btn-save {
+    flex: 1;
+    height: 44px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.time-btn-cancel {
+    background: transparent;
+    border: 1px solid #EFEFEF;
+    color: #807B89;
+}
+
+.time-btn-cancel:hover {
+    background: #F9F8FF;
+}
+
+.time-btn-save {
+    background: #7B48FF;
+    border: none;
+    color: #fff;
+}
+
+.time-btn-save:hover {
+    background: #6431e8;
+}
+
+.map-filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #FFFFFF;
+    border: 1px solid #EFEFEF;
+    border-radius: 12px;
+    padding: 0 16px;
+    height: 50px;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    color: #151515;
+    font-weight: 500;
+}
+
+.map-filter-btn:hover {
+    background: #F9F8FF;
+}
+
+.map-filter-btn-label {
+    flex: 1;
+    text-align: left;
+}
+
+.map-filter-btn-arrow {
+    color: #ABABAB;
+    flex-shrink: 0;
+}
+
+/* --- Status Tabs (Barchasi / Onlayn / Oflayn) --- */
+.map-tabs {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #EFEFEF;
+    padding: 0 16px;
+    margin-bottom: 0;
+}
+
+.map-tab {
+    flex: 1;
+    text-align: center;
+    padding: 14px 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #ABABAB;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: -1px;
+}
+
+.map-tab.active {
+    color: #7B48FF;
+    border-bottom-color: #7B48FF;
+    font-weight: 500;
+}
+
+.map-tab:hover:not(.active) {
+    color: #151515;
+}
+
+/* --- Person list --- */
+.map-person-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.map-person-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    cursor: pointer;
+    border-bottom: 1px solid #EFEFEF;
+    transition: background 0.15s;
+}
+
+.map-person-item:hover {
+    background: #F9F8FF;
+}
+
+.map-person-item.active {
+    background: #F4F0FF;
+}
+
+.map-person-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 2px solid currentColor;
+    background: transparent;
+}
+
+.map-person-dot.dot-orange {
+    color: #D49859;
+}
+
+.map-person-dot.dot-green {
+    color: #45BF84;
+}
+
+.map-person-info {
+    flex: 1;
+}
+
+.map-person-name {
+    font-size: 18px;
+    font-weight: 500;
+    color: #151515;
+}
+
+.map-person-arrow {
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+/* Custom Zoom Controls Overlay */
+.map-custom-zoom {
+    position: absolute;
+    bottom: 28px;
+    right: 28px;
+    z-index: 1000;
+    width: 60px;
+    height: 112px;
+}
+
+.map-custom-zoom img {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    pointer-events: none;
+    /* Let clicks pass through to absolute divs */
+}
+
+.map-custom-zoom .zoom-btn {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    cursor: pointer;
+    z-index: 2;
+}
+
+#mapZoomIn {
+    top: 0;
+}
+
+#mapZoomOut {
+    bottom: 0;
+}
+
+/* =========================================================================
+   RIGHT MAP AREA
+   ========================================================================= */
+.map-right-area {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    overflow: hidden;
+    background: #FFFFFF;
+}
+
+/* Map search bar overlay */
+.map-overlay-search {
+    position: absolute;
+    top: 28px;
+    left: 28px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    background: #FFFFFF;
+    border: 1px solid #EFEFEF;
+    border-radius: 12px;
+    height: 50px;
+    width: 292px;
+    padding: 0 16px;
+    transition: border-color 0.2s;
+}
+
+.map-overlay-search:focus-within {
+    border-color: #7B48FF;
+}
+
+.map-overlay-search .search-icon {
+    color: #ABABAB;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.map-overlay-search input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+    color: #151515;
+    font-family: 'Inter', sans-serif;
+}
+
+.map-overlay-search input::placeholder {
+    color: #ABABAB;
+}
+
+/* =========================================================================
+   TOP FILTER BAR (above the map inside right area)
+   ========================================================================= */
+.map-top-filter-bar {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #FFFFFF;
+    border: 1px solid #EFEFEF;
+    border-radius: 12px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    flex-wrap: wrap;
+}
+
+.mtf-item {
+    position: relative;
+}
+
+.mtf-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #F5F4F9;
+    border: 1px solid #EFEFEF;
+    border-radius: 10px;
+    padding: 0 14px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    color: #151515;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.mtf-btn:hover {
+    background: #EDE9FF;
+    border-color: #7B48FF;
+}
+
+.mtf-label {
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mtf-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 220px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #EFEFEF;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    z-index: 1200;
+}
+
+.map-right-area .custom-calendar-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 1200;
+}
+
+.map-right-area .time-dropdown {
+    top: calc(100% + 6px);
+}
+
+.mtf-switch-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #F5F4F9;
+    border: 1px solid #EFEFEF;
+    border-radius: 10px;
+    padding: 0 14px;
+    height: 40px;
+    cursor: default;
+}
+
+.mtf-switch-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #151515;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+}
+
+.mtf-clear-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #FFF0F0;
+    border: 1px solid #FFD5D5;
+    border-radius: 10px;
+    padding: 0 14px;
+    height: 40px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    color: #E53935;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    margin-left: auto;
+}
+
+.mtf-clear-btn:hover {
+    background: #FFE5E5;
+    border-color: #E53935;
+}
+
+#yandexMap {
+    position: absolute;
+    top: 72px;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 1;
+    border: 1px solid #EFEFEF;
+}
+
+/* Custom avatar marker */
+.map-avatar-marker {
+    width: 42px;
+    height: 52px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.map-avatar-marker img {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 3px solid #7B48FF;
+    object-fit: cover;
+}
+
+/* Leaflet popup */
+.map-popup-card {
+    padding: 2px;
+    min-width: 160px;
+}
+
+.map-popup-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #151515;
+    margin-bottom: 3px;
+}
+
+.map-popup-meta {
+    font-size: 12px;
+    color: #807B89;
+}
+
+/* Static SVG map image */
+.map-static-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Xarita.svg is 1440px wide; left 250px is the sidebar panel in the mockup.
+       Shift left so only the map right area shows. */
+    object-position: right center;
+    user-select: none;
+    pointer-events: none;
+}

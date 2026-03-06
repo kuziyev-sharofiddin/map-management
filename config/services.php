@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'api' => [
+        'base_url' => env('DOTNET_API_BASE_URL'),
+        'timeout' => env('DOTNET_API_TIMEOUT', 10),
+    ],
+
 ];
