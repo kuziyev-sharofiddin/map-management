@@ -924,14 +924,14 @@ ymaps.ready(function () {
                 const d = String(startDate.getDate()).padStart(2, '0');
                 const dateStr = `${y}-${m}-${d}`;
                 
-                // Sahifani yangilamasdan faqat vizual turni o'zgartiramiz
-                document.getElementById('mapDateFilterText').innerText = `${d} ${shortMonths[startDate.getMonth()]} ${y}`;
-                dropdown.dataset.selectedDate = dateStr;
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('date', dateStr);
+                window.location.href = currentUrl.toString();
             } else {
-                document.getElementById('mapDateFilterText').innerText = 'Sanani tanlang';
-                delete dropdown.dataset.selectedDate;
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.delete('date');
+                window.location.href = currentUrl.toString();
             }
-            dropdown.classList.remove('active');
         });
         setupCalendar();
         updateRangeClasses();
@@ -1089,12 +1089,10 @@ ymaps.ready(function () {
             const sh = pad(timeFrom.h) + ':' + pad(timeFrom.m);
             const eh = pad(timeTo.h) + ':' + pad(timeTo.m);
             
-            // Sahifani yangilamasdan vizual va data qadriyatlarini o'zgartiramiz
-            document.getElementById('mapTimeFilterText').innerText = `${sh} - ${eh}`;
-            timeDropdown.dataset.startHour = sh;
-            timeDropdown.dataset.endHour = eh;
-            
-            timeDropdown.style.display = 'none';
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('start_hour', sh);
+            currentUrl.searchParams.set('end_hour', eh);
+            window.location.href = currentUrl.toString();
         });
 
         document.addEventListener('click', function(e) {
