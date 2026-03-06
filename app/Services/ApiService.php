@@ -12,7 +12,7 @@ class ApiService
 
     public function __construct()
     {
-        $this->baseUrl = config('services.api.base_url', env('DOTNET_API_BASE_URL', 'http://10.100.104.128:5084/api'));
+        $this->baseUrl = config('services.api.base_url', env('DOTNET_API_BASE_URL'));
         $this->timeout = config('services.api.timeout', env('DOTNET_API_TIMEOUT', 10));
     }
 
@@ -36,7 +36,11 @@ class ApiService
      */
     public function get(string $endpoint, array $query = [])
     {
-        return $this->client()->get($endpoint, $query);
+        try {
+            return $this->client()->get($endpoint, $query);
+        } catch (\Exception $e) {
+            throw new \Exception("Backend xizmati bilan aloqa o'rnatib bo'lmadi. Iltimos, tizim administratoriga murojaat qiling yoki keyinroq qayta urinib ko'ring.");
+        }
     }
 
     /**
@@ -44,6 +48,10 @@ class ApiService
      */
     public function post(string $endpoint, array $data = [])
     {
-        return $this->client()->post($endpoint, $data);
+        try {
+            return $this->client()->post($endpoint, $data);
+        } catch (\Exception $e) {
+            throw new \Exception("Backend xizmati bilan aloqa o'rnatib bo'lmadi. Iltimos, tizim administratoriga murojaat qiling yoki keyinroq qayta urinib ko'ring.");
+        }
     }
 }

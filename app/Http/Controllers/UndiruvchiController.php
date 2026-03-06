@@ -47,18 +47,24 @@ class UndiruvchiController extends Controller
                 $selectedDateText = 'Sanani tanlang';
             }
 
-            $page = (int) $request->query('page', 0);
+            $page = (int) $request->query('page', 1);
+            $pageSize = (int) $request->query('page_size', 10);
             $search = $request->query('search');
 
             $usersData = [];
             $pagination = [
                 'total_count' => 0,
                 'page' => $page,
-                'page_size' => 10,
+                'page_size' => $pageSize,
                 'total_pages' => 0,
                 'has_next_page' => false,
                 'has_previous_page' => false,
             ];
+
+            $totalUsersCount = 0;
+            $onlineUsersCount = 0;
+            $offlineUsersCount = 0;
+            $branchesCount = 0;
 
             if ($token) {
                 // Branches from API
@@ -92,6 +98,24 @@ class UndiruvchiController extends Controller
                     }
                 }
 
+                // Stats kartalar uchun (Jami, Onlayn, Oflayn sonlari)
+                $statPayloadBase = [
+                    'search_term' => null,
+                    'branch_guid' => $selectedBranch ?: null,
+                    'is_stopped' => null,
+                    'date' => $dateApi ?? null,
+                    'start_hour' => null,
+                    'end_hour' => null,
+                    'min_stopped_minutes' => 0,
+                    'page' => 1,
+                    'page_size' => 1,
+                ];
+
+                $totalUsersCount   = $this->api->post("/users", array_merge($statPayloadBase, ['is_active' => null]))->json('total_count') ?? 0;
+                $onlineUsersCount  = $this->api->post("/users", array_merge($statPayloadBase, ['is_active' => 'true']))->json('total_count') ?? 0;
+                $offlineUsersCount = $this->api->post("/users", array_merge($statPayloadBase, ['is_active' => 'false']))->json('total_count') ?? 0;
+                $branchesCount     = count($branches);
+
                 /** @var \Illuminate\Http\Client\Response $usersResponse */
                 $usersResponse = $this->api->post("/users", [
                     'search_term' => $search,
@@ -103,25 +127,50 @@ class UndiruvchiController extends Controller
                     'end_hour' => null,
                     'min_stopped_minutes' => 0,
                     'page' => $page,
-                    'page_size' => 10, // Changed to 10
+                    'page_size' => $pageSize,
                 ]);
 
                 if ($usersResponse->successful() && $usersResponse->json('status')) {
                     $usersData = $usersResponse->json('data') ?? [];
+                    $totalCount = $usersResponse->json('total_count') ?? 0;
+                    $rPageSize = $usersResponse->json('page_size') ?? 10;
+                    $rTotalPages = $usersResponse->json('total_pages');
+                    
+                    if (empty($rTotalPages) && $rPageSize > 0) {
+                        $rTotalPages = ceil($totalCount / $rPageSize);
+                    }
+
                     $pagination = [
-                        'total_count' => $usersResponse->json('total_count') ?? 0,
+                        'total_count' => $totalCount,
                         'page' => $usersResponse->json('page') ?? $page,
-                        'page_size' => $usersResponse->json('page_size') ?? 10,
-                        'total_pages' => $usersResponse->json('total_pages') ?? 0,
+                        'page_size' => $rPageSize,
+                        'total_pages' => (int) $rTotalPages,
                         'has_next_page' => $usersResponse->json('has_next_page') ?? false,
                         'has_previous_page' => $usersResponse->json('has_previous_page') ?? false,
                     ];
+
+                    // Kuryerlarga qaysi filialga tegishliligini ($branches dan) bog'lash
+                    if (!empty($branches) && !empty($usersData)) {
+                        $branchesMap = [];
+                        foreach ($branches as $br) {
+                            if (isset($br['branch_guid'])) {
+                                $branchesMap[$br['branch_guid']] = $br['name'] ?? "Noma'lum";
+                            }
+                        }
+                        foreach ($usersData as &$u) {
+                            $bGuid = $u['branch_guid'] ?? null;
+                            if ($bGuid && isset($branchesMap[$bGuid])) {
+                                $u['branch'] = $branchesMap[$bGuid];
+                            }
+                        }
+                        unset($u);
+                    }
                 }
             }
 
-            return view('undiruvchilar.index', compact('branches', 'selectedBranch', 'selectedBranchName', 'isActive', 'selectedStatusName', 'selectedDate', 'selectedDateText', 'usersData', 'pagination'));
+            return view('undiruvchilar.index', compact('branches', 'selectedBranch', 'selectedBranchName', 'isActive', 'selectedStatusName', 'selectedDate', 'selectedDateText', 'usersData', 'pagination', 'totalUsersCount', 'onlineUsersCount', 'offlineUsersCount', 'branchesCount'));
         } catch (Exception $e) {
-            return back()->with('error', "Kutilmagan xato yuz berdi: " . $e->getMessage());
+            return view('undiruvchilar.index', compact('branches', 'selectedBranch', 'selectedBranchName', 'isActive', 'selectedStatusName', 'selectedDate', 'selectedDateText', 'usersData', 'pagination', 'totalUsersCount', 'onlineUsersCount', 'offlineUsersCount', 'branchesCount'))->with('error', $e->getMessage());
         }
     }
 
@@ -311,7 +360,14 @@ class UndiruvchiController extends Controller
                 'locationLimit', 'locationIndex', 'selectedUserIds'
             ));
         } catch (\Throwable $e) {
-            return back()->with('error', "Xarita yuklanishida xatolik yuz berdi: " . $e->getMessage());
+            return view('undiruvchilar.map', compact(
+                'branches', 'selectedBranch', 'selectedBranchName',
+                'isActive', 'selectedStatusName',
+                'selectedDate', 'selectedDateText',
+                'startHour', 'endHour', 'selectedTimeText',
+                'usersData', 'pagination', 'search',
+                'locationLimit', 'locationIndex', 'selectedUserIds'
+            ))->with('error', $e->getMessage());
         }
     }
 

@@ -43,15 +43,29 @@
             </svg>
             <span>Undiruvchilar</span>
         </a>
+        <a href="/masofalar" class="nav-item {{ request()->is('masofalar') || request()->is('masofalar/*') ? 'active' : '' }}">
+            <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
+            </svg>
+            <span>Masofa hisoboti</span>
+        </a>
     </nav>
 
     <div class="sidebar-footer">
         <form method="POST" action="{{ route('logout') }}" id="logoutForm">
             @csrf
+            {{-- Normal (expanded) logout button --}}
             <button type="button" class="logout-btn" id="logoutTrigger" aria-label="Ilovadan chiqish">
                 <img src="{{ asset('assets/images/logout.svg') }}" alt="Ilovadan chiqish">
             </button>
         </form>
+        {{-- Collapsed (icon-only) logout button --}}
+        <button type="button" class="logout-icon-only" id="logoutTriggerCollapsed" title="Ilovadan chiqish">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.9 2H5C3.34315 2 2 3.34315 2 5V19C2 20.6569 3.34315 22 5 22H8.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M15 16.5L20 12M20 12L15 7.5M20 12H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
     </div>
 </aside>
 
@@ -76,12 +90,34 @@
 <script>
     const overlay    = document.getElementById('logoutModalOverlay');
     const trigger    = document.getElementById('logoutTrigger');
+    const triggerCol = document.getElementById('logoutTriggerCollapsed');
     const cancelBtn  = document.getElementById('logoutCancel');
     const confirmBtn = document.getElementById('logoutConfirm');
     const form       = document.getElementById('logoutForm');
 
     trigger.addEventListener('click', () => overlay.classList.add('active'));
+    if (triggerCol) triggerCol.addEventListener('click', () => overlay.classList.add('active'));
     cancelBtn.addEventListener('click', () => overlay.classList.remove('active'));
     overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); });
     confirmBtn.addEventListener('click', () => form.submit());
+
+    // ---- Sidebar collapse toggle ----
+    const sidebar       = document.querySelector('.sidebar');
+    const collapseBtn   = document.querySelector('.collapse-sidebar');
+    const STORAGE_KEY   = 'sidebar_collapsed';
+
+    // Restore state from localStorage
+    if (localStorage.getItem(STORAGE_KEY) === '1') {
+        sidebar.classList.add('collapsed');
+    }
+
+    collapseBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+        localStorage.setItem(STORAGE_KEY, sidebar.classList.contains('collapsed') ? '1' : '0');
+        
+        // Dispatch an event so other scripts (like Yandex map) know to resize
+        setTimeout(() => {
+            window.dispatchEvent(new Event('sidebarToggled'));
+        }, 300); // 300ms is slightly longer than the 0.25s CSS transition
+    });
 </script>

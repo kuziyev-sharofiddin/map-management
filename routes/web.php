@@ -17,5 +17,7 @@ Route::middleware('auth.check')->group(function () {
     Route::get('/undiruvchilar/xarita', [UndiruvchiController::class, 'map'])->name('undiruvchilar.map');
     Route::post('/undiruvchilar/locations', [UndiruvchiController::class, 'getMultipleLocations'])->name('undiruvchilar.locations');
 
+    Route::get('/masofalar', [App\Http\Controllers\MasofaController::class, 'index'])->name('masofalar.index');
+
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

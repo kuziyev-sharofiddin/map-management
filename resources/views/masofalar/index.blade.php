@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Undiruvchilar - Undiruv')
+@section('title', 'Masofa hisoboti - Undiruv')
 
-@section('page-title', 'Undiruvchilar')
+@section('page-title', 'Masofa hisoboti')
 
 @section('content')
 <div class="undiruvchilar-container">
@@ -11,7 +11,7 @@
         <!-- Card 1 (Purple Base) -->
         <div class="stat-card primary-card decorative-bg">
             <div class="stat-header">
-                <span class="stat-title">Jami undiruvchilar soni</span>
+                <span class="stat-title">Jami hisobotlar soni</span>
                 <div class="custom-icon-container">
                     <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect x="0.5" y="0.5" width="41" height="41" rx="11.5" fill="white"/>
@@ -90,10 +90,11 @@
     <!-- Actions Row -->
     <div class="actions-row">
         <!-- Search -->
-        <form class="search-box" style="margin: 0;" method="GET" action="{{ route('undiruvchilar.index') }}" id="searchForm">
+        <form class="search-box" style="margin: 0;" method="GET" action="{{ route('masofalar.index') }}" id="searchForm">
             @if(request('branch_guid')) <input type="hidden" name="branch_guid" value="{{ request('branch_guid') }}"> @endif
             @if(request('is_active')) <input type="hidden" name="is_active" value="{{ request('is_active') }}"> @endif
-            @if(request('date')) <input type="hidden" name="date" value="{{ request('date') }}"> @endif
+            @if(request('from_date')) <input type="hidden" name="from_date" value="{{ request('from_date') }}"> @endif
+            @if(request('to_date')) <input type="hidden" name="to_date" value="{{ request('to_date') }}"> @endif
             
             <img src="{{ asset('assets/images/search.svg') }}" class="search-icon" width="20" height="20" alt="Qidiruv" onclick="document.getElementById('searchForm').submit()" style="cursor: pointer;">
             <input type="text" id="searchInput" name="search" value="{{ request('search') }}" placeholder="Qidiruv..." autocomplete="off">
@@ -188,8 +189,8 @@
             </div>
 
             <!-- Barcha filtrlarni tozalash (Faqat parametrlar bo'lganda chiqadi) -->
-            @if(request()->hasAny(['branch_guid', 'is_active', 'date']))
-            <a href="{{ route('undiruvchilar.index') }}" class="filter-btn" style="text-decoration: none; color: #FF4D4D; border-color: #FF4D4D; display: flex; align-items: center; gap: 6px; box-sizing: border-box;">
+            @if(request()->hasAny(['branch_guid', 'is_active', 'from_date', 'to_date']))
+            <a href="{{ route('masofalar.index') }}" class="filter-btn" style="text-decoration: none; color: #FF4D4D; border-color: #FF4D4D; display: flex; align-items: center; gap: 6px; box-sizing: border-box;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19.36,2.72L20.78,4.14L15.06,9.85C16.13,11.39 16.28,13.24 15.38,14.44L9.06,8.12C10.26,7.22 12.11,7.37 13.65,8.44L19.36,2.72M5.93,17.57C3.92,15.56 2.69,13.16 2.35,10.92L7.23,8.83L14.67,16.27L12.58,21.15C10.34,20.81 7.94,19.58 5.93,17.57Z" />
                 </svg>
@@ -221,14 +222,23 @@
                     </th>
                     <th style="white-space: nowrap;">
                         <div style="display: flex; align-items: center; gap: 6px;">
+                            <img src="{{ asset('assets/images/location.svg') }}" width="20" height="20" alt="Filial">
+                            Filial
+                        </div>
+                    </th>
+                    <th style="white-space: nowrap;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
                             <img src="{{ asset('assets/images/ish.svg') }}" width="20" height="20" alt="Ish holati">
                             Ish holati
                         </div>
                     </th>
                     <th style="white-space: nowrap;">
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <img src="{{ asset('assets/images/location.svg') }}" width="20" height="20" alt="Filial">
-                            Filial
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#807b89" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            Yurilgan masofa
                         </div>
                     </th>
                 </tr>
@@ -236,9 +246,11 @@
            <tbody>
             @forelse($usersData as $index => $user)
             @php
+                // "Masofalar" sahifasida faqat filtrlarni saqlab, shu user'ni (kuryer) marshrutini map'dan ochib beruvchi link
                 $uId = $user['user_id'] ?? $user['id'] ?? null;
                 $mapUrlParams = [];
-                if (!empty($selectedDate)) $mapUrlParams['date'] = $selectedDate;
+                if (!empty($fromDate)) $mapUrlParams['from_date'] = $fromDate;
+                if (!empty($toDate)) $mapUrlParams['to_date'] = $toDate;
                 if (!empty($selectedBranch)) $mapUrlParams['branch_guid'] = $selectedBranch;
                 if (!empty($isActive)) $mapUrlParams['is_active'] = $isActive;
                 if (request()->filled('search')) $mapUrlParams['search'] = request()->query('search');
@@ -273,6 +285,7 @@
                     @endphp
                     {{ $formattedPhone }}
                 </td>
+                <td>{{ empty($user['branch']) ? 'Noma\'lum' : $user['branch'] }}</td>
                 <td>
                     @if(isset($user['is_active']) && $user['is_active'])
                         <span class="status-badge onlayn">Onlayn</span>
@@ -280,7 +293,9 @@
                         <span class="status-badge oflayn">Oflayn</span>
                     @endif
                 </td>
-                <td>{{ empty($user['branch']) ? 'Noma\'lum' : $user['branch'] }}</td>
+                <td style="font-weight: 500; color: #7B48FF;">
+                    {{ isset($user['total_distance']) ? number_format($user['total_distance'], 2, '.', '') . ' km' : '0.00 km' }}
+                </td>
             </tr>
             @empty
             <tr>
@@ -358,7 +373,7 @@
                         @endforeach
                     </select>
                 </div>
-                <span style="font-size: 14px; color: #555;">( {{ $pagination['total_count'] ?? 0 }} ) ta undiruvchilar</span>
+                <span style="font-size: 14px; color: #555;">( {{ $pagination['total_count'] ?? 0 }} ) ta masofalar ro'yxati</span>
             </div>
         </div>
     </div>
@@ -440,19 +455,33 @@ document.addEventListener('DOMContentLoaded', function() {
     const startYear = 2015;
     let startDate = null;
     let endDate = null;
+    let isSelectingStart = true; // toggles between true/false
 
-    const initialDateStr = "{{ $selectedDate ?? '' }}";
-    if (initialDateStr) {
-        const parts = initialDateStr.split('-');
+    const initialFromDateStr = "{{ $fromDate ?? '' }}";
+    const initialToDateStr = "{{ $toDate ?? '' }}";
+
+    function parseInitialDate(dateStr) {
+        if (!dateStr) return null;
+        const parts = dateStr.split('-');
         if (parts.length === 3) {
-            startDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 0, 0, 0);
-        } else {
-            startDate = new Date(initialDateStr);
+            return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 0, 0, 0);
         }
+        return new Date(dateStr);
+    }
+
+    startDate = parseInitialDate(initialFromDateStr);
+    endDate = parseInitialDate(initialToDateStr);
+
+    if (startDate) {
         currentYear = startDate.getFullYear();
     } else {
         startDate = new Date();
+        startDate.setDate(startDate.getDate() - 1);
         startDate.setHours(0, 0, 0, 0);
+        
+        endDate = new Date();
+        endDate.setHours(0, 0, 0, 0);
+        
         currentYear = startDate.getFullYear();
     }
     
@@ -673,14 +702,51 @@ document.addEventListener('DOMContentLoaded', function() {
                 cell.appendChild(span);
 
                 cell.addEventListener('click', () => {
-                    startDate = new Date(cellTime);
+                    if (isSelectingStart) {
+                        startDate = new Date(cellTime);
+                        endDate = null; // reset end date if starting again
+                        isSelectingStart = false;
+                    } else {
+                        const tempDate = new Date(cellTime);
+                        if (tempDate < startDate) {
+                            // If user clicked an earlier date, swap them
+                            endDate = startDate;
+                            startDate = tempDate;
+                        } else {
+                            endDate = tempDate;
+                        }
+                        isSelectingStart = true; 
+                    }
                     updateRangeClasses();
                     updateDisplay();
                 });
 
-                // Single date logic doesn't need hover
+                // Hover logic to show the range dynamically
                 cell.addEventListener('mouseenter', () => {
-                    // Mute hover
+                    if (!isSelectingStart && startDate && !endDate) {
+                        const hoverTime = parseInt(cell.dataset.time);
+                        const hoverDate = new Date(hoverTime);
+                        const cells = daysContainer.querySelectorAll('.day-cell:not(.empty)');
+                        
+                        let minDate = startDate;
+                        let maxDate = hoverDate;
+                        if (hoverDate < startDate) {
+                            minDate = hoverDate;
+                            maxDate = startDate;
+                        }
+
+                        cells.forEach(c => {
+                            const cTime = parseInt(c.dataset.time);
+                            const cDate = new Date(cTime);
+                            
+                            // Visual range
+                            if (cDate > minDate && cDate < maxDate) {
+                                c.classList.add('in-range');
+                            } else {
+                                c.classList.remove('in-range');
+                            }
+                        });
+                    }
                 });
 
                 daysContainer.appendChild(cell);
@@ -710,28 +776,43 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     daysContainer.addEventListener('mouseleave', () => {
-        // Mute range leave
+        if (!isSelectingStart && startDate && !endDate) {
+            daysContainer.querySelectorAll('.day-cell.in-range').forEach(c => c.classList.remove('in-range'));
+        }
     });
 
     function updateRangeClasses() {
         const cells = daysContainer.querySelectorAll('.day-cell:not(.empty)');
-        const sY = startDate ? startDate.getFullYear() : null;
-        const sM = startDate ? startDate.getMonth() : null;
-        const sD = startDate ? startDate.getDate() : null;
-
+        
         cells.forEach(cell => {
             const cTime = parseInt(cell.dataset.time);
             const cDate = new Date(cTime);
             cell.classList.remove('selected-start', 'selected-end', 'in-range');
 
-            if (sY !== null && cDate.getFullYear() === sY && cDate.getMonth() === sM && cDate.getDate() === sD) {
+            if (startDate && cDate.getTime() === startDate.getTime()) {
                 cell.classList.add('selected-start');
+            }
+
+            if (endDate && cDate.getTime() === endDate.getTime()) {
+                cell.classList.add('selected-end');
+            }
+
+            if (startDate && endDate && cDate > startDate && cDate < endDate) {
+                cell.classList.add('in-range');
             }
         });
     }
 
     function updateDisplay() {
-        if (startDate) {
+        if (startDate && endDate) {
+            const startStr = `${startDate.getDate()} ${shortMonths[startDate.getMonth()]} ${startDate.getFullYear()}`;
+            if (startDate.getTime() === endDate.getTime()) {
+                displayRange.innerHTML = startStr;
+            } else {
+                const endStr = `${endDate.getDate()} ${shortMonths[endDate.getMonth()]} ${endDate.getFullYear()}`;
+                displayRange.innerHTML = startStr + ' - ' + endStr;
+            }
+        } else if (startDate) {
             const startStr = `${startDate.getDate()} ${shortMonths[startDate.getMonth()]} ${startDate.getFullYear()}`;
             displayRange.innerHTML = startStr;
         } else {
@@ -741,30 +822,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
     resetBtn.addEventListener('click', () => {
         startDate = null;
+        endDate = null;
+        isSelectingStart = true;
         updateDisplay();
         updateRangeClasses();
-        
-        // Optionally redirect directly on reset
-        // const currentUrl = new URL(window.location.href);
-        // currentUrl.searchParams.delete('date');
-        // window.location.href = currentUrl.toString();
     });
 
     saveBtn.addEventListener('click', () => {
+        const currentUrl = new URL(window.location.href);
+
         if (startDate) {
-            const y = startDate.getFullYear();
-            const m = String(startDate.getMonth() + 1).padStart(2, '0');
-            const d = String(startDate.getDate()).padStart(2, '0');
-            const dateStr = `${y}-${m}-${d}`;
-            
-            const currentUrl = new URL(window.location.href);
-            currentUrl.searchParams.set('date', dateStr);
-            window.location.href = currentUrl.toString();
+            const y1 = startDate.getFullYear();
+            const m1 = String(startDate.getMonth() + 1).padStart(2, '0');
+            const d1 = String(startDate.getDate()).padStart(2, '0');
+            const dateStr1 = `${y1}-${m1}-${d1}`;
+            currentUrl.searchParams.set('from_date', dateStr1);
+
+            let dateStr2 = dateStr1; // default to same
+            if (endDate) {
+                const y2 = endDate.getFullYear();
+                const m2 = String(endDate.getMonth() + 1).padStart(2, '0');
+                const d2 = String(endDate.getDate()).padStart(2, '0');
+                dateStr2 = `${y2}-${m2}-${d2}`;
+            }
+            currentUrl.searchParams.set('to_date', dateStr2);
         } else {
-            const currentUrl = new URL(window.location.href);
-            currentUrl.searchParams.delete('date');
-            window.location.href = currentUrl.toString();
+            currentUrl.searchParams.delete('from_date');
+            currentUrl.searchParams.delete('to_date');
         }
+
+        window.location.href = currentUrl.toString();
     });
 
     setupCalendar();
