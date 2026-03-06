@@ -71,6 +71,11 @@ class MasofaController extends Controller
                 'has_previous_page' => false,
             ];
 
+            $totalUsersCount = 0;
+            $onlineUsersCount = 0;
+            $offlineUsersCount = 0;
+            $branchesCount = 0;
+
             if ($token) {
                 // Filiallar ro'yxatini olish
                 $response = $this->api->post("/branches/branch-list", [
@@ -218,7 +223,7 @@ class MasofaController extends Controller
 
             return view('masofalar.index', compact('branches', 'selectedBranch', 'selectedBranchName', 'isActive', 'selectedStatusName', 'fromDate', 'toDate', 'selectedDateText', 'usersData', 'pagination', 'totalUsersCount', 'onlineUsersCount', 'offlineUsersCount', 'branchesCount'));
         } catch (Exception $e) {
-            return back()->with('error', "Kutilmagan xato yuz berdi: " . $e->getMessage());
+            return view('masofalar.index', compact('branches', 'selectedBranch', 'selectedBranchName', 'isActive', 'selectedStatusName', 'fromDate', 'toDate', 'selectedDateText', 'usersData', 'pagination', 'totalUsersCount', 'onlineUsersCount', 'offlineUsersCount', 'branchesCount'))->with('error', "Kutilmagan xato yuz berdi: " . $e->getMessage());
         }
     }
 }

@@ -76,6 +76,26 @@
         </main>
     </div>
 
+    @if(session('error'))
+        <div style="position: fixed; top: 32px; left: 50%; transform: translateX(-50%); z-index: 9999; background: #FFF0F0; border: 1px solid #FFD5D5; color: #E53935; padding: 16px 24px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-weight: 500; box-shadow: 0 10px 30px rgba(229, 57, 53, 0.15); animation: slideDownAlert 0.4s ease forwards;" id="globalErrorToast">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>{{ session('error') }}</span>
+            <button onclick="document.getElementById('globalErrorToast').remove()" style="background:none; border:none; cursor:pointer; color:#E53935; margin-left:16px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <style>
+            @keyframes slideDownAlert {
+                from { top: -20px; opacity: 0; }
+                to { top: 32px; opacity: 1; }
+            }
+        </style>
+    @endif
+
 @stack('scripts')
 </body>
 </html>

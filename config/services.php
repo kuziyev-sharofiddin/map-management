@@ -36,7 +36,7 @@ return [
     ],
 
     'api' => [
-        'base_url' => env('DOTNET_API_BASE_URL', 'http://10.100.104.128:5084/api'),
+        'base_url' => env('DOTNET_API_BASE_URL'),
         'timeout' => env('DOTNET_API_TIMEOUT', 10),
     ],
 

@@ -61,6 +61,11 @@ class UndiruvchiController extends Controller
                 'has_previous_page' => false,
             ];
 
+            $totalUsersCount = 0;
+            $onlineUsersCount = 0;
+            $offlineUsersCount = 0;
+            $branchesCount = 0;
+
             if ($token) {
                 // Branches from API
                 /** @var \Illuminate\Http\Client\Response $response */
@@ -165,7 +170,7 @@ class UndiruvchiController extends Controller
 
             return view('undiruvchilar.index', compact('branches', 'selectedBranch', 'selectedBranchName', 'isActive', 'selectedStatusName', 'selectedDate', 'selectedDateText', 'usersData', 'pagination', 'totalUsersCount', 'onlineUsersCount', 'offlineUsersCount', 'branchesCount'));
         } catch (Exception $e) {
-            return back()->with('error', "Kutilmagan xato yuz berdi: " . $e->getMessage());
+            return view('undiruvchilar.index', compact('branches', 'selectedBranch', 'selectedBranchName', 'isActive', 'selectedStatusName', 'selectedDate', 'selectedDateText', 'usersData', 'pagination', 'totalUsersCount', 'onlineUsersCount', 'offlineUsersCount', 'branchesCount'))->with('error', $e->getMessage());
         }
     }
 
@@ -355,7 +360,14 @@ class UndiruvchiController extends Controller
                 'locationLimit', 'locationIndex', 'selectedUserIds'
             ));
         } catch (\Throwable $e) {
-            return back()->with('error', "Xarita yuklanishida xatolik yuz berdi: " . $e->getMessage());
+            return view('undiruvchilar.map', compact(
+                'branches', 'selectedBranch', 'selectedBranchName',
+                'isActive', 'selectedStatusName',
+                'selectedDate', 'selectedDateText',
+                'startHour', 'endHour', 'selectedTimeText',
+                'usersData', 'pagination', 'search',
+                'locationLimit', 'locationIndex', 'selectedUserIds'
+            ))->with('error', $e->getMessage());
         }
     }
 
