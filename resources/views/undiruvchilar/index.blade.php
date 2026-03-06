@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div class="stat-value-area">
-                <span class="stat-number">1,200</span><span class="stat-label">/ta</span>
+                <span class="stat-number">{{ number_format($totalUsersCount ?? 0) }}</span><span class="stat-label">/ta</span>
             </div>
         </div>
 
@@ -46,7 +46,7 @@
                 </div>
             </div>
             <div class="stat-value-area">
-                <span class="stat-number">600</span><span class="stat-label">/ta</span>
+                <span class="stat-number">{{ number_format($onlineUsersCount ?? 0) }}</span><span class="stat-label">/ta</span>
             </div>
         </div>
 
@@ -65,7 +65,7 @@
                 </div>
             </div>
             <div class="stat-value-area">
-                <span class="stat-number">600</span><span class="stat-label">/ta</span>
+                <span class="stat-number">{{ number_format($offlineUsersCount ?? 0) }}</span><span class="stat-label">/ta</span>
             </div>
         </div>
 
@@ -82,7 +82,7 @@
                 </div>
             </div>
             <div class="stat-value-area">
-                <span class="stat-number">40</span><span class="stat-label">/ta</span>
+                <span class="stat-number">{{ number_format($branchesCount ?? 0) }}</span><span class="stat-label">/ta</span>
             </div>
         </div>
     </div>

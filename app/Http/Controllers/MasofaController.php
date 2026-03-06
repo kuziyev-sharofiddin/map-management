@@ -99,6 +99,25 @@ class MasofaController extends Controller
                 if ($endTs) $toDateApi = date('Y-m-d', $endTs);
 
                 /** @var \Illuminate\Http\Client\Response $usersResponse */
+                // Stats kartalar uchun (Jami, Onlayn, Oflayn sonlari)
+                $statPayloadBase = [
+                    'search_term' => null,
+                    'branch_guid' => $selectedBranch ?: null,
+                    'is_stopped' => null,
+                    'from_date' => $fromDateApi,
+                    'to_date' => $toDateApi,
+                    'start_hour' => null,
+                    'end_hour' => null,
+                    'min_stopped_minutes' => 0,
+                    'page' => 1,
+                    'page_size' => 1,
+                ];
+
+                $totalUsersCount   = $this->api->post("/users", array_merge($statPayloadBase, ['is_active' => null]))->json('total_count') ?? 0;
+                $onlineUsersCount  = $this->api->post("/users", array_merge($statPayloadBase, ['is_active' => 'true']))->json('total_count') ?? 0;
+                $offlineUsersCount = $this->api->post("/users", array_merge($statPayloadBase, ['is_active' => 'false']))->json('total_count') ?? 0;
+                $branchesCount     = count($branches);
+
                 $usersResponse = $this->api->post("/users", [
                     'search_term' => $search,
                     'is_active' => $isActiveApi,
@@ -131,6 +150,23 @@ class MasofaController extends Controller
                         'has_next_page' => $usersResponse->json('has_next_page') ?? false,
                         'has_previous_page' => $usersResponse->json('has_previous_page') ?? false,
                     ];
+
+                    // Kuryerlarga qaysi filialga tegishliligini ($branches dan) bog'lash
+                    if (!empty($branches) && !empty($usersData)) {
+                        $branchesMap = [];
+                        foreach ($branches as $br) {
+                            if (isset($br['branch_guid'])) {
+                                $branchesMap[$br['branch_guid']] = $br['name'] ?? "Noma'lum";
+                            }
+                        }
+                        foreach ($usersData as &$u) {
+                            $bGuid = $u['branch_guid'] ?? null;
+                            if ($bGuid && isset($branchesMap[$bGuid])) {
+                                $u['branch'] = $branchesMap[$bGuid];
+                            }
+                        }
+                        unset($u);
+                    }
 
                     // Masofa hisobotlarini olish
                     if (!empty($usersData)) {
@@ -180,7 +216,7 @@ class MasofaController extends Controller
                 }
             }
 
-            return view('masofalar.index', compact('branches', 'selectedBranch', 'selectedBranchName', 'isActive', 'selectedStatusName', 'fromDate', 'toDate', 'selectedDateText', 'usersData', 'pagination'));
+            return view('masofalar.index', compact('branches', 'selectedBranch', 'selectedBranchName', 'isActive', 'selectedStatusName', 'fromDate', 'toDate', 'selectedDateText', 'usersData', 'pagination', 'totalUsersCount', 'onlineUsersCount', 'offlineUsersCount', 'branchesCount'));
         } catch (Exception $e) {
             return back()->with('error', "Kutilmagan xato yuz berdi: " . $e->getMessage());
         }

@@ -54,10 +54,18 @@
     <div class="sidebar-footer">
         <form method="POST" action="{{ route('logout') }}" id="logoutForm">
             @csrf
+            {{-- Normal (expanded) logout button --}}
             <button type="button" class="logout-btn" id="logoutTrigger" aria-label="Ilovadan chiqish">
                 <img src="{{ asset('assets/images/logout.svg') }}" alt="Ilovadan chiqish">
             </button>
         </form>
+        {{-- Collapsed (icon-only) logout button --}}
+        <button type="button" class="logout-icon-only" id="logoutTriggerCollapsed" title="Ilovadan chiqish">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.9 2H5C3.34315 2 2 3.34315 2 5V19C2 20.6569 3.34315 22 5 22H8.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M15 16.5L20 12M20 12L15 7.5M20 12H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
     </div>
 </aside>
 
@@ -82,12 +90,29 @@
 <script>
     const overlay    = document.getElementById('logoutModalOverlay');
     const trigger    = document.getElementById('logoutTrigger');
+    const triggerCol = document.getElementById('logoutTriggerCollapsed');
     const cancelBtn  = document.getElementById('logoutCancel');
     const confirmBtn = document.getElementById('logoutConfirm');
     const form       = document.getElementById('logoutForm');
 
     trigger.addEventListener('click', () => overlay.classList.add('active'));
+    if (triggerCol) triggerCol.addEventListener('click', () => overlay.classList.add('active'));
     cancelBtn.addEventListener('click', () => overlay.classList.remove('active'));
     overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); });
     confirmBtn.addEventListener('click', () => form.submit());
+
+    // ---- Sidebar collapse toggle ----
+    const sidebar       = document.querySelector('.sidebar');
+    const collapseBtn   = document.querySelector('.collapse-sidebar');
+    const STORAGE_KEY   = 'sidebar_collapsed';
+
+    // Restore state from localStorage
+    if (localStorage.getItem(STORAGE_KEY) === '1') {
+        sidebar.classList.add('collapsed');
+    }
+
+    collapseBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+        localStorage.setItem(STORAGE_KEY, sidebar.classList.contains('collapsed') ? '1' : '0');
+    });
 </script>

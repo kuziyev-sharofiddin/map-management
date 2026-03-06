@@ -46,6 +46,70 @@ body {
     position: sticky;
     top: 0;
     height: 100vh;
+    transition: width 0.25s ease;
+    overflow: hidden;
+}
+
+/* ---- Collapsed state ---- */
+.sidebar.collapsed {
+    width: 72px;
+}
+
+.sidebar.collapsed .logo span,
+.sidebar.collapsed .nav-item span,
+.sidebar.collapsed .logout-btn img {
+    display: none;
+}
+
+.sidebar.collapsed .logo {
+    justify-content: center;
+    gap: 0;
+}
+
+.sidebar.collapsed .nav-item {
+    justify-content: center;
+    gap: 0;
+    padding: 12px;
+}
+
+.sidebar.collapsed .collapse-sidebar svg {
+    transform: rotate(180deg);
+}
+
+.sidebar.collapsed .sidebar-footer {
+    justify-content: center;
+}
+
+.sidebar.collapsed .sidebar-footer .logout-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Show icon-only logout when collapsed */
+.sidebar.collapsed .logout-icon-only {
+    display: flex !important;
+}
+
+.logout-icon-only {
+    display: none;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    transition: background 0.2s;
+}
+
+.logout-icon-only:hover {
+    background: #F9FAFB;
+    color: #FF4D4D;
 }
 
 .sidebar-header {
@@ -65,6 +129,9 @@ body {
     font-weight: 700;
     font-size: 20px;
     color: var(--primary);
+    transition: gap 0.25s ease;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .collapse-sidebar {
@@ -73,11 +140,16 @@ body {
     border-radius: 8px;
     width: 34px;
     height: 34px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     color: var(--text-muted);
+}
+
+.collapse-sidebar svg {
+    transition: transform 0.25s ease;
 }
 
 .sidebar-nav {
@@ -98,6 +170,8 @@ body {
     font-weight: 500;
     font-size: 16px;
     transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .nav-item:hover {
@@ -128,7 +202,6 @@ body {
     width: 100%;
     max-width: 208px;
     transition: opacity 0.2s ease;
-    /* button elementini reset qilish */
     background: none;
     border: none;
     padding: 0;

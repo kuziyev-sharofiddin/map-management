@@ -93,6 +93,24 @@ class UndiruvchiController extends Controller
                     }
                 }
 
+                // Stats kartalar uchun (Jami, Onlayn, Oflayn sonlari)
+                $statPayloadBase = [
+                    'search_term' => null,
+                    'branch_guid' => $selectedBranch ?: null,
+                    'is_stopped' => null,
+                    'date' => $dateApi ?? null,
+                    'start_hour' => null,
+                    'end_hour' => null,
+                    'min_stopped_minutes' => 0,
+                    'page' => 1,
+                    'page_size' => 1,
+                ];
+
+                $totalUsersCount   = $this->api->post("/users", array_merge($statPayloadBase, ['is_active' => null]))->json('total_count') ?? 0;
+                $onlineUsersCount  = $this->api->post("/users", array_merge($statPayloadBase, ['is_active' => 'true']))->json('total_count') ?? 0;
+                $offlineUsersCount = $this->api->post("/users", array_merge($statPayloadBase, ['is_active' => 'false']))->json('total_count') ?? 0;
+                $branchesCount     = count($branches);
+
                 /** @var \Illuminate\Http\Client\Response $usersResponse */
                 $usersResponse = $this->api->post("/users", [
                     'search_term' => $search,
@@ -125,10 +143,27 @@ class UndiruvchiController extends Controller
                         'has_next_page' => $usersResponse->json('has_next_page') ?? false,
                         'has_previous_page' => $usersResponse->json('has_previous_page') ?? false,
                     ];
+
+                    // Kuryerlarga qaysi filialga tegishliligini ($branches dan) bog'lash
+                    if (!empty($branches) && !empty($usersData)) {
+                        $branchesMap = [];
+                        foreach ($branches as $br) {
+                            if (isset($br['branch_guid'])) {
+                                $branchesMap[$br['branch_guid']] = $br['name'] ?? "Noma'lum";
+                            }
+                        }
+                        foreach ($usersData as &$u) {
+                            $bGuid = $u['branch_guid'] ?? null;
+                            if ($bGuid && isset($branchesMap[$bGuid])) {
+                                $u['branch'] = $branchesMap[$bGuid];
+                            }
+                        }
+                        unset($u);
+                    }
                 }
             }
 
-            return view('undiruvchilar.index', compact('branches', 'selectedBranch', 'selectedBranchName', 'isActive', 'selectedStatusName', 'selectedDate', 'selectedDateText', 'usersData', 'pagination'));
+            return view('undiruvchilar.index', compact('branches', 'selectedBranch', 'selectedBranchName', 'isActive', 'selectedStatusName', 'selectedDate', 'selectedDateText', 'usersData', 'pagination', 'totalUsersCount', 'onlineUsersCount', 'offlineUsersCount', 'branchesCount'));
         } catch (Exception $e) {
             return back()->with('error', "Kutilmagan xato yuz berdi: " . $e->getMessage());
         }
