@@ -114,5 +114,10 @@
     collapseBtn.addEventListener('click', () => {
         sidebar.classList.toggle('collapsed');
         localStorage.setItem(STORAGE_KEY, sidebar.classList.contains('collapsed') ? '1' : '0');
+        
+        // Dispatch an event so other scripts (like Yandex map) know to resize
+        setTimeout(() => {
+            window.dispatchEvent(new Event('sidebarToggled'));
+        }, 300); // 300ms is slightly longer than the 0.25s CSS transition
     });
 </script>

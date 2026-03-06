@@ -1199,5 +1199,12 @@ ymaps.ready(function () {
         updateTabText();
     })();
 });
+
+// Listen for sidebar toggle to resize map
+window.addEventListener('sidebarToggled', function() {
+    if (typeof myMap !== 'undefined' && myMap) {
+        myMap.container.fitToViewport();
+    }
+});
 </script>
 @endpush
