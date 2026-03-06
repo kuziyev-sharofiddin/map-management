@@ -146,7 +146,7 @@
     <div class="map-right-area">
 
         {{-- TOP FILTER BAR --}}
-        <div class="map-top-filter-bar" id="mapTopFilterBar">
+        <div class="map-top-filter-bar" id="mapTopFilterBar" style="justify-content: flex-end;">
 
             {{-- Branch Filter --}}
             <div class="mtf-item" style="position: relative;" id="mapBranchFilterWrapper">
