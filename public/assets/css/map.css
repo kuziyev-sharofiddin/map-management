@@ -559,9 +559,133 @@ body.map-page .content-body {
     color: #ABABAB;
 }
 
-#yandexMap {
+/* =========================================================================
+   TOP FILTER BAR (above the map inside right area)
+   ========================================================================= */
+.map-top-filter-bar {
     position: absolute;
     top: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #FFFFFF;
+    border: 1px solid #EFEFEF;
+    border-radius: 12px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    flex-wrap: wrap;
+}
+
+.mtf-item {
+    position: relative;
+}
+
+.mtf-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #F5F4F9;
+    border: 1px solid #EFEFEF;
+    border-radius: 10px;
+    padding: 0 14px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    color: #151515;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.mtf-btn:hover {
+    background: #EDE9FF;
+    border-color: #7B48FF;
+}
+
+.mtf-label {
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mtf-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 220px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #EFEFEF;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    z-index: 1200;
+}
+
+.map-right-area .custom-calendar-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 1200;
+}
+
+.map-right-area .time-dropdown {
+    top: calc(100% + 6px);
+}
+
+.mtf-switch-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #F5F4F9;
+    border: 1px solid #EFEFEF;
+    border-radius: 10px;
+    padding: 0 14px;
+    height: 40px;
+    cursor: default;
+}
+
+.mtf-switch-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #151515;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+}
+
+.mtf-clear-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #FFF0F0;
+    border: 1px solid #FFD5D5;
+    border-radius: 10px;
+    padding: 0 14px;
+    height: 40px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    color: #E53935;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    margin-left: auto;
+}
+
+.mtf-clear-btn:hover {
+    background: #FFE5E5;
+    border-color: #E53935;
+}
+
+#yandexMap {
+    position: absolute;
+    top: 72px;
     left: 12px;
     right: 12px;
     bottom: 12px;

@@ -55,152 +55,7 @@
                 <input type="text" id="mapSearchInput" value="{{ $search ?? '' }}" placeholder="Undiruvchini qidirish..." autocomplete="off">
             </div>
 
-            <div class="map-filter-row">
-                <!-- Filter Filiallar -->
-                <div class="status-filter-wrapper" id="mapBranchFilterWrapper" style="position: relative; margin-bottom: 8px;">
-                    <button class="map-filter-btn" id="mapBranchFilterBtn" style="justify-content: flex-start;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
-                            <path d="M20 11.1755C20 15.6907 16.4183 21 12 21C7.58172 21 4 15.6907 4 11.1755C4 6.66029 7.58172 3 12 3C16.4183 3 20 6.66029 20 11.1755Z" fill="#7B48FF"/>
-                            <path d="M9.5 10.5C9.5 9.11929 10.6193 8 12 8C13.3807 8 14.5 9.11929 14.5 10.5C14.5 11.8807 13.3807 13 12 13C10.6193 13 9.5 11.8807 9.5 10.5Z" fill="#FFFFFF"/>
-                        </svg>
-                        <span class="map-filter-btn-label" id="mapBranchFilterText" style="flex: 1; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; vertical-align: middle;">{{ $selectedBranchName ?? 'Barchasi (Filiallar)' }}</span>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="map-filter-btn-arrow"><polyline points="6 9 12 15 18 9"/></svg>
-                    </button>
-                    
-                    <div class="custom-calendar-dropdown" id="mapBranchDropdown" style="max-height: 300px; overflow-y: auto; padding: 12px; display: none; margin-top: 8px;">
-                        <style>
-                            .map-branch-item {
-                                padding: 10px 14px;
-                                border-radius: 8px;
-                                cursor: pointer;
-                                font-size: 15px;
-                                font-weight: 500;
-                                color: #807B89;
-                                transition: all 0.2s;
-                                margin-bottom: 4px;
-                            }
-                            .map-branch-item:hover {
-                                background: #F9F8FF;
-                                color: #151515;
-                            }
-                            .map-branch-item.active {
-                                background: #F4F0FF;
-                                color: #7B48FF;
-                            }
-                        </style>
-                        <div class="map-branch-item {{ empty($selectedBranch) ? 'active' : '' }}" data-guid="">Barchasi (Filiallar)</div>
-                        @if(isset($branches) && is_array($branches))
-                            @foreach($branches as $branch)
-                                <div class="map-branch-item {{ ($selectedBranch ?? '') == ($branch['branch_guid'] ?? '') ? 'active' : '' }}" data-guid="{{ $branch['branch_guid'] ?? '' }}">{{ $branch['name'] ?? 'Noma\'lum' }}</div>
-                            @endforeach
-                        @endif
-                    </div>
-                </div>
 
-                <div class="date-filter-wrapper" style="position: relative;">
-                    <button class="map-filter-btn" id="mapDateFilterBtn">
-                        <img src="{{ asset('assets/images/calendar_icon.svg') }}" width="20" height="20" alt="Calendar">
-                        <span class="map-filter-btn-label" id="mapDateFilterText">{{ $selectedDateText }}</span>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="map-filter-btn-arrow"><polyline points="6 9 12 15 18 9"/></svg>
-                    </button>
-
-                <div class="custom-calendar-dropdown" id="mapCalendarDropdown">
-                    <div class="calendar-header">
-                        <div class="date-range-display" id="mapCalendarDisplayRange" style="font-size: 14px; font-weight: 500;">
-                            {{ $selectedDateText }}
-                        </div>
-                        <div class="year-selector" id="mapYearSelectorBtn">
-                            <span id="mapCalendarYearText">2026</span>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#151515" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                            <div class="year-dropdown" id="mapYearDropdown"></div>
-                        </div>
-                    </div>
-                    <div class="calendar-body">
-                        <div class="months-sidebar" id="mapCalendarMonths" style="display: none;"></div>
-                        <div class="calendar-grid" style="width: 100%;">
-                            <div class="weekdays">
-                                <span>Du</span><span>Se</span><span>Cho</span><span>Pa</span><span>Ju</span><span>Sha</span><span>Ya</span>
-                            </div>
-                            <div class="days-grid" id="mapCalendarDays"></div>
-                        </div>
-                    </div>
-                    <div class="calendar-footer">
-                        <div class="duration-display" id="mapCalendarDuration" style="display: none;">0 kunlik</div>
-                        <div class="footer-actions">
-                                <button class="reset-btn" id="mapCalendarResetBtn">Qayta tiklash</button>
-                                <button class="save-btn" id="mapCalendarSaveBtn">Saqlash</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                {{-- TIME FILTER --}}
-                <div class="time-filter-wrapper" style="position: relative;">
-                    <button class="map-filter-btn" id="mapTimeFilterBtn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M11.9466 2H12.0534C14.2007 1.99999 15.8835 1.99998 17.1966 2.17651C18.5405 2.3572 19.601 2.73426 20.4334 3.56664C21.2657 4.39902 21.6428 5.45951 21.8235 6.80345C22 8.11646 22 9.79929 22 11.9466V12.0534C22 14.2007 22 15.8835 21.8235 17.1966C21.6428 18.5405 21.2657 19.601 20.4334 20.4334C19.601 21.2657 18.5405 21.6428 17.1966 21.8235C15.8835 22 14.2007 22 12.0534 22H11.9466C9.79929 22 8.11646 22 6.80345 21.8235C5.45951 21.6428 4.39902 21.2657 3.56664 20.4334C2.73426 19.601 2.3572 18.5405 2.17651 17.1966C1.99998 15.8835 1.99999 14.2007 2 12.0534V11.9466C1.99999 9.79928 1.99998 8.11646 2.17651 6.80345C2.3572 5.45951 2.73426 4.39902 3.56664 3.56664C4.39902 2.73426 5.45951 2.3572 6.80345 2.17651C8.11646 1.99998 9.79928 1.99999 11.9466 2ZM6.98937 3.55941C5.80016 3.7193 5.08321 4.02339 4.5533 4.5533C4.02339 5.08321 3.7193 5.80016 3.55941 6.98937C3.39683 8.19866 3.39535 9.7877 3.39535 12C3.39535 14.2123 3.39683 15.8013 3.55941 17.0106C3.7193 18.1998 4.02339 18.9168 4.5533 19.4467C5.08321 19.9766 5.80016 20.2807 6.98937 20.4406C8.19866 20.6032 9.7877 20.6047 12 20.6047C14.2123 20.6047 15.8013 20.6032 17.0106 20.4406C18.1998 20.2807 18.9168 19.9766 19.4467 19.4467C19.9766 18.9168 20.2807 18.1998 20.4406 17.0106C20.6032 15.8013 20.6047 14.2123 20.6047 12C20.6047 9.7877 20.6032 8.19866 20.4406 6.98937C20.2807 5.80016 19.9766 5.08321 19.4467 4.5533C18.9168 4.02339 18.1998 3.7193 17.0106 3.55941C15.8013 3.39683 14.2123 3.39535 12 3.39535C9.7877 3.39535 8.19866 3.39683 6.98937 3.55941ZM12 7.5814C12.3853 7.5814 12.6977 7.89376 12.6977 8.27907V11.711L14.8189 13.8323C15.0914 14.1047 15.0914 14.5465 14.8189 14.8189C14.5465 15.0914 14.1047 15.0914 13.8323 14.8189L11.8472 12.8339C11.5784 12.565 11.4439 12.4306 11.3731 12.2597C11.3023 12.0887 11.3023 11.8986 11.3023 11.5184V8.27907C11.3023 7.89376 11.6147 7.5814 12 7.5814Z" fill="#7B48FF"/>
-                        </svg>
-                        <span class="map-filter-btn-label" id="mapTimeFilterText">{{ $selectedTimeText }}</span>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="map-filter-btn-arrow"><polyline points="6 9 12 15 18 9"/></svg>
-                    </button>
-
-                    {{-- TIME DROPDOWN (Interactive UI mimicking oclock.svg) --}}
-                    <div class="time-dropdown" id="mapTimeDropdown" style="display: none;">
-                        <div class="time-dropdown-header">Vaqtni o'rnatish</div>
-                        <div class="time-dropdown-tabs">
-                            <div class="time-tab active" id="timeTabFrom">
-                                <span>Dan</span> <span class="time-val" id="timeValFrom">12:00</span>
-                            </div>
-                            <div class="time-tab" id="timeTabTo">
-                                <span>Gacha</span> <span class="time-val" id="timeValTo">16:00</span>
-                            </div>
-                        </div>
-
-                        <div class="time-picker-body">
-                            {{-- Fade overlays --}}
-                            <div class="time-picker-fade-top"></div>
-                            <div class="time-picker-fade-bottom"></div>
-                            {{-- Selection borders --}}
-                            <div class="time-picker-select-overlay"></div>
-
-                            <div class="time-wheels">
-                                <div class="time-wheel" id="wheelHour">
-                                    <div class="wheel-scroller" id="scrollHour">
-                                        <!-- Built via JS -->
-                                    </div>
-                                </div>
-                                <div class="time-colon">:</div>
-                                <div class="time-wheel" id="wheelMinute">
-                                    <div class="wheel-scroller" id="scrollMinute">
-                                        <!-- Built via JS -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="time-dropdown-footer">
-                            <button class="time-btn-cancel" id="timeBtnCancel">Bekor qilish</button>
-                            <button class="time-btn-save" id="timeBtnSave">Saqlash</button>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- DIRECTION SWITCH (Ahamiyatsiz, hozircha zapros ketmaydi) --}}
-                <div class="map-switch-wrapper" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: #FFF; border: 1px solid #EFEFEF; border-radius: 12px; margin-top: 8px;">
-                    <span style="font-size: 16px; font-weight: 500; color: #151515; font-family: 'Inter', sans-serif;">Yo'nalishlar orqali</span>
-                    <label class="switch-custom" style="position: relative; display: inline-block; width: 44px; height: 24px; margin: 0;">
-                        <input type="checkbox" id="mapDirectionSwitch" style="opacity: 0; width: 0; height: 0;" {{ ($locationLimit ?? 1) === 0 ? 'checked' : '' }}>
-                        <span class="slider-custom" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #E6E4EA; transition: .3s; border-radius: 24px;"></span>
-                        <span class="slider-circle" style="position: absolute; content: ''; height: 20px; width: 20px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></span>
-                    </label>
-                    <style>
-                        input:checked + .slider-custom { background-color: #45BF84 !important; }
-                        input:checked ~ .slider-circle { transform: translateX(20px); }
-                    </style>
-                </div>
-            </div>
         </div>{{-- /map-top-card --}}
 
         <div class="map-tabs">
@@ -277,12 +132,133 @@
             <div style="padding: 20px; text-align: center; color: #888;">Undiruvchilar topilmadi</div>
             @endforelse
         </div>
+        
+        {{-- Qidirish (Apply Selection) Button --}}
+        <div style="padding: 16px; border-top: 1px solid #EFEFEF; background: #fff;">
+            <button id="mapApplySelectionBtn" style="width: 100%; padding: 12px; background: #7B48FF; color: #fff; border: none; border-radius: 10px; font-weight: 500; font-family: 'Inter', sans-serif; cursor: pointer; transition: background 0.2s;">
+                Xaritadan ko'rish
+            </button>
+        </div>
 
     </div>
 
     {{-- RIGHT MAP AREA --}}
     <div class="map-right-area">
-        
+
+        {{-- TOP FILTER BAR --}}
+        <div class="map-top-filter-bar" id="mapTopFilterBar">
+
+            {{-- Branch Filter --}}
+            <div class="mtf-item" style="position: relative;" id="mapBranchFilterWrapper">
+                <button class="mtf-btn" id="mapBranchFilterBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+                        <path d="M20 11.1755C20 15.6907 16.4183 21 12 21C7.58172 21 4 15.6907 4 11.1755C4 6.66029 7.58172 3 12 3C16.4183 3 20 6.66029 20 11.1755Z" fill="#7B48FF"/>
+                        <path d="M9.5 10.5C9.5 9.11929 10.6193 8 12 8C13.3807 8 14.5 9.11929 14.5 10.5C14.5 11.8807 13.3807 13 12 13C10.6193 13 9.5 11.8807 9.5 10.5Z" fill="#FFFFFF"/>
+                    </svg>
+                    <span id="mapBranchFilterText" class="mtf-label">{{ $selectedBranchName ?? 'Barchasi (Filiallar)' }}</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ABABAB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="mtf-dropdown" id="mapBranchDropdown" style="display: none;">
+                    <style>
+                        .map-branch-item { padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 500; color: #807B89; transition: all 0.2s; margin-bottom: 4px; }
+                        .map-branch-item:hover { background: #F9F8FF; color: #151515; }
+                        .map-branch-item.active { background: #F4F0FF; color: #7B48FF; }
+                    </style>
+                    <div class="map-branch-item {{ empty($selectedBranch) ? 'active' : '' }}" data-guid="">Barchasi (Filiallar)</div>
+                    @if(isset($branches) && is_array($branches))
+                        @foreach($branches as $branch)
+                            <div class="map-branch-item {{ ($selectedBranch ?? '') == ($branch['branch_guid'] ?? '') ? 'active' : '' }}" data-guid="{{ $branch['branch_guid'] ?? '' }}">{{ $branch['name'] ?? 'Noma\'lum' }}</div>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
+
+            {{-- Date Filter --}}
+            <div class="mtf-item" style="position: relative;">
+                <button class="mtf-btn" id="mapDateFilterBtn">
+                    <img src="{{ asset('assets/images/calendar_icon.svg') }}" width="18" height="18" alt="Calendar">
+                    <span id="mapDateFilterText" class="mtf-label">{{ $selectedDateText }}</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ABABAB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="custom-calendar-dropdown" id="mapCalendarDropdown">
+                    <div class="calendar-header">
+                        <div class="date-range-display" id="mapCalendarDisplayRange" style="font-size: 14px; font-weight: 500;">{{ $selectedDateText }}</div>
+                        <div class="year-selector" id="mapYearSelectorBtn">
+                            <span id="mapCalendarYearText">2026</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#151515" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            <div class="year-dropdown" id="mapYearDropdown"></div>
+                        </div>
+                    </div>
+                    <div class="calendar-body">
+                        <div class="months-sidebar" id="mapCalendarMonths" style="display: none;"></div>
+                        <div class="calendar-grid" style="width: 100%;">
+                            <div class="weekdays"><span>Du</span><span>Se</span><span>Cho</span><span>Pa</span><span>Ju</span><span>Sha</span><span>Ya</span></div>
+                            <div class="days-grid" id="mapCalendarDays"></div>
+                        </div>
+                    </div>
+                    <div class="calendar-footer">
+                        <div class="duration-display" id="mapCalendarDuration" style="display: none;">0 kunlik</div>
+                        <div class="footer-actions">
+                            <button class="reset-btn" id="mapCalendarResetBtn">Qayta tiklash</button>
+                            <button class="save-btn" id="mapCalendarSaveBtn">Saqlash</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Time Filter --}}
+            <div class="mtf-item time-filter-wrapper" style="position: relative;">
+                <button class="mtf-btn" id="mapTimeFilterBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M11.9466 2H12.0534C14.2007 1.99999 15.8835 1.99998 17.1966 2.17651C18.5405 2.3572 19.601 2.73426 20.4334 3.56664C21.2657 4.39902 21.6428 5.45951 21.8235 6.80345C22 8.11646 22 9.79929 22 11.9466V12.0534C22 14.2007 22 15.8835 21.8235 17.1966C21.6428 18.5405 21.2657 19.601 20.4334 20.4334C19.601 21.2657 18.5405 21.6428 17.1966 21.8235C15.8835 22 14.2007 22 12.0534 22H11.9466C9.79929 22 8.11646 22 6.80345 21.8235C5.45951 21.6428 4.39902 21.2657 3.56664 20.4334C2.73426 19.601 2.3572 18.5405 2.17651 17.1966C1.99998 15.8835 1.99999 14.2007 2 12.0534V11.9466C1.99999 9.79928 1.99998 8.11646 2.17651 6.80345C2.3572 5.45951 2.73426 4.39902 3.56664 3.56664C4.39902 2.73426 5.45951 2.3572 6.80345 2.17651C8.11646 1.99998 9.79928 1.99999 11.9466 2ZM6.98937 3.55941C5.80016 3.7193 5.08321 4.02339 4.5533 4.5533C4.02339 5.08321 3.7193 5.80016 3.55941 6.98937C3.39683 8.19866 3.39535 9.7877 3.39535 12C3.39535 14.2123 3.39683 15.8013 3.55941 17.0106C3.7193 18.1998 4.02339 18.9168 4.5533 19.4467C5.08321 19.9766 5.80016 20.2807 6.98937 20.4406C8.19866 20.6032 9.7877 20.6047 12 20.6047C14.2123 20.6047 15.8013 20.6032 17.0106 20.4406C18.1998 20.2807 18.9168 19.9766 19.4467 19.4467C19.9766 18.9168 20.2807 18.1998 20.4406 17.0106C20.6032 15.8013 20.6047 14.2123 20.6047 12C20.6047 9.7877 20.6032 8.19866 20.4406 6.98937C20.2807 5.80016 19.9766 5.08321 19.4467 4.5533C18.9168 4.02339 18.1998 3.7193 17.0106 3.55941C15.8013 3.39683 14.2123 3.39535 12 3.39535C9.7877 3.39535 8.19866 3.39683 6.98937 3.55941ZM12 7.5814C12.3853 7.5814 12.6977 7.89376 12.6977 8.27907V11.711L14.8189 13.8323C15.0914 14.1047 15.0914 14.5465 14.8189 14.8189C14.5465 15.0914 14.1047 15.0914 13.8323 14.8189L11.8472 12.8339C11.5784 12.565 11.4439 12.4306 11.3731 12.2597C11.3023 12.0887 11.3023 11.8986 11.3023 11.5184V8.27907C11.3023 7.89376 11.6147 7.5814 12 7.5814Z" fill="#7B48FF"/>
+                    </svg>
+                    <span id="mapTimeFilterText" class="mtf-label">{{ $selectedTimeText }}</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ABABAB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="time-dropdown" id="mapTimeDropdown" style="display: none;">
+                    <div class="time-dropdown-header">Vaqtni o'rnatish</div>
+                    <div class="time-dropdown-tabs">
+                        <div class="time-tab active" id="timeTabFrom"><span>Dan</span> <span class="time-val" id="timeValFrom">12:00</span></div>
+                        <div class="time-tab" id="timeTabTo"><span>Gacha</span> <span class="time-val" id="timeValTo">16:00</span></div>
+                    </div>
+                    <div class="time-picker-body">
+                        <div class="time-picker-fade-top"></div>
+                        <div class="time-picker-fade-bottom"></div>
+                        <div class="time-picker-select-overlay"></div>
+                        <div class="time-wheels">
+                            <div class="time-wheel" id="wheelHour"><div class="wheel-scroller" id="scrollHour"></div></div>
+                            <div class="time-colon">:</div>
+                            <div class="time-wheel" id="wheelMinute"><div class="wheel-scroller" id="scrollMinute"></div></div>
+                        </div>
+                    </div>
+                    <div class="time-dropdown-footer">
+                        <button class="time-btn-cancel" id="timeBtnCancel">Bekor qilish</button>
+                        <button class="time-btn-save" id="timeBtnSave">Saqlash</button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Direction Switch --}}
+            <div class="mtf-item mtf-switch-item">
+                <span class="mtf-switch-label">Yo'nalishlar orqali</span>
+                <label class="switch-custom" style="position: relative; display: inline-block; width: 44px; height: 24px; margin: 0;">
+                    <input type="checkbox" id="mapDirectionSwitch" style="opacity: 0; width: 0; height: 0;" {{ ($locationLimit ?? 1) === 0 ? 'checked' : '' }}>
+                    <span class="slider-custom" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #E6E4EA; transition: .3s; border-radius: 24px;"></span>
+                    <span class="slider-circle" style="position: absolute; content: ''; height: 20px; width: 20px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></span>
+                </label>
+                <style>
+                    input:checked + .slider-custom { background-color: #45BF84 !important; }
+                    input:checked ~ .slider-circle { transform: translateX(20px); }
+                </style>
+            </div>
+
+            {{-- Clear Button --}}
+            <button class="mtf-clear-btn" id="mapClearAllFilters" title="Barcha filtrlarni tozalash">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Tozalash
+            </button>
+        </div>
+
         <!-- Custom Zoom Controls -->
         <div class="map-custom-zoom">
             <div class="zoom-btn" id="mapZoomIn"></div>
@@ -307,53 +283,16 @@
         endHour: '{{ $endHour ?? "" }}'
     };
 
-    // --- Sahifa yangilanganda yoki Orqaga/Oldinga qaytilgan bo'lsa tanlanganlarni tozalash ---
+    // --- Default Date Redirect Logic (agar URL da date bo'lmasa) ---
     (function() {
-        // performance.navigation is deprecated in modern browsers but still widely supported.
-        // We also check PerformanceNavigationTiming
-        var isReloadOrBack = false;
-        
-        if (window.performance) {
-            var navEntries = window.performance.getEntriesByType('navigation');
-            if (navEntries.length > 0) {
-                var navType = navEntries[0].type;
-                if (navType === 'reload' || navType === 'back_forward') {
-                    isReloadOrBack = true;
-                }
-            } else if (window.performance.navigation) {
-                // Fallback for older browsers
-                var type = window.performance.navigation.type;
-                if (type === 1 || type === 2) {
-                    isReloadOrBack = true;
-                }
-            }
-        }
-
-        if (isReloadOrBack) {
-            const currentUrl = new URL(window.location.href);
-            let shouldRedirect = false;
-            
-            if (currentUrl.searchParams.has('selected_users[]')) {
-                currentUrl.searchParams.delete('selected_users[]');
-                shouldRedirect = true;
-            }
-            if (currentUrl.searchParams.has('date')) {
-                currentUrl.searchParams.delete('date');
-                shouldRedirect = true;
-            }
-            if (currentUrl.searchParams.has('start_hour')) {
-                currentUrl.searchParams.delete('start_hour');
-                currentUrl.searchParams.delete('end_hour');
-                shouldRedirect = true;
-            }
-            if (currentUrl.searchParams.has('is_active')) {
-                currentUrl.searchParams.delete('is_active');
-                shouldRedirect = true;
-            }
-
-            if (shouldRedirect) {
-                window.location.replace(currentUrl.toString());
-            }
+        const currentUrl = new URL(window.location.href);
+        if (!currentUrl.searchParams.has('date')) {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            currentUrl.searchParams.set('date', yyyy + '-' + mm + '-' + dd);
+            window.location.replace(currentUrl.toString());
         }
     })();
 </script>
@@ -530,6 +469,133 @@ ymaps.ready(function () {
         var locationLimit = {{ $locationLimit ?? 1 }};
         var drawnPolylines = {};
 
+        function drawRoute(userId, idx, c) {
+            if (drawnPolylines[userId]) return;
+            var locs = locationIndex[userId] || [];
+            if (locs.length > 1) {
+                var lineColor = statuses[idx] === 'green' ? '#2196F3' : '#F44336';
+                var collection = new ymaps.GeoObjectCollection();
+                var lineCoords = locs.map(function(l) { return [parseFloat(l.lat), parseFloat(l.lng)]; });
+                
+                var poly = new ymaps.Polyline(lineCoords, {}, {
+                    strokeColor: lineColor,
+                    strokeWidth: 4,
+                    strokeOpacity: 0.85
+                });
+                collection.add(poly);
+                
+                var rowData = rows[idx] || {};
+                var userName = rowData.dataset ? rowData.dataset.name : "Noma'lum";
+                var imgUrl = (rowData.dataset && rowData.dataset.image) ? rowData.dataset.image : 'https://ui-avatars.com/api/?background=random&color=fff&name=' + encodeURIComponent(userName.charAt(0));
+                
+                for (var k = 0; k < locs.length; k++) {
+                    var l = locs[k];
+                    var isAvatarPoint = c ? (Math.abs(c[0] - parseFloat(l.lat)) < 0.000001 && Math.abs(c[1] - parseFloat(l.lng)) < 0.000001) : (k === locs.length - 1);
+                    
+                    if (!isAvatarPoint) {
+                        var deg = 0;
+                        if (k < locs.length - 1) {
+                            var n = locs[k+1];
+                            var dy = parseFloat(n.lat) - parseFloat(l.lat);
+                            var dx = (parseFloat(n.lng) - parseFloat(l.lng)) * Math.cos(parseFloat(l.lat) * Math.PI / 180);
+                            deg = 90 - (Math.atan2(dy, dx) * 180 / Math.PI);
+                        } else if (k > 0) {
+                            var p = locs[k-1];
+                            var dy = parseFloat(l.lat) - parseFloat(p.lat);
+                            var dx = (parseFloat(l.lng) - parseFloat(p.lng)) * Math.cos(parseFloat(p.lat) * Math.PI / 180);
+                            deg = 90 - (Math.atan2(dy, dx) * 180 / Math.PI);
+                        }
+                        
+                        var ArrowBalloonContent = `
+                <div style="min-width: 260px; font-family: Inter, sans-serif; padding: 5px 0;">
+                    <div style="display:flex; align-items:center; margin-bottom: 16px;">
+                        <img src="${imgUrl}" style="width:40px; height:40px; border-radius:10px; margin-right:12px; object-fit: cover;">
+                        <div>
+                            <div style="font-weight: 600; font-size: 15px; color:#151515; line-height:1.2; margin-bottom: 2px;">${userName}</div>
+                            <div style="font-size: 13px; color:#807b89;">Undiruvchi</div>
+                        </div>
+                    </div>
+                    
+                    <div style="height:1px; background:#F0F0F0; margin: 0 -15px 16px -15px;"></div>
+                    
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                            <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                <span>Telefon:</span>
+                            </div>
+                            <span style="font-weight: 600; color:#151515;">${rowData.dataset ? rowData.dataset.phone : "Noma'lum"}</span>
+                        </div>
+                        
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                            <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+                                <span>Status:</span>
+                            </div>
+                            <span style="font-weight: 600; color:${lineColor};">${statuses[idx] === 'green' ? 'Onlayn' : 'Oflayn'}</span>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                            <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                <span>Vaqt:</span>
+                            </div>
+                            <span style="font-weight: 600; color:#151515;">${
+                                l.time 
+                                ? new Date(l.time).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', ' /') 
+                                : "Noma'lum"
+                            }</span>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                            <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="10" y1="15" x2="10" y2="9"></line><line x1="14" y1="15" x2="14" y2="9"></line></svg>
+                                <span>To'xtab turgan vaqt:</span>
+                            </div>
+                            <span style="font-weight: 600; color:#45BF84;">${l.stopped ? l.stopped + ' daqiqa' : "Noma'lum"}</span>
+                        </div>
+                    </div>
+                    
+                    <div style="height:1px; background:#F0F0F0; margin: 16px -15px 12px -15px;"></div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                        <div style="display:flex; align-items:center; color:#807b89; gap:6px;">
+                            <span>Kordinata:</span>
+                            <span style="font-weight: 600; color:#151515; letter-spacing: 0.5px;">${parseFloat(l.lat).toFixed(6)} - ${parseFloat(l.lng).toFixed(6)}</span>
+                        </div>
+                        <div style="position:relative; display:flex; align-items:center;">
+                            <span id="copyMsg-arrow-${idx}-${k}" style="position:absolute; right:35px; background:#45BF84; color:#fff; font-size:11px; padding:3px 6px; border-radius:4px; opacity:0; transition:opacity 0.3s ease; pointer-events:none; white-space:nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Nusxa olindi</span>
+                            <div style="cursor:pointer; display:flex; padding: 5px; border-radius: 6px; background: #F5F4F9; transition: background 0.2s;" title="Nusxa olish" onclick="navigator.clipboard.writeText('${parseFloat(l.lat).toFixed(6)}, ${parseFloat(l.lng).toFixed(6)}').then(() => { var msg = document.getElementById('copyMsg-arrow-${idx}-${k}'); if(msg) { msg.style.opacity='1'; msg.style.transform='translateY(-2px)'; setTimeout(()=>{ msg.style.opacity='0'; msg.style.transform='translateY(0)'; }, 1500); } var t=this; t.style.background='#d1f0e1'; setTimeout(()=>t.style.background='#F5F4F9', 500); })">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#807b89" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+                        
+                        var arrowSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="' + lineColor + '" stroke="#fff" stroke-width="2" style="transform: rotate(' + deg + 'deg); position: absolute; top: -9px; left: -9px;"><polygon points="12,2 22,22 12,17 2,22"></polygon></svg>';
+                        var pointPm = new ymaps.Placemark([parseFloat(l.lat), parseFloat(l.lng)], {
+                            balloonContentBody: ArrowBalloonContent
+                        }, {
+                            iconLayout: ymaps.templateLayoutFactory.createClass(arrowSvg),
+                            hideIconOnBalloonOpen: false,
+                            balloonPanelMaxMapArea: 0,
+                            balloonOffset: [0, -10],
+                            iconShape: {
+                                type: 'Rectangle',
+                                coordinates: [[-12, -12], [12, 12]]
+                            },
+                            zIndex: 100
+                        });
+                        collection.add(pointPm);
+                    }
+                }
+                
+                map.geoObjects.add(collection);
+                drawnPolylines[userId] = collection;
+            }
+        }
+
         // helper: toggling polyline for a given userId
         function togglePolyline(idx) {
             var userId = rows[idx].dataset.id;
@@ -538,54 +604,21 @@ ymaps.ready(function () {
             if (drawnPolylines[userId]) {
                 map.geoObjects.remove(drawnPolylines[userId]);
                 delete drawnPolylines[userId];
-                return;
-            }
-
-            var locs = locationIndex[userId] || [];
-            if (locs.length > 1) {
-                var lineCoords = locs.map(function(l) { return [parseFloat(l.lat), parseFloat(l.lng)]; });
-                var poly = new ymaps.Polyline(lineCoords, {}, {
-                    strokeColor: statuses[idx] === 'green' ? '#2196F3' : '#F44336',
-                    strokeWidth: 4,
-                    strokeOpacity: 0.85
-                });
-                map.geoObjects.add(poly);
-                drawnPolylines[userId] = poly;
-                // Pan to the last location point
-                map.panTo(lineCoords[lineCoords.length - 1], { flying: true, duration: 400 });
+            } else {
+                drawRoute(userId, idx, coords[idx]);
+                var locs = locationIndex[userId] || [];
+                if (locs.length > 1) {
+                    var lastLoc = locs[locs.length - 1];
+                    map.panTo([parseFloat(lastLoc.lat), parseFloat(lastLoc.lng)], { flying: true, duration: 400 });
+                }
             }
         }
 
         // Draw initially if we have any route array
         coords.forEach(function(c, i) {
             var userId = rows[i] ? rows[i].dataset.id : null;
-            if (!userId) return;
-            
-            var locs = locationIndex[userId] || [];
-            if (locs.length > 1) {
-                var lineColor = statuses[i] === 'green' ? '#2196F3' : '#F44336';
-                var lineCoords = locs.map(function(l) { return [parseFloat(l.lat), parseFloat(l.lng)]; });
-                var poly = new ymaps.Polyline(lineCoords, {}, {
-                    strokeColor: lineColor,
-                    strokeWidth: 4,
-                    strokeOpacity: 0.85
-                });
-                map.geoObjects.add(poly);
-                drawnPolylines[userId] = poly;
-                
-                // Kichik tarixiy nuqtalarni (dot) chizish
-                locs.forEach(function(l) {
-                    var isAvatarPoint = (Math.abs(c[0] - parseFloat(l.lat)) < 0.000001 && Math.abs(c[1] - parseFloat(l.lng)) < 0.000001);
-                    if (!isAvatarPoint) {
-                        var pointPm = new ymaps.Placemark([parseFloat(l.lat), parseFloat(l.lng)], {}, {
-                            iconLayout: ymaps.templateLayoutFactory.createClass(
-                                '<div style="width: 14px; height: 14px; margin-top:-7px; margin-left:-7px; background: #fff; border: 3px solid ' + lineColor + '; border-radius: 50%;"></div>'
-                            ),
-                            zIndex: 100 // Avatar emas, orqa fonda turishi uchun
-                        });
-                        map.geoObjects.add(pointPm);
-                    }
-                });
+            if (userId && locationIndex[userId] && locationIndex[userId].length > 1) {
+                drawRoute(userId, i, c);
             }
         });
 
@@ -630,7 +663,7 @@ ymaps.ready(function () {
         });
     });
 
-    // ---- Row click: URL orqali navigate ----
+    // ---- Row click: Faqat vizual tanlash (URL ga o'tmaydi) ----
     function setActive(idx) {
         var row = rows[idx];
         var userId = row.dataset.id;
@@ -640,52 +673,40 @@ ymaps.ready(function () {
         var cb = row.querySelector('.custom-checkbox');
         if (cb) cb.classList.toggle('checked');
         row.classList.toggle('active');
-        
-        var currentUrl = new URL(window.location.href);
-        currentUrl.searchParams.delete('selected_users[]');
-        
-        // Barcha belgilangan ismlarni (aktiv qatorlarni) yig'ib bazaga jo'natamiz
-        document.querySelectorAll('.map-person-item.active').forEach(function(r) {
-            if (r.dataset.id) {
-                currentUrl.searchParams.append('selected_users[]', r.dataset.id);
-            }
-        });
-
-        // "Yo'nalishlar orqali" swichining holatini ham olib urlga qo'shib yuboramiz
-        var directionSwitch = document.getElementById('mapDirectionSwitch');
-        if (directionSwitch) {
-            currentUrl.searchParams.set('location_limit', directionSwitch.checked ? '0' : '1');
-        }
-
-        // Kutib turgan Sana filterini olib jo'natamiz
-        var calendarDropdown = document.getElementById('mapCalendarDropdown');
-        if (calendarDropdown && calendarDropdown.dataset.selectedDate) {
-            currentUrl.searchParams.set('date', calendarDropdown.dataset.selectedDate);
-        } else {
-            // Agar tanlanmagan yoki tozalangan bo'lsa
-            currentUrl.searchParams.delete('date');
-        }
-
-        // Kutib turgan Vaqt filterlarini olib jo'natamiz
-        var timeDropdown = document.getElementById('mapTimeDropdown');
-        if (timeDropdown && timeDropdown.dataset.startHour && timeDropdown.dataset.endHour) {
-            currentUrl.searchParams.set('start_hour', timeDropdown.dataset.startHour);
-            currentUrl.searchParams.set('end_hour', timeDropdown.dataset.endHour);
-        } else {
-            currentUrl.searchParams.delete('start_hour');
-            currentUrl.searchParams.delete('end_hour');
-        }
-
-        window.location.href = currentUrl.toString();
     }
 
     // Attach listener to individual rows
     rows.forEach(function(r, i){ r.addEventListener('click', function(){ setActive(i); }); });
 
-    // Listener for Switch: toggle location_limit URL param (Faqat state o'zgaradi, reload bo'lmaydi)
+    // ---- Qidirish (Xaritadan ko'rish) tugmasi ----
+    var applySelectionBtn = document.getElementById('mapApplySelectionBtn');
+    if (applySelectionBtn) {
+        applySelectionBtn.addEventListener('click', function() {
+            var currentUrl = new URL(window.location.href);
+            
+            // Avvalgi barcha tanlangan userlarni url dan tozalaymiz
+            currentUrl.searchParams.delete('selected_users[]');
+            
+            // Faqat hozirgi aktiv elementlarni url ga qo'shamiz
+            document.querySelectorAll('.map-person-item.active').forEach(function(r) {
+                if (r.dataset.id) {
+                    currentUrl.searchParams.append('selected_users[]', r.dataset.id);
+                }
+            });
+
+            // Qolgan barcha URL parametrlar o'z o'rnida qoladi (filial, date, time va h.k.)
+            window.location.href = currentUrl.toString();
+        });
+    }
+
+    // Attach listener to individual rows
+    rows.forEach(function(r, i){ r.addEventListener('click', function(){ setActive(i); }); });
+
+    // Listener for Switch: toggle location_limit URL param and immediately submit
     document.getElementById('mapDirectionSwitch').addEventListener('change', function() {
-        // Bu joyda endi sahifa yangilanishiga ehtiyoj yo'q, chunki
-        // biz holatni setActive funksiyasi chaqirilganda URL'ga qo'shamiz
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('location_limit', this.checked ? '0' : '1');
+        window.location.href = currentUrl.toString();
     });
 
     // ---- Tabs ----
@@ -705,6 +726,14 @@ ymaps.ready(function () {
             window.location.href = currentUrl.toString();
         });
     });
+
+    // ---- Clear All Filters Button ----
+    var clearAllBtn = document.getElementById('mapClearAllFilters');
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', function() {
+            window.location.href = window.location.pathname;
+        });
+    }
 
     // ---- Search (person filter) ----
     const searchInput = document.getElementById('mapSearchInput');
@@ -806,7 +835,9 @@ ymaps.ready(function () {
         const startYear = 2015;
         const initialDateStr = "{{ $selectedDate ?? '' }}";
         if (initialDateStr) {
-            startDate = new Date(initialDateStr);
+            // UTC muammosini oldini olish: stringni manual parse qilamiz
+            const parts = initialDateStr.split('-');
+            startDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 0, 0, 0);
             currentYear = startDate.getFullYear();
         }
         
@@ -848,8 +879,15 @@ ymaps.ready(function () {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             dropdown.classList.toggle('active');
-            if (dropdown.classList.contains('active') && monthsContainer.querySelector('.active')) {
-                monthsContainer.querySelector('.active').scrollIntoView({ block: 'nearest' });
+            if (dropdown.classList.contains('active')) {
+                // Tanlangan oy ga scroll qilamiz
+                setTimeout(function() {
+                    var targetMonth = startDate ? startDate.getMonth() : new Date().getMonth();
+                    var el = daysContainer.querySelector('[data-grid-month="' + targetMonth + '"]');
+                    if (el) {
+                        daysContainer.scrollTo({ top: el.offsetTop - daysContainer.offsetTop, behavior: 'auto' });
+                    }
+                }, 30);
             }
         });
 
@@ -980,16 +1018,17 @@ ymaps.ready(function () {
                 const d = String(startDate.getDate()).padStart(2, '0');
                 const dateStr = `${y}-${m}-${d}`;
                 
-                // Sahifani yangilamasdan faqat vizual turni o'zgartiramiz
-                document.getElementById('mapDateFilterText').innerText = `${d} ${shortMonths[startDate.getMonth()]} ${y}`;
-                dropdown.dataset.selectedDate = dateStr;
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('date', dateStr);
+                window.location.href = currentUrl.toString();
             } else {
-                document.getElementById('mapDateFilterText').innerText = 'Sanani tanlang';
-                delete dropdown.dataset.selectedDate;
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.delete('date');
+                window.location.href = currentUrl.toString();
             }
-            dropdown.classList.remove('active');
         });
         setupCalendar();
+        updateRangeClasses();
         updateDisplay();
     })();
 
@@ -1144,12 +1183,10 @@ ymaps.ready(function () {
             const sh = pad(timeFrom.h) + ':' + pad(timeFrom.m);
             const eh = pad(timeTo.h) + ':' + pad(timeTo.m);
             
-            // Sahifani yangilamasdan vizual va data qadriyatlarini o'zgartiramiz
-            document.getElementById('mapTimeFilterText').innerText = `${sh} - ${eh}`;
-            timeDropdown.dataset.startHour = sh;
-            timeDropdown.dataset.endHour = eh;
-            
-            timeDropdown.style.display = 'none';
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('start_hour', sh);
+            currentUrl.searchParams.set('end_hour', eh);
+            window.location.href = currentUrl.toString();
         });
 
         document.addEventListener('click', function(e) {

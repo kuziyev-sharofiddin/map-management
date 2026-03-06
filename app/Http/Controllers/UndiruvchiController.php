@@ -14,6 +14,11 @@ class UndiruvchiController extends Controller
 
     public function index(Request $request)
     {
+        // Agar URL da `date` ko'rsatilmagan bo'lsa, bugungi sana bilan redirect qilamiz
+        if (!$request->query('date')) {
+            return redirect()->to($request->fullUrlWithQuery(['date' => date('Y-m-d')]));
+        }
+
         try {
             $token = session('auth_token');
             $branches = [];
@@ -30,15 +35,16 @@ class UndiruvchiController extends Controller
                 $selectedStatusName = 'Oflayn';
             }
 
-            $selectedDate = $request->query('date');
-            $selectedDateText = 'Sanani tanlang';
-            if ($selectedDate) {
-                $monthsArr = ['yan', 'fev', 'mar', 'apr', 'may', 'iyn', 'iyl', 'avg', 'sen', 'okt', 'noy', 'dek'];
-                $timestamp = strtotime($selectedDate);
-                if ($timestamp) {
-                    $monthIndex = (int)date('n', $timestamp) - 1;
-                    $selectedDateText = date('j', $timestamp) . ' ' . $monthsArr[$monthIndex] . ' ' . date('Y', $timestamp);
-                }
+            $monthsArr = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avgust', 'sentyabr', 'oktyabr', 'noyabr', 'dekabr'];
+
+            // Default: bugungi sana (URL da ko'rsatilmasa ham)
+            $selectedDate = $request->query('date', date('Y-m-d'));
+            $timestamp = strtotime($selectedDate);
+            if ($timestamp) {
+                $monthIndex = (int)date('n', $timestamp) - 1;
+                $selectedDateText = date('j', $timestamp) . ' ' . $monthsArr[$monthIndex] . ' ' . date('Y', $timestamp);
+            } else {
+                $selectedDateText = 'Sanani tanlang';
             }
 
             $page = (int) $request->query('page', 0);
@@ -250,12 +256,25 @@ class UndiruvchiController extends Controller
                             'date'       => $dateApi ?: date('Y-m-d'),
                             'start_hour' => $startHour ?: null,
                             'end_hour'   => $endHour   ?: null,
-                            'limit'      => $locationLimit <= 0 ? 500 : $locationLimit,
+                            'limit'      => $locationLimit,
                             'is_active'  => null,
                             'is_stopped' => null,
                         ]);
 
+                        // dd([
+                        //     'user_ids'   => $apiUserIds,
+                        //     'date'       => $dateApi ?: date('Y-m-d'),
+                        //     'start_hour' => $startHour ?: null,
+                        //     'end_hour'   => $endHour   ?: null,
+                        //     'limit'      => $locationLimit,
+                        //     'is_active'  => null,
+                        //     'is_stopped' => null,
+                        // ]);
+
+
+
                     $responseData = $locResponse->json('data');
+                    // dd($responseData);
                     if ($locResponse->successful() && is_array($responseData)) {
                         foreach ($responseData as $userData) {
                             $uid = $userData['user_id'] ?? $userData['id'] ?? null;
