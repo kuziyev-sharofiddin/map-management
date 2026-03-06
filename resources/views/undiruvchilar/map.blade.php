@@ -469,6 +469,133 @@ ymaps.ready(function () {
         var locationLimit = {{ $locationLimit ?? 1 }};
         var drawnPolylines = {};
 
+        function drawRoute(userId, idx, c) {
+            if (drawnPolylines[userId]) return;
+            var locs = locationIndex[userId] || [];
+            if (locs.length > 1) {
+                var lineColor = statuses[idx] === 'green' ? '#2196F3' : '#F44336';
+                var collection = new ymaps.GeoObjectCollection();
+                var lineCoords = locs.map(function(l) { return [parseFloat(l.lat), parseFloat(l.lng)]; });
+                
+                var poly = new ymaps.Polyline(lineCoords, {}, {
+                    strokeColor: lineColor,
+                    strokeWidth: 4,
+                    strokeOpacity: 0.85
+                });
+                collection.add(poly);
+                
+                var rowData = rows[idx] || {};
+                var userName = rowData.dataset ? rowData.dataset.name : "Noma'lum";
+                var imgUrl = (rowData.dataset && rowData.dataset.image) ? rowData.dataset.image : 'https://ui-avatars.com/api/?background=random&color=fff&name=' + encodeURIComponent(userName.charAt(0));
+                
+                for (var k = 0; k < locs.length; k++) {
+                    var l = locs[k];
+                    var isAvatarPoint = c ? (Math.abs(c[0] - parseFloat(l.lat)) < 0.000001 && Math.abs(c[1] - parseFloat(l.lng)) < 0.000001) : (k === locs.length - 1);
+                    
+                    if (!isAvatarPoint) {
+                        var deg = 0;
+                        if (k < locs.length - 1) {
+                            var n = locs[k+1];
+                            var dy = parseFloat(n.lat) - parseFloat(l.lat);
+                            var dx = (parseFloat(n.lng) - parseFloat(l.lng)) * Math.cos(parseFloat(l.lat) * Math.PI / 180);
+                            deg = 90 - (Math.atan2(dy, dx) * 180 / Math.PI);
+                        } else if (k > 0) {
+                            var p = locs[k-1];
+                            var dy = parseFloat(l.lat) - parseFloat(p.lat);
+                            var dx = (parseFloat(l.lng) - parseFloat(p.lng)) * Math.cos(parseFloat(p.lat) * Math.PI / 180);
+                            deg = 90 - (Math.atan2(dy, dx) * 180 / Math.PI);
+                        }
+                        
+                        var ArrowBalloonContent = `
+                <div style="min-width: 260px; font-family: Inter, sans-serif; padding: 5px 0;">
+                    <div style="display:flex; align-items:center; margin-bottom: 16px;">
+                        <img src="${imgUrl}" style="width:40px; height:40px; border-radius:10px; margin-right:12px; object-fit: cover;">
+                        <div>
+                            <div style="font-weight: 600; font-size: 15px; color:#151515; line-height:1.2; margin-bottom: 2px;">${userName}</div>
+                            <div style="font-size: 13px; color:#807b89;">Undiruvchi</div>
+                        </div>
+                    </div>
+                    
+                    <div style="height:1px; background:#F0F0F0; margin: 0 -15px 16px -15px;"></div>
+                    
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                            <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                <span>Telefon:</span>
+                            </div>
+                            <span style="font-weight: 600; color:#151515;">${rowData.dataset ? rowData.dataset.phone : "Noma'lum"}</span>
+                        </div>
+                        
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                            <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+                                <span>Status:</span>
+                            </div>
+                            <span style="font-weight: 600; color:${lineColor};">${statuses[idx] === 'green' ? 'Onlayn' : 'Oflayn'}</span>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                            <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                <span>Vaqt:</span>
+                            </div>
+                            <span style="font-weight: 600; color:#151515;">${
+                                l.time 
+                                ? new Date(l.time).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', ' /') 
+                                : "Noma'lum"
+                            }</span>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                            <div style="display:flex; align-items:center; color:#807b89; gap:8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B48FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="10" y1="15" x2="10" y2="9"></line><line x1="14" y1="15" x2="14" y2="9"></line></svg>
+                                <span>To'xtab turgan vaqt:</span>
+                            </div>
+                            <span style="font-weight: 600; color:#45BF84;">${l.stopped ? l.stopped + ' daqiqa' : "Noma'lum"}</span>
+                        </div>
+                    </div>
+                    
+                    <div style="height:1px; background:#F0F0F0; margin: 16px -15px 12px -15px;"></div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                        <div style="display:flex; align-items:center; color:#807b89; gap:6px;">
+                            <span>Kordinata:</span>
+                            <span style="font-weight: 600; color:#151515; letter-spacing: 0.5px;">${parseFloat(l.lat).toFixed(6)} - ${parseFloat(l.lng).toFixed(6)}</span>
+                        </div>
+                        <div style="position:relative; display:flex; align-items:center;">
+                            <span id="copyMsg-arrow-${idx}-${k}" style="position:absolute; right:35px; background:#45BF84; color:#fff; font-size:11px; padding:3px 6px; border-radius:4px; opacity:0; transition:opacity 0.3s ease; pointer-events:none; white-space:nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Nusxa olindi</span>
+                            <div style="cursor:pointer; display:flex; padding: 5px; border-radius: 6px; background: #F5F4F9; transition: background 0.2s;" title="Nusxa olish" onclick="navigator.clipboard.writeText('${parseFloat(l.lat).toFixed(6)}, ${parseFloat(l.lng).toFixed(6)}').then(() => { var msg = document.getElementById('copyMsg-arrow-${idx}-${k}'); if(msg) { msg.style.opacity='1'; msg.style.transform='translateY(-2px)'; setTimeout(()=>{ msg.style.opacity='0'; msg.style.transform='translateY(0)'; }, 1500); } var t=this; t.style.background='#d1f0e1'; setTimeout(()=>t.style.background='#F5F4F9', 500); })">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#807b89" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+                        
+                        var arrowSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="' + lineColor + '" stroke="#fff" stroke-width="2" style="transform: rotate(' + deg + 'deg); position: absolute; top: -9px; left: -9px;"><polygon points="12,2 22,22 12,17 2,22"></polygon></svg>';
+                        var pointPm = new ymaps.Placemark([parseFloat(l.lat), parseFloat(l.lng)], {
+                            balloonContentBody: ArrowBalloonContent
+                        }, {
+                            iconLayout: ymaps.templateLayoutFactory.createClass(arrowSvg),
+                            hideIconOnBalloonOpen: false,
+                            balloonPanelMaxMapArea: 0,
+                            balloonOffset: [0, -10],
+                            iconShape: {
+                                type: 'Rectangle',
+                                coordinates: [[-12, -12], [12, 12]]
+                            },
+                            zIndex: 100
+                        });
+                        collection.add(pointPm);
+                    }
+                }
+                
+                map.geoObjects.add(collection);
+                drawnPolylines[userId] = collection;
+            }
+        }
+
         // helper: toggling polyline for a given userId
         function togglePolyline(idx) {
             var userId = rows[idx].dataset.id;
@@ -477,54 +604,21 @@ ymaps.ready(function () {
             if (drawnPolylines[userId]) {
                 map.geoObjects.remove(drawnPolylines[userId]);
                 delete drawnPolylines[userId];
-                return;
-            }
-
-            var locs = locationIndex[userId] || [];
-            if (locs.length > 1) {
-                var lineCoords = locs.map(function(l) { return [parseFloat(l.lat), parseFloat(l.lng)]; });
-                var poly = new ymaps.Polyline(lineCoords, {}, {
-                    strokeColor: statuses[idx] === 'green' ? '#2196F3' : '#F44336',
-                    strokeWidth: 4,
-                    strokeOpacity: 0.85
-                });
-                map.geoObjects.add(poly);
-                drawnPolylines[userId] = poly;
-                // Pan to the last location point
-                map.panTo(lineCoords[lineCoords.length - 1], { flying: true, duration: 400 });
+            } else {
+                drawRoute(userId, idx, coords[idx]);
+                var locs = locationIndex[userId] || [];
+                if (locs.length > 1) {
+                    var lastLoc = locs[locs.length - 1];
+                    map.panTo([parseFloat(lastLoc.lat), parseFloat(lastLoc.lng)], { flying: true, duration: 400 });
+                }
             }
         }
 
         // Draw initially if we have any route array
         coords.forEach(function(c, i) {
             var userId = rows[i] ? rows[i].dataset.id : null;
-            if (!userId) return;
-            
-            var locs = locationIndex[userId] || [];
-            if (locs.length > 1) {
-                var lineColor = statuses[i] === 'green' ? '#2196F3' : '#F44336';
-                var lineCoords = locs.map(function(l) { return [parseFloat(l.lat), parseFloat(l.lng)]; });
-                var poly = new ymaps.Polyline(lineCoords, {}, {
-                    strokeColor: lineColor,
-                    strokeWidth: 4,
-                    strokeOpacity: 0.85
-                });
-                map.geoObjects.add(poly);
-                drawnPolylines[userId] = poly;
-                
-                // Kichik tarixiy nuqtalarni (dot) chizish
-                locs.forEach(function(l) {
-                    var isAvatarPoint = (Math.abs(c[0] - parseFloat(l.lat)) < 0.000001 && Math.abs(c[1] - parseFloat(l.lng)) < 0.000001);
-                    if (!isAvatarPoint) {
-                        var pointPm = new ymaps.Placemark([parseFloat(l.lat), parseFloat(l.lng)], {}, {
-                            iconLayout: ymaps.templateLayoutFactory.createClass(
-                                '<div style="width: 14px; height: 14px; margin-top:-7px; margin-left:-7px; background: #fff; border: 3px solid ' + lineColor + '; border-radius: 50%;"></div>'
-                            ),
-                            zIndex: 100 // Avatar emas, orqa fonda turishi uchun
-                        });
-                        map.geoObjects.add(pointPm);
-                    }
-                });
+            if (userId && locationIndex[userId] && locationIndex[userId].length > 1) {
+                drawRoute(userId, i, c);
             }
         });
 

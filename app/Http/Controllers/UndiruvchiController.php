@@ -35,7 +35,7 @@ class UndiruvchiController extends Controller
                 $selectedStatusName = 'Oflayn';
             }
 
-            $monthsArr = ['yan', 'fev', 'mar', 'apr', 'may', 'iyn', 'iyl', 'avg', 'sen', 'okt', 'noy', 'dek'];
+            $monthsArr = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avgust', 'sentyabr', 'oktyabr', 'noyabr', 'dekabr'];
 
             // Default: bugungi sana (URL da ko'rsatilmasa ham)
             $selectedDate = $request->query('date', date('Y-m-d'));
@@ -274,6 +274,7 @@ class UndiruvchiController extends Controller
 
 
                     $responseData = $locResponse->json('data');
+                    // dd($responseData);
                     if ($locResponse->successful() && is_array($responseData)) {
                         foreach ($responseData as $userData) {
                             $uid = $userData['user_id'] ?? $userData['id'] ?? null;
