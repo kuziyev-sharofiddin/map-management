@@ -235,11 +235,21 @@
             </thead>
            <tbody>
             @forelse($usersData as $index => $user)
-            <tr>
+            @php
+                $uId = $user['user_id'] ?? $user['id'] ?? null;
+                $mapUrlParams = [];
+                if (!empty($selectedDate)) $mapUrlParams['date'] = $selectedDate;
+                if (!empty($selectedBranch)) $mapUrlParams['branch_guid'] = $selectedBranch;
+                if (!empty($isActive)) $mapUrlParams['is_active'] = $isActive;
+                if (request()->filled('search')) $mapUrlParams['search'] = request()->query('search');
+                if ($uId) $mapUrlParams['selected_users'] = [$uId];
+                $mapUrl = route('undiruvchilar.map', $mapUrlParams);
+            @endphp
+            <tr onclick="window.location.href='{{ $mapUrl }}'" style="cursor: pointer;" class="hover-row">
                 <td>{{ $index + 1 + (($pagination['page'] ?? 0) * ($pagination['page_size'] ?? 10)) }}</td>
                 <td style="text-align: center;">
                     @if(!empty($user['image']))
-                        <img src="{{ $user['image'] }}" alt="Avatar" onclick="openImageModal(this.src)" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto; cursor: pointer; transition: transform 0.2s;">
+                        <img src="{{ $user['image'] }}" alt="Avatar" onclick="event.stopPropagation(); openImageModal(this.src)" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto; cursor: pointer; transition: transform 0.2s;">
                     @else
                         <div style="width: 44px; height: 44px; border-radius: 50%; background: #E0E0E0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; color: #555; margin: 0 auto;">
                             {{ mb_substr($user['name'] ?? 'U', 0, 1) }}
@@ -392,7 +402,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const initialDateStr = "{{ $selectedDate ?? '' }}";
     if (initialDateStr) {
-        startDate = new Date(initialDateStr);
+        const parts = initialDateStr.split('-');
+        if (parts.length === 3) {
+            startDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 0, 0, 0);
+        } else {
+            startDate = new Date(initialDateStr);
+        }
+        currentYear = startDate.getFullYear();
+    } else {
+        startDate = new Date();
+        startDate.setHours(0, 0, 0, 0);
         currentYear = startDate.getFullYear();
     }
     
@@ -524,9 +543,24 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         dropdown.classList.toggle('active');
         if (dropdown.classList.contains('active')) {
-             if(monthsContainer.querySelector('.active')) {
-                 monthsContainer.querySelector('.active').scrollIntoView({block: 'nearest'});
-             }
+            // Wait for dropdown to be rendered/visible, THEN scroll and highlight
+            setTimeout(() => {
+                // Scroll to the selected month
+                const targetMonth = startDate ? startDate.getMonth() : new Date().getMonth();
+                const monthEl = daysContainer.querySelector(`[data-grid-month="${targetMonth}"]`);
+                if (monthEl) {
+                    daysContainer.scrollTo({
+                        top: monthEl.offsetTop - daysContainer.offsetTop,
+                        behavior: 'auto'
+                    });
+                }
+                // Highlight active month in sidebar
+                monthsContainer.querySelectorAll('.month-item').forEach((m, idx) => {
+                    m.classList.toggle('active', idx === targetMonth);
+                });
+                // Highlight selected day
+                updateRangeClasses();
+            }, 30);
         }
     });
 
@@ -552,10 +586,12 @@ document.addEventListener('DOMContentLoaded', function() {
         monthsContainer.innerHTML = '';
         daysContainer.innerHTML = '';
 
+        let targetMonthIndex = startDate ? startDate.getMonth() : new Date().getMonth();
+
         months.forEach((month, index) => {
             const mDiv = document.createElement('div');
             mDiv.className = `month-item`;
-            if(index === 0) mDiv.classList.add('active');
+            if(index === targetMonthIndex) mDiv.classList.add('active');
             mDiv.innerText = month;
             mDiv.dataset.idx = index;
             mDiv.addEventListener('click', () => {
@@ -628,7 +664,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         behavior: 'auto'
                     });
                 }
-            }, 50);
+            }, 150);
         }
     }
 
@@ -638,13 +674,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateRangeClasses() {
         const cells = daysContainer.querySelectorAll('.day-cell:not(.empty)');
-        const sTime = startDate ? startDate.getTime() : null;
+        const sY = startDate ? startDate.getFullYear() : null;
+        const sM = startDate ? startDate.getMonth() : null;
+        const sD = startDate ? startDate.getDate() : null;
 
         cells.forEach(cell => {
             const cTime = parseInt(cell.dataset.time);
+            const cDate = new Date(cTime);
             cell.classList.remove('selected-start', 'selected-end', 'in-range');
 
-            if (sTime && cTime === sTime) cell.classList.add('selected-start');
+            if (sY !== null && cDate.getFullYear() === sY && cDate.getMonth() === sM && cDate.getDate() === sD) {
+                cell.classList.add('selected-start');
+            }
         });
     }
 
@@ -686,6 +727,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     setupCalendar();
+    updateRangeClasses();
     updateDisplay();
 
     // Auto-search logic (typing with debounce)
